@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "icon": "/uploads/icons/music.svg",
+        "title": "Music"
+    },
+    {
+        "id": 2,
+        "icon": "/uploads/icons/fitness.svg",
+        "title": "Fitness"
+    }
+]
