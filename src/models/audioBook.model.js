@@ -1,18 +1,17 @@
 const { required } = require("joi");
 const mongoose = require("mongoose");
 
-
 const audioBookSchema = mongoose.Schema(
   {
-    storyTitle : {
-        type: String,
-        required :true,
+    storyTitle: {
+      type: String,
+      required: true,
     },
     coverPhotos: {
       type: [String],
       default: [],
     },
-    audios :[
+    audios: [
       {
         audioFile: {
           type: String,
@@ -41,13 +40,12 @@ const audioBookSchema = mongoose.Schema(
         },
       },
     },
-  
   },
   {
     timestamps: true,
   }
 );
 
-const audioBook = mongoose.model("audioBook", audioBookSchema);
+const AudioBook = mongoose.model("AudioBook", audioBookSchema, "audioBooks");
 
-module.exports = audioBook;
+module.exports = AudioBook;

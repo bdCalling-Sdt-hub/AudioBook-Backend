@@ -1,15 +1,13 @@
 const { required } = require("joi");
 const mongoose = require("mongoose");
 
-
 const charactersSchema = mongoose.Schema(
   {
-
-    storyTitle : {
-        type: string,
-        required :true,
+    storyTitle: {
+      type: String,
+      required: true,
     },
-    audios :[
+    audios: [
       {
         audioFile: {
           type: String,
@@ -22,19 +20,17 @@ const charactersSchema = mongoose.Schema(
         },
       },
     ],
-    
+
     coverPhoto: {
-      type: string,
+      type: String,
       default: null,
-  },
+    },
   },
   {
     timestamps: true,
   }
 );
 
+const Characters = mongoose.model("Characters", charactersSchema);
 
-
-const characters = mongoose.model("characters", charactersSchema);
-
-module.exports = characters;
+module.exports = Characters;

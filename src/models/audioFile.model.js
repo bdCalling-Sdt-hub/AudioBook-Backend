@@ -1,7 +1,6 @@
 const { required } = require("joi");
 const mongoose = require("mongoose");
 
-
 const audioFileSchema = mongoose.Schema(
   {
     audioFile: {
@@ -19,8 +18,6 @@ const audioFileSchema = mongoose.Schema(
   }
 );
 
+const AudioFile = mongoose.model("AudioFile", audioFileSchema, "audioFile");
 
-
-const audioFile = mongoose.model("audioFile", audioFileSchema);
-
-module.exports = audioFile;
+module.exports = AudioFile;

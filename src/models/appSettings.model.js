@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-
 const appSettingsSchema = mongoose.Schema(
   {
     backgroundPhoto: {
@@ -12,9 +11,9 @@ const appSettingsSchema = mongoose.Schema(
     // TODO: Default value should be double checked - ms
 
     characterBtnPhoto: {
-        type: String,
-        required: [true, "Image is must be Required"],
-        default: { url: `/uploads/users/user.png`, path: "null" },
+      type: String,
+      required: [true, "Image is must be Required"],
+      default: { url: `/uploads/users/user.png`, path: "null" },
     },
   },
   {
@@ -22,8 +21,10 @@ const appSettingsSchema = mongoose.Schema(
   }
 );
 
-
-
-const AppSettings = mongoose.model("AppSettings", appSettingsSchema);
+const AppSettings = mongoose.model(
+  "AppSettings",
+  appSettingsSchema,
+  "appSettings"
+);
 
 module.exports = AppSettings;
