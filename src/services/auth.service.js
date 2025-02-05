@@ -91,7 +91,7 @@ const verifyEmail = async (reqBody, reqQuery) => {
 
   // if(user.oneTimeCode === 'verified'){
   //   throw new ApiError(
-  //     httpStatus.BAD_REQUEST,
+  //     httpStatus.  BAD_REQUEST,
   //     "try 3 minute later"
   //   );
   // }

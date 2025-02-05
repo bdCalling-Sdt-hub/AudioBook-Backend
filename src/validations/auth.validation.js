@@ -6,7 +6,8 @@ const register = {
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
     fullName: Joi.string().required(),
-    role: Joi.string().required().valid("client", "employee", "admin"),
+    role: Joi.string().required().valid("user", "admin", "superAdmin"),
+    message: Joi.string().optional(),
   }),
 };
 
@@ -65,13 +66,13 @@ const sendOTP = {
   body: Joi.object().keys({
     phoneNumber: Joi.string().required(),
   }),
-}
+};
 const verifyOTP = {
   body: Joi.object().keys({
     phoneNumber: Joi.string().required(),
     otpCode: Joi.string().required(),
   }),
-}
+};
 module.exports = {
   register,
   login,
@@ -81,5 +82,5 @@ module.exports = {
   resetPassword,
   verifyEmail,
   deleteMe,
-  changePassword
+  changePassword,
 };

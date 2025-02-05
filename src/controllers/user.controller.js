@@ -88,8 +88,6 @@ const deleteUser = catchAsync(async (req, res) => {
   );
 });
 
-
-
 const userRatioCount = catchAsync(async (req, res) => {
   const thisMonthClint = await User.countDocuments({
     createdAt: { $gte: new Date().setMonth(new Date().getMonth() - 1) },
@@ -160,5 +158,5 @@ module.exports = {
   userRatioCount,
   userInterestUpdate,
   interestAdd,
-  interestDelete
+  interestDelete,
 };

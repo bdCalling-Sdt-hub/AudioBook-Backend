@@ -45,14 +45,14 @@ const userSchema = mongoose.Schema(
       enum: roles,
     },
 
-    status:{
+    status: {
       type: String,
-      enum : ['active', 'deactivate'],
-      default : 'active'
+      enum: ["active", "deactivate"],
+      default: "active",
     },
 
-    message : {
-      type : String,
+    message: {
+      type: String,
       required: false,
     },
 
@@ -61,7 +61,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: false,
     },
-    
+
     isEmailVerified: {
       type: Boolean,
       default: false,
@@ -70,7 +70,7 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    
+
     isProfileCompleted: {
       type: Boolean,
       default: false,
