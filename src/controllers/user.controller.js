@@ -19,10 +19,23 @@ const createUser = catchAsync(async (req, res) => {
   );
 });
 
+// TODO : Shahinur vai ke ask korte hobe .. shob user ke query korar bepar e ...
 const getUsers = catchAsync(async (req, res) => {
   const filter = pick(req.query, ["name", "role", "gender"]);
   const options = pick(req.query, ["sortBy", "limit", "page"]);
   const result = await userService.queryUsers(filter, options);
+  res.status(httpStatus.OK).json(
+    response({
+      message: "All Users",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: result,
+    })
+  );
+});
+
+const getAllUsers = catchAsync(async (req, res) => {
+  const result = await userService.getAllUsers();
   res.status(httpStatus.OK).json(
     response({
       message: "All Users",
@@ -151,6 +164,7 @@ const interestDelete = catchAsync(async (req, res) => {
 
 module.exports = {
   createUser,
+  getAllUsers,
   getUsers,
   getUser,
   updateUser,
