@@ -11,8 +11,24 @@ const uploadUsers = userFileUploadMiddleware(UPLOADS_FOLDER_USERS);
 
 const router = express.Router();
 
-router.route("/").get(auth("common"), userController.getUsers);
+// router.route("/").get(auth("commonAdmin"), userController.getUsers); // common
 
+router.route("/").get(auth("commonAdmin"), userController.getAllUsers);
+router
+  .route("/deactivate/:userId")
+  .get(auth("commonAdmin"), userController.deactivateUserById);
+//----------------------------------------------------------------
+router
+  .route("/createNewAdmin")
+  .post(auth("superAdmin"), userController.createNewAdmin);
+router
+  .route("/deactivate/:adminId")
+  .get(auth("superAdmin"), userController.deactivateAdminById);
+router
+  .route("/getAllAdminAndSuperAdmin")
+  .get(auth("commonAdmin"), userController.getAllAdminAndSuperAdmin);
+
+//--------- TODO: route created by Shahinur vai..
 router
   .route("/:userId")
   .get(auth("common"), userController.getUser)
