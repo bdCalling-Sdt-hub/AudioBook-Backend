@@ -18,6 +18,7 @@ const createUser = async (userBody) => {
   return User.create({ ...userBody, oneTimeCode });
 };
 
+// TODO : Shahinur vai ke ask korte hobe .. shob user ke query korar bepar e ...
 const queryUsers = async (filter, options) => {
   const query = {};
 
@@ -34,6 +35,14 @@ const queryUsers = async (filter, options) => {
   }
 
   const users = await User.paginate(query, options);
+
+  // Convert height and age to feet/inches here...
+
+  return users;
+};
+
+const getAllUsers = async () => {
+  const users = await User.find();
 
   // Convert height and age to feet/inches here...
 
@@ -159,6 +168,7 @@ const interestAdd = async (id, updateBody) => {
 
 module.exports = {
   createUser,
+  getAllUsers,
   queryUsers,
   getUserById,
   getUserByEmail,
