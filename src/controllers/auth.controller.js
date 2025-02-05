@@ -15,12 +15,13 @@ const register = catchAsync(async (req, res) => {
   if (isUser && isUser.isEmailVerified === false) {
     const user = await userService.isUpdateUser(isUser.id, req.body);
     const tokens = await tokenService.generateAuthTokens(user);
-    res.status(httpStatus.CREATED).json(
+    res.status(httpStatus.OK).json(
       response({
         message: "Thank you for registering. Please verify your email",
         status: "OK",
         statusCode: httpStatus.CREATED,
         data: {},
+        tokens,
       })
     );
   } else if (isUser && isUser.isDeleted === false) {
@@ -46,6 +47,7 @@ const register = catchAsync(async (req, res) => {
         status: "OK",
         statusCode: httpStatus.CREATED,
         data: {},
+        tokens,
       })
     );
   }
@@ -79,7 +81,7 @@ const login = catchAsync(async (req, res) => {
   }, 180000); // 3 minute in milliseconds
 
   const tokens = await tokenService.generateAuthTokens(user);
-  
+
   res.status(httpStatus.OK).json(
     response({
       message: "Login Successful",
@@ -92,7 +94,7 @@ const login = catchAsync(async (req, res) => {
 
 const logout = catchAsync(async (req, res) => {
   // await authService.logout(req.body.refreshToken);
-  // res.status(httpStatus.OK).send();
+  // res.status(httpStatus.  OK).send();
 });
 
 const refreshTokens = catchAsync(async (req, res) => {
@@ -110,7 +112,7 @@ const forgotPassword = catchAsync(async (req, res) => {
   }
   // if(user.oneTimeCode === 'verified'){
   //   throw new ApiError(
-  //     httpStatus.BAD_REQUEST,
+  //     httpStatus.  BAD_REQUEST,
   //     "try 3 minute later"
   //   );
   // }
@@ -159,18 +161,20 @@ const changePassword = catchAsync(async (req, res) => {
   );
 });
 
+// This is for web application
 const sendVerificationEmail = catchAsync(async (req, res) => {
-  // const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.user);
-  // await emailService.sendVerificationEmail(req.user.email, verifyEmailToken);
-  // res.status(httpStatus.OK).send();
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(
+    req.user
+  );
 
-  const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.user);
   await emailService.sendVerificationEmail(req.user.email, verifyEmailToken);
   res.status(httpStatus.OK).send();
 });
 
 const verifyEmail = catchAsync(async (req, res) => {
-  const user = await authService.verifyEmail(req.body, req.query);
+  // const user = await authService.verifyEmail(req.body, req.query);
+
+  const user = await authService.verifyEmail(req.body, req.user);
 
   const tokens = await tokenService.generateAuthTokens(user);
 
@@ -182,7 +186,7 @@ const verifyEmail = catchAsync(async (req, res) => {
       data: { user, tokens },
     })
   );
-  // res.status(httpStatus.OK).send();
+  // res.status(httpStatus.  OK).send();
 });
 
 const deleteMe = catchAsync(async (req, res) => {

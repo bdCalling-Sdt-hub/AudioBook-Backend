@@ -82,33 +82,34 @@ const changePassword = async (reqUser, reqBody) => {
   return user;
 };
 
-const verifyEmail = async (reqBody, reqQuery) => {
-  const { email, oneTimeCode } = reqBody;
-  console.log("reqBody", email);
-  console.log("reqQuery", oneTimeCode);
-  const user = await userService.getUserByEmail(email);
+const verifyEmail = async (reqBody, user) => {
+  // (reqBody, reqQuery)
+  const { oneTimeCode } = reqBody;
+  // const { email, oneTimeCode } = reqBody;
+
+  const user1 = await userService.getUserByEmail(user.email);
   // console.log("user", user);
 
   // if(user.oneTimeCode === 'verified'){
   //   throw new ApiError(
-  //     httpStatus.BAD_REQUEST,
+  //     httpStatus.  BAD_REQUEST,
   //     "try 3 minute later"
   //   );
   // }
-  if (!user) {
+  if (!user1) {
     throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
-  } else if (user.oneTimeCode === null) {
+  } else if (user1.oneTimeCode === null) {
     throw new ApiError(httpStatus.BAD_REQUEST, "OTP expired");
-  } else if (oneTimeCode != user.oneTimeCode) {
+  } else if (oneTimeCode != user1.oneTimeCode) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid OTP");
-  } else if (user.isEmailVerified && !user.isResetPassword) {
+  } else if (user1.isEmailVerified && !user1.isResetPassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Email already verified");
   } else {
-    user.isEmailVerified = true;
-    user.oneTimeCode = null;
-    user.isResetPassword = false;
-    await user.save();
-    return user;
+    user1.isEmailVerified = true;
+    user1.oneTimeCode = null;
+    user1.isResetPassword = false;
+    await user1.save();
+    return user1;
   }
 };
 
