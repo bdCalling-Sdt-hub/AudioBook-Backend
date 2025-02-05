@@ -9,30 +9,10 @@ const createUser = async (userBody) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
   }
 
-  // ------------- TODO: Comment By Mohammad Sheakh ---
-  // function generateReferralCode(length = 6) {
-  //   const characters =
-  //     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  //   let referralCode = "";
-
-  //   for (let i = 0; i < length; i++) {
-  //     referralCode += characters.charAt(
-  //       Math.floor(Math.random() * characters.length)
-  //     );
-  //   }
-  //   return referralCode;
-  // }
-
-  // const referralCode = generateReferralCode();
-
-  // if (userBody.role === "client" || userBody.role === "employee") {
-  //   userBody.referralCode = referralCode;
-  // }
-
   const oneTimeCode =
     Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
 
-  if (userBody.role === "client" || userBody.role === "employee") {
+  if (userBody.role === "user" || userBody.role === "admin") {
     sendEmailVerification(userBody.email, oneTimeCode);
   }
   return User.create({ ...userBody, oneTimeCode });
@@ -120,7 +100,7 @@ const isUpdateUser = async (userId, updateBody) => {
 
   const referralCode = generateReferralCode();
 
-  if (updateBody.role === "client" || updateBody.role === "employee") {
+  if (updateBody.role === "user" || updateBody.role === "admin") {
     updateBody.referralCode = referralCode;
   }
 

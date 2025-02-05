@@ -11,15 +11,16 @@ const uploadUsers = userFileUploadMiddleware(UPLOADS_FOLDER_USERS);
 
 const router = express.Router();
 
-
-// router.route("/interest").get(userController.interestList)
-// router.route("/interest").patch(userController.interestAdd)
-// router.route("/interest").delete(userController.interestDelete)
-
 router.route("/").get(auth("common"), userController.getUsers);
 
-router.route("/:userId")
-      .get(auth("common"), userController.getUser)
-      .patch(auth("common"),[uploadUsers.single("image")],convertHeicToPngMiddleware(UPLOADS_FOLDER_USERS),userController.updateUser);
+router
+  .route("/:userId")
+  .get(auth("common"), userController.getUser)
+  .patch(
+    auth("common"),
+    [uploadUsers.single("image")],
+    convertHeicToPngMiddleware(UPLOADS_FOLDER_USERS),
+    userController.updateUser
+  );
 
 module.exports = router;

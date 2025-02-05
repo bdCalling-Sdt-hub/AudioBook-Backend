@@ -14,9 +14,8 @@ const verifyCallback =
     }
     req.user = user;
 
-
     const { authorization } = req.headers;
-  
+
     let token;
     let activity;
     let decodedData;
@@ -24,7 +23,6 @@ const verifyCallback =
       token = authorization.split(" ")[1];
       decodedData = jwt.decode(token);
       activity = decodedData.activity;
-
     }
 
     if (requiredRights.length) {
