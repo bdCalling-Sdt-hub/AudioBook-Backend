@@ -8,8 +8,8 @@ const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
   }
-  
-  // ------------- TODO: Comment By Mohammad Sheakh --- 
+
+  // ------------- TODO: Comment By Mohammad Sheakh ---
   // function generateReferralCode(length = 6) {
   //   const characters =
   //     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -143,21 +143,22 @@ const isUpdateUser = async (userId, updateBody) => {
   return user;
 };
 
-
-
 const interestList = async () => {
   const interest = await Interest.find({});
   return interest;
 };
 
-const userInterestUpdate = async (id,updateBody) => {
+const userInterestUpdate = async (id, updateBody) => {
   const user = await getUserById(id);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
   console.log(updateBody.interest);
-  if(updateBody.interest.length === 0){
-    throw new ApiError(httpStatus.BAD_REQUEST, "Please select at least one interest.");
+  if (updateBody.interest.length === 0) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Please select at least one interest."
+    );
   }
   updateBody.isInterest = true;
   Object.assign(user, updateBody);
@@ -165,17 +166,16 @@ const userInterestUpdate = async (id,updateBody) => {
   return user;
 };
 
-const interestAdd = async (id,updateBody) => {
+const interestAdd = async (id, updateBody) => {
   const user = await getUserById(id);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
   updateBody.isInterest = true;
   Object.assign(user, updateBody);
-  await user.save();  
+  await user.save();
   return user;
 };
-
 
 module.exports = {
   createUser,
@@ -185,8 +185,8 @@ module.exports = {
   updateUserById,
   deleteUserById,
   isUpdateUser,
- 
+
   interestList,
   userInterestUpdate,
-  interestAdd
+  interestAdd,
 };

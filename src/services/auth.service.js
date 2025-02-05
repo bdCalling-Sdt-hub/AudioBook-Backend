@@ -5,7 +5,6 @@ const Token = require("../models/token.model");
 const ApiError = require("../utils/ApiError");
 const { tokenTypes } = require("../config/tokens");
 
-
 const loginUserWithEmailAndPassword = async (email, password) => {
   // console.log("email", email);
   const user = await userService?.getUserByEmail(email);
@@ -14,7 +13,6 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   }
   return user;
 };
-
 
 const logout = async (refreshToken) => {
   const refreshTokenDoc = await Token.findOne({
@@ -27,7 +25,6 @@ const logout = async (refreshToken) => {
   }
   await refreshTokenDoc.remove();
 };
-
 
 const refreshAuth = async (refreshToken) => {
   try {
@@ -46,20 +43,22 @@ const refreshAuth = async (refreshToken) => {
   }
 };
 
-
 const resetPassword = async (newPassword, email) => {
   const user = await userService.getUserByEmail(email);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
-  if (await user.isPasswordMatch(newPassword)) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "New password cannot be the same as old password"
-    );
-  }
-  await userService.updateUserById(user.id, { password: newPassword });
 
+  if (!user.isResetPassword && user.oneTimeCode == null) {
+    if (await user.isPasswordMatch(newPassword)) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "New password cannot be the same as old password"
+      );
+    }
+
+    await userService.updateUserById(user.id, { password: newPassword });
+  }
   return user;
 };
 
@@ -130,7 +129,7 @@ const verifyNumber = async (phoneNumber, otpCode, email) => {
     user.isPhoneNumberVerified = true;
     user.phoneNumberOTP = null;
     await user.save();
-    return  user;
+    return user;
   }
 };
 
