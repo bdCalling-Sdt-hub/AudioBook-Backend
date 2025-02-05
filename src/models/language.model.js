@@ -16,7 +16,6 @@ const languageSchema = mongoose.Schema(
     timestamps: true,
   }
 );
-// from auth branch
 
 const Language = mongoose.model("Language", languageSchema);
 
