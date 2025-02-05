@@ -51,8 +51,8 @@ const changePassword = {
 
 const verifyEmail = {
   body: Joi.object().keys({
-    email: Joi.string().required(),
-    oneTimeCode: Joi.string().required(),
+    email: Joi.string().optional(), // .required()
+    oneTimeCode: Joi.string().optional(), // .required()
   }),
 };
 

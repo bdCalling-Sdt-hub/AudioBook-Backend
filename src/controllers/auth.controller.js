@@ -161,16 +161,10 @@ const changePassword = catchAsync(async (req, res) => {
   );
 });
 
+// This is for web application
 const sendVerificationEmail = catchAsync(async (req, res) => {
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(
     req.user
-  );
-
-  console.log(
-    "👌 verifyEmailToken :: req.user.email",
-    verifyEmailToken,
-    "::",
-    req.user.email
   );
 
   await emailService.sendVerificationEmail(req.user.email, verifyEmailToken);
@@ -179,6 +173,8 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
 
 const verifyEmail = catchAsync(async (req, res) => {
   // const user = await authService.verifyEmail(req.body, req.query);
+
+  const user = await authService.verifyEmail(req.body, req.user);
 
   const tokens = await tokenService.generateAuthTokens(user);
 
