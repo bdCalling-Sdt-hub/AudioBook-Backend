@@ -1,23 +1,34 @@
 const catchAsync = require("../utils/catchAsync");
+const httpStatus = require("http-status");
+const response = require("../config/response");
+const languageService = require("../services/language.service");
 
 const addNewLanguage = catchAsync(async (req, res) => {
+  if (req.file) {
+    req.body.flagImage = "/uploads/languages/" + req.file.filename;
+  }
+
+  const language = await languageService.addNewLanguage(req.body);
+  console.log(req.file);
+
   res.status(httpStatus.CREATED).json(
     response({
-      message: "User Created",
+      message: "language Created",
       status: "OK",
       statusCode: httpStatus.CREATED,
-      data: user,
+      data: language,
     })
   );
 });
 
 const getAllLanguage = catchAsync(async (req, res) => {
+  const result = await languageService.getAllLanguage();
   res.status(httpStatus.CREATED).json(
     response({
-      message: "User Created",
+      message: "All language",
       status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: user,
+      statusCode: httpStatus.OK,
+      data: result,
     })
   );
 });
