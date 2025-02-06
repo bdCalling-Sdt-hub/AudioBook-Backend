@@ -9,7 +9,7 @@ const audioBookSchema = mongoose.Schema(
     },
     coverPhotos: {
       type: [String],
-      default: [],
+      default: [], 
     },
     audios: [
       {

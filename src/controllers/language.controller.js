@@ -3,6 +3,7 @@ const httpStatus = require("http-status");
 const response = require("../config/response");
 const languageService = require("../services/language.service");
 
+//[🚧][🧑‍💻✅][🧪🆗]
 const addNewLanguage = catchAsync(async (req, res) => {
   if (req.file) {
     req.body.flagImage = "/uploads/languages/" + req.file.filename;
@@ -21,6 +22,7 @@ const addNewLanguage = catchAsync(async (req, res) => {
   );
 });
 
+//[🚧][🧑‍💻✅][🧪🆗]
 const getAllLanguage = catchAsync(async (req, res) => {
   const result = await languageService.getAllLanguage();
   res.status(httpStatus.CREATED).json(
