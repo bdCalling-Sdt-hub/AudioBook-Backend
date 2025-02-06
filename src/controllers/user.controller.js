@@ -101,35 +101,14 @@ const deleteUser = catchAsync(async (req, res) => {
   );
 });
 
-const userRatioCount = catchAsync(async (req, res) => {
-  const thisMonthClint = await User.countDocuments({
-    createdAt: { $gte: new Date().setMonth(new Date().getMonth() - 1) },
-    role: "client",
-  });
-  const thisMonthEmployee = await User.countDocuments({
-    createdAt: { $gte: new Date().setMonth(new Date().getMonth() - 1) },
-    role: "employee",
-  });
+// ----------------------Admin Functionality------------------
 
-  const ratio = [
-    { name: "Client", value: thisMonthClint },
-    { name: "Employee", value: thisMonthEmployee },
-  ];
-
+// cross check korte hobe ..
+const deactivateUserById = catchAsync(async (req, res) => {
+  const user = await userService.deactivateUserById(req.params.userId);
   res.status(httpStatus.OK).json(
     response({
-      message: "User Ratio List",
-      status: "OK",
-      statusCode: httpStatus.OK,
-      data: ratio,
-    })
-  );
-});
-const userInterestUpdate = catchAsync(async (req, res) => {
-  const user = await userService.userInterestUpdate(req.user.id, req.body);
-  res.status(httpStatus.OK).json(
-    response({
-      message: "User Interest Update",
+      message: "User Deactivated",
       status: "OK",
       statusCode: httpStatus.OK,
       data: user,
@@ -137,27 +116,36 @@ const userInterestUpdate = catchAsync(async (req, res) => {
   );
 });
 
-const interestAdd = catchAsync(async (req, res) => {
-  const interest = await Interest.create(req.body);
-
-  res.status(httpStatus.OK).json(
+const createNewAdmin = catchAsync(async (req, res) => {
+  const user = await userService.createNewAdmin(req.body);
+  res.status(httpStatus.CREATED).json(
     response({
-      message: "Interest add successfully",
+      message: "Admin Created",
       status: "OK",
-      statusCode: httpStatus.OK,
-      data: {},
+      statusCode: httpStatus.CREATED,
+      data: user,
     })
   );
 });
 
-const interestDelete = catchAsync(async (req, res) => {
-  const interest = await Interest.findByIdAndDelete(req.query.interestId);
-  res.status(httpStatus.OK).json(
+const deactivateAdminById = catchAsync(async (req, res) => {
+  res.status(httpStatus.CREATED).json(
     response({
-      message: "Interest Deleted",
+      message: "Admin deactivated",
       status: "OK",
-      statusCode: httpStatus.OK,
-      data: {},
+      statusCode: httpStatus.CREATED,
+      data: user,
+    })
+  );
+});
+
+const getAllAdminAndSuperAdmin = catchAsync(async (req, res) => {
+  res.status(httpStatus.CREATED).json(
+    response({
+      message: "getAllAdminAndSuperAdmin",
+      status: "OK",
+      statusCode: httpStatus.CREATED,
+      data: user,
     })
   );
 });
@@ -169,8 +157,8 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
-  userRatioCount,
-  userInterestUpdate,
-  interestAdd,
-  interestDelete,
+  deactivateUserById, // admin functionality
+  createNewAdmin,
+  deactivateAdminById,
+  getAllAdminAndSuperAdmin,
 };

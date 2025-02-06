@@ -29,24 +29,27 @@ router.post(
   auth(),
   authController.sendVerificationEmail
 );
-
+// test korte hobe ..
 router.post(
   "/reset-password",
   validate(authValidation.resetPassword),
   authController.resetPassword
 );
+// test korte hobe
 router.post(
   "/change-password",
   auth("common"),
   validate(authValidation.changePassword),
   authController.changePassword
 );
+// test korte hobe
 router.post(
   "/forgot-password",
   validate(authValidation.forgotPassword),
   authController.forgotPassword
 );
 router.post("/logout", validate(authValidation.logout), authController.logout);
+// test korte hobe ..
 router.post(
   "/refresh-tokens",
   validate(authValidation.refreshTokens),

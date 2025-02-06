@@ -1,17 +1,13 @@
 const express = require("express");
-const config = require("../../config/config"); 
+const config = require("../../config/config");
 const authRoute = require("./auth.routes");
 const userRoute = require("./user.routes");
 const docsRoute = require("./docs.routes");
-// const taskRoute = require("./tasks.routes");
-// const referralRoute = require("./referral.routes");
-// const termsRoute = require("./terms.routes");
-// const privacyRoute = require("./privacy.routes");
-// const aboutRoute = require("./about.routes");
-// const withdrawalRoute = require("./withdrawal.routes");
-// const paymentRoute = require("./payment.routes");
-// const notificationRoute = require("./notification.routes");
-// const serviceRoute = require("./service.routes");
+// const appSettingsRoute = require("./appSettings.routes");
+// const audioBookRoute = require("./audioBook.routes");
+// const charactersRoute = require("./characters.routes");
+// const landingPageAudioRoute = require("./landingPageAudio.routes");
+// const languageRoute = require("./language.routes");
 
 const router = express.Router();
 
@@ -25,44 +21,24 @@ const defaultRoutes = [
     route: userRoute,
   },
   // {
-  //   path: "/tasks",
-  //   route: taskRoute,
+  //   path: "/appSettings",
+  //   route: appSettingsRoute,
   // },
   // {
-  //   path: "/referral",
-  //   route: referralRoute,
+  //   path: "/audioBook",
+  //   route: audioBookRoute,
   // },
   // {
-  //   path: "/terms",
-  //   route: termsRoute,
+  //   path: "/characters",
+  //   route: charactersRoute,
   // },
   // {
-  //   path: "/privacy",
-  //   route: privacyRoute,
+  //   path: "/landingPageAudio",
+  //   route: landingPageAudioRoute,
   // },
   // {
-  //   path: "/about",
-  //   route: aboutRoute,
-  // },
-  // {
-  //   path: "/withdrawal",
-  //   route: withdrawalRoute,
-  // },
-  // {
-  //   path: "/notification",
-  //   route: notificationRoute,
-  // },
-  // {
-  //   path: "/payment",
-  //   route: paymentRoute,
-  // },
-  // {
-  //   path: "/payment",
-  //   route: paymentRoute,
-  // },
-  // {
-  //   path: "/service",
-  //   route: serviceRoute,
+  //   path: "/language",
+  //   route: languageRoute,
   // },
 ];
 
