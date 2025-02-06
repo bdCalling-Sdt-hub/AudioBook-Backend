@@ -2,14 +2,44 @@ const catchAsync = require("../utils/catchAsync");
 const httpStatus = require("http-status");
 const response = require("../config/response");
 
-//[🚧][][] // 🧑‍💻✅  🧪🆗
+const audioBookService = require("../services/audioBook.service");
+const audioFileService = require("../services/audioFile.service");
+
+//[🚧][🧑‍💻][] //  🚧 🧑‍💻✅  🧪🆗
 const addNewAudioBook = catchAsync(async (req, res) => {
+  // Step 1: Process uploaded cover photos
+  const coverPhotos = [];
+  if (req.files && req.files.length > 0) {
+    req.files.forEach((file) => {
+      coverPhotos.push("/uploads/audiobooks/" + file.filename); // Adjust path as needed
+    });
+  }
+
+  // Step 2: Create AudioFile documents
+  const audioFilesData = req.body.audios; // Expect an array of audio files from the request body
+  const audioFileIds = [];
+
+  for (const audioFileData of audioFilesData) {
+    const audioFile = await audioFileService.createAudioFile(audioFileData); // Service function to create an AudioFile
+    audioFileIds.push(audioFile._id);
+  }
+
+  // Step 3: Create the AudioBook document
+  const audioBookData = {
+    storyTitle: req.body.storyTitle,
+    coverPhotos: coverPhotos,
+    audios: audioFileIds, // Reference the created AudioFile IDs
+    location: req.body.location, // Expect location data in the request body
+  };
+
+  const audioBook = await audioBookService.createAudioBook(audioBookData);
+
   res.status(httpStatus.CREATED).json(
     response({
-      message: "User Created",
+      message: "AudioBook Created",
       status: "OK",
       statusCode: httpStatus.CREATED,
-      data: user,
+      data: audioBook,
     })
   );
 });
