@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const auth = require("../../middlewares/auth");
 const landingPageAudioController = require("../../controllers/landingPageAudio.controller");
 
 router.route("/").get(auth("common"), landingPageAudioController.getAllAudio);
@@ -12,6 +12,6 @@ router
   .post(auth("commonAdmin"), landingPageAudioController.addNewAudio);
 router
   .route("/:audioId")
-  .patch(auth("commonAdmin"), languageController.updateAudioById);
+  .patch(auth("commonAdmin"), landingPageAudioController.updateAudioById);
 
 module.exports = router;

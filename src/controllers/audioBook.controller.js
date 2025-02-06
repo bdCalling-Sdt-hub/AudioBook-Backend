@@ -1,3 +1,5 @@
+const catchAsync = require("../utils/catchAsync");
+
 const addNewAudioBook = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(
     response({

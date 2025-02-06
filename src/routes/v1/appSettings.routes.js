@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const appSettingsController = require("../../controllers/appSettings.controller");
+const auth = require("../../middlewares/auth");
 
 router
   .route("/getAppImages")
