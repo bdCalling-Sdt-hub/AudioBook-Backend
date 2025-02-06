@@ -3,11 +3,11 @@ const config = require("../../config/config");
 const authRoute = require("./auth.routes");
 const userRoute = require("./user.routes");
 const docsRoute = require("./docs.routes");
-// const appSettingsRoute = require("./appSettings.routes");
-// const audioBookRoute = require("./audioBook.routes");
-// const charactersRoute = require("./characters.routes");
-// const landingPageAudioRoute = require("./landingPageAudio.routes");
-// const languageRoute = require("./language.routes");
+const appSettingsRoute = require("./appSettings.routes");
+const audioBookRoute = require("./audioBook.routes");
+const charactersRoute = require("./characters.routes");
+const landingPageAudioRoute = require("./landingPageAudio.routes");
+const languageRoute = require("./language.routes");
 
 const router = express.Router();
 
@@ -20,26 +20,26 @@ const defaultRoutes = [
     path: "/users",
     route: userRoute,
   },
-  // {
-  //   path: "/appSettings",
-  //   route: appSettingsRoute,
-  // },
-  // {
-  //   path: "/audioBook",
-  //   route: audioBookRoute,
-  // },
-  // {
-  //   path: "/characters",
-  //   route: charactersRoute,
-  // },
-  // {
-  //   path: "/landingPageAudio",
-  //   route: landingPageAudioRoute,
-  // },
-  // {
-  //   path: "/language",
-  //   route: languageRoute,
-  // },
+  {
+    path: "/appSettings",
+    route: appSettingsRoute,
+  },
+  {
+    path: "/audioBook",
+    route: audioBookRoute,
+  },
+  {
+    path: "/characters",
+    route: charactersRoute,
+  },
+  {
+    path: "/landingPageAudio",
+    route: landingPageAudioRoute,
+  },
+  {
+    path: "/language",
+    route: languageRoute,
+  },
 ];
 
 const devRoutes = [

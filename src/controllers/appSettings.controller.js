@@ -1,3 +1,5 @@
+const catchAsync = require("../utils/catchAsync");
+
 const getAppImages = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(
     response({

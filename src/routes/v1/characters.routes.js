@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const auth = require("../../middlewares/auth");
 const characterController = require("../../controllers/character.controller");
 
 // TODO : Search By Name kivabe kora jete pare .. shahinur vai er shathe discuss korte hobe ..
