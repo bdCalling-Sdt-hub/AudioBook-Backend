@@ -5,7 +5,6 @@ const catchAsync = require("../utils/catchAsync");
 const response = require("../config/response");
 const { userService } = require("../services");
 const unlinkImages = require("../common/unlinkImage");
-const { User, Interest } = require("../models");
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);

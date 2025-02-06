@@ -7,7 +7,12 @@ const audioBookController = require("../../controllers/audioBook.controller");
 router.route("/").get(auth("common"), audioBookController.getAllAudioBook);
 router
   .route("/")
-  .post(auth("commonAdmin"), audioBookController.addNewAudioBook);
+
+  .post(
+    [uploadLanguage.array("coverPhotos")],
+    auth("commonAdmin"),
+    audioBookController.addNewAudioBook
+  );
 router
   .route("/:audioBookId")
   .patch(auth("commonAdmin"), audioBookController.updateAudioBookById);
