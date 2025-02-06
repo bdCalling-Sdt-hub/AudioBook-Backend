@@ -5,6 +5,10 @@ const characterService = require("../services/character.service");
 const response = require("../config/response");
 // 🚧
 const addNewCharacters = catchAsync(async (req, res) => {
+  if (req.file) {
+    req.body.coverPhoto = "/uploads/characters/" + req.file.filename;
+  }
+
   const character = await characterService.addNewCharacters(req.body);
   res.status(httpStatus.CREATED).json(
     response({

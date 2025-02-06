@@ -9,7 +9,7 @@ const addNewLanguage = catchAsync(async (req, res) => {
   }
 
   const language = await languageService.addNewLanguage(req.body);
-  console.log(req.file);
+  // console.log(req.file);
 
   res.status(httpStatus.CREATED).json(
     response({

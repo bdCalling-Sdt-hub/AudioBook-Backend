@@ -9,7 +9,7 @@ const addNewCharacter = {
         languageId: Joi.string().required(), // TODO : issue thakte pare because this is reference ..
       })
     ),
-    coverPhoto: Joi.string().required(),
+    coverPhoto: Joi.string().optional(), // TODO : optional ke required kora jacche na
   }),
 };
 
