@@ -3,6 +3,10 @@ const router = express.Router();
 const auth = require("../../middlewares/auth");
 const audioBookController = require("../../controllers/audioBook.controller");
 
+const UPLOADS_FOLDER_LANGUAGE = "./public/uploads/audioFiles";
+
+const uploadLanguage = userFileUploadMiddleware(UPLOADS_FOLDER_LANGUAGE);
+
 // TODO : Search By Name  er case e idea lagbe Shahinur vai er theke
 router.route("/").get(auth("common"), audioBookController.getAllAudioBook);
 router
