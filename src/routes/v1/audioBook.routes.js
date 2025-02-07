@@ -2,8 +2,10 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middlewares/auth");
 const audioBookController = require("../../controllers/audioBook.controller");
-
+const userFileUploadMiddleware = require("../../middlewares/fileUpload");
+const validate = require("../../middlewares/validate");
 const UPLOADS_FOLDER_LANGUAGE = "./public/uploads/audioFiles";
+const audioBookValidation = require("../../validations/audioBook.validation");
 
 const uploadLanguage = userFileUploadMiddleware(UPLOADS_FOLDER_LANGUAGE);
 
@@ -11,10 +13,10 @@ const uploadLanguage = userFileUploadMiddleware(UPLOADS_FOLDER_LANGUAGE);
 router.route("/").get(auth("common"), audioBookController.getAllAudioBook);
 router
   .route("/")
-
   .post(
     [uploadLanguage.array("coverPhotos")],
     auth("commonAdmin"),
+    validate(audioBookValidation.addNewAudioBook),
     audioBookController.addNewAudioBook
   );
 router
