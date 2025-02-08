@@ -10,12 +10,16 @@ router.route("/").get(auth("common"), landingPageAudioController.getAllAudio);
 router
   .route("/:audioId")
   .get(auth("common"), landingPageAudioController.getAAudioById); // playAAudioById
-router.route("/").post(
-  auth("commonAdmin"),
-  // validate(languagePageAudioValidation.addNewLandingPageAudio),
-  // FIX :  after submit validation is not working properly \"audioFile\" is required, \"languageId\" is required
-  landingPageAudioController.addNewAudio
-);
+router
+  .route("/")
+  .post(auth("commonAdmin"),
+  [uploadUsers.single("image")],
+  convertHeicToPngMiddleware(UPLOADS_FOLDER_USERS),
+  landingPageAudioController.addNewAudio);
+
+// validate(languagePageAudioValidation.addNewLandingPageAudio),
+// FIX :  after submit validation is not working properly \"audioFile\" is required, \"languageId\" is required
+
 router
   .route("/:audioId")
   .patch(auth("commonAdmin"), landingPageAudioController.updateAudioById);
