@@ -3,9 +3,36 @@ const httpStatus = require("http-status");
 const response = require("../config/response");
 const LandingPageAudios = require("../models/landingPageAudio.model");
 const LandingPageAUdioService = require("../services/landingPageAudio.service");
+const mongoose = require("mongoose");
 
+//[🚧][🧑‍💻✅][🧪🆗✔️]  //
 const addNewAudio = catchAsync(async (req, res) => {
-  console.log("print req.body from addNewAudio🚧", req.body);
+  // Ensure a file was uploaded
+  if (!req.file) {
+    return res.status(httpStatus.BAD_REQUEST).json(
+      response({
+        message: "No audio file uploaded",
+        status: "ERROR",
+        statusCode: httpStatus.BAD_REQUEST,
+      })
+    );
+  }
+
+  if (req.file) {
+    req.body.audioFile = "/uploads/landingPageAudio/" + req.file.filename;
+  }
+
+  // Validate that languageId is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(req.body.languageId)) {
+    return res.status(400).json(
+      response({
+        message: "Invalid languageId. Please provide a valid ObjectId.",
+        status: "ERROR",
+        statusCode: httpStatus.BAD_REQUEST,
+      })
+    );
+  }
+
   const landingPageAudio = LandingPageAUdioService.addNewAudio(req.body);
   res.status(httpStatus.CREATED).json(
     response({
@@ -17,6 +44,7 @@ const addNewAudio = catchAsync(async (req, res) => {
   );
 });
 
+//[🚧][🧑‍💻✅][🧪🆗]  //
 const getAllAudio = catchAsync(async (req, res) => {
   const audios = await LandingPageAudios.find();
 
@@ -30,6 +58,7 @@ const getAllAudio = catchAsync(async (req, res) => {
   );
 });
 
+//[🚧][][]  // 🧑‍💻✅  🧪🆗
 const getAAudioById = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(
     response({
@@ -41,6 +70,7 @@ const getAAudioById = catchAsync(async (req, res) => {
   );
 });
 
+//[🚧][][]  // 🧑‍💻✅  🧪🆗
 const updateAudioById = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(
     response({
