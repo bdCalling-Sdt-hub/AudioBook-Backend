@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const JoiObjectId = require("joi-objectid")(Joi);
 
 const addNewAudioBook = {
   body: Joi.object().keys({
@@ -6,8 +7,10 @@ const addNewAudioBook = {
     coverPhotos: Joi.array().items(Joi.string()),
     audios: Joi.array().items(
       Joi.object().keys({
-        audioFile: Joi.string().required(),
-        languageId: Joi.string().required(), // TODO : issue thakte pare because this is reference ..
+        // audioFile: Joi.string().required(), // because this is file
+        languageId: JoiObjectId().required().messages({
+          "string.pattern.name": "Language ID must be a valid ObjectId.",
+        }),
       })
     ),
     location: Joi.object().keys({

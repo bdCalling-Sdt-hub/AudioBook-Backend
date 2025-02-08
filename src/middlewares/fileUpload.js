@@ -32,12 +32,14 @@ module.exports = function (UPLOADS_FOLDER) {
         file.mimetype == "image/png" ||
         file.mimetype == "image/jpeg" ||
         file.mimetype == "image/heic" ||
-        file.mimetype == "image/heif"
+        file.mimetype == "image/heif" ||
+        file.mimetype == "audio/mpeg" || // MP3
+        file.mimetype == "audio/wav" || // WAV
+        file.mimetype == "audio/ogg" // OGG
       ) {
         cb(null, true);
-
       } else {
-        cb(new Error("Only jpg, png, jpeg format allowed!"));
+        cb(new Error("Only jpg, png, jpeg, mpeg, wav, ogg  format allowed!"));
       }
     },
   });

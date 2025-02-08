@@ -1,11 +1,13 @@
 const catchAsync = require("../utils/catchAsync");
 const httpStatus = require("http-status");
 const response = require("../config/response");
-
+const ApiError = require("../utils/ApiError");
 const audioBookService = require("../services/audioBook.service");
 const audioFileService = require("../services/audioFile.service");
+const AudioBook = require("../models/audioBook.model");
+const mongoose = require("mongoose");
 
-//[🚧][🧑‍💻][] //  🚧 🧑‍💻✅  🧪🆗
+//[🚧][🧑‍💻][🧪] //  🚧 🧑‍💻✅  🧪🆗✔️
 const addNewAudioBook = catchAsync(async (req, res) => {
   // Step 1: Process uploaded cover photos
   const coverPhotos = [];
@@ -20,6 +22,18 @@ const addNewAudioBook = catchAsync(async (req, res) => {
   const audioFileIds = [];
 
   for (const audioFileData of audioFilesData) {
+    // TODO : audioFileData.audioFile null kina check korte hobe ..
+
+    if (!mongoose.Types.ObjectId.isValid(audioFileData.languageId)) {
+      return res.status(400).json(
+        response({
+          message: "Invalid languageId. Please provide a valid LanguageId", // FIX Better : kon audio File er jonno languageId ta invalid .. sheta mention kora gele may be valo hoito ..
+          status: "ERROR",
+          statusCode: httpStatus.BAD_REQUEST,
+        })
+      );
+    }
+
     const audioFile = await audioFileService.createAudioFile(audioFileData); // Service function to create an AudioFile
     audioFileIds.push(audioFile._id);
   }
@@ -43,14 +57,17 @@ const addNewAudioBook = catchAsync(async (req, res) => {
     })
   );
 });
-//[][][] // 🚧 🧑‍💻✅  🧪🆗
+
+//[🚧][🧑‍💻][] // 🚧 🧑‍💻✅  🧪🆗
 const getAllAudioBook = catchAsync(async (req, res) => {
+  const audioBook = await AudioBook.find();
+
   res.status(httpStatus.CREATED).json(
     response({
-      message: "User Created",
+      message: "All AudioBooks",
       status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: user,
+      statusCode: httpStatus.OK,
+      data: audioBook,
     })
   );
 });

@@ -5,7 +5,6 @@ const appSettingsSchema = mongoose.Schema(
     backgroundPhoto: {
       type: String,
       required: [true, "Image is must be Required"],
-      default: { url: `/uploads/users/user.png`, path: "null" },
     },
 
     // TODO: Default value should be double checked - ms
@@ -13,7 +12,6 @@ const appSettingsSchema = mongoose.Schema(
     characterBtnPhoto: {
       type: String,
       required: [true, "Image is must be Required"],
-      default: { url: `/uploads/users/user.png`, path: "null" },
     },
   },
   {

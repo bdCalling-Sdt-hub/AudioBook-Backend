@@ -20,7 +20,7 @@ const addNewCharacters = catchAsync(async (req, res) => {
     })
   );
 });
-
+ 
 //[🚧][🧑‍💻✅][🧪🆗]
 const getAllCharacters = catchAsync(async (req, res) => {
   const result = await characterService.getAllCharacters();
