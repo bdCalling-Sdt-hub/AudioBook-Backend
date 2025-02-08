@@ -18,7 +18,6 @@ const createUser = async (userBody) => {
   return User.create({ ...userBody, oneTimeCode });
 };
 
-// TODO : Shahinur vai ke ask korte hobe .. shob user ke query korar bepar e ...
 const queryUsers = async (filter, options) => {
   const query = {};
 

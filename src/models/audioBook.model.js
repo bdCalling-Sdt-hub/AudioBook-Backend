@@ -1,5 +1,6 @@
 const { required } = require("joi");
 const mongoose = require("mongoose");
+const { toJSON, paginate } = require("./plugins");
 
 const audioBookSchema = mongoose.Schema(
   {
@@ -52,6 +53,10 @@ const audioBookSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+// add plugin that converts mongoose to json
+audioBookSchema.plugin(toJSON);
+audioBookSchema.plugin(paginate);
 
 const AudioBook = mongoose.model("AudioBook", audioBookSchema, "audioBooks");
 
