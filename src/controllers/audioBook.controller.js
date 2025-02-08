@@ -1,9 +1,10 @@
 const catchAsync = require("../utils/catchAsync");
 const httpStatus = require("http-status");
 const response = require("../config/response");
-
+const ApiError = require("../utils/ApiError");
 const audioBookService = require("../services/audioBook.service");
 const audioFileService = require("../services/audioFile.service");
+const AudioBook = require("../models/audioBook.model");
 
 //[🚧][🧑‍💻][] //  🚧 🧑‍💻✅  🧪🆗
 const addNewAudioBook = catchAsync(async (req, res) => {
@@ -43,14 +44,16 @@ const addNewAudioBook = catchAsync(async (req, res) => {
     })
   );
 });
-//[][][] // 🚧 🧑‍💻✅  🧪🆗
+//[🚧][🧑‍💻][] // 🚧 🧑‍💻✅  🧪🆗
 const getAllAudioBook = catchAsync(async (req, res) => {
+  const audioBook = await AudioBook.find();
+
   res.status(httpStatus.CREATED).json(
     response({
-      message: "User Created",
+      message: "All AudioBooks",
       status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: user,
+      statusCode: httpStatus.OK,
+      data: audioBook,
     })
   );
 });
