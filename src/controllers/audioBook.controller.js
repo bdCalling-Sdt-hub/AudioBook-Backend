@@ -6,6 +6,7 @@ const audioBookService = require("../services/audioBook.service");
 const audioFileService = require("../services/audioFile.service");
 const AudioBook = require("../models/audioBook.model");
 const mongoose = require("mongoose");
+const pick = require("../utils/pick");
 
 //[🚧][🧑‍💻][🧪] //  🚧 🧑‍💻✅  🧪🆗✔️
 const addNewAudioBook = catchAsync(async (req, res) => {
@@ -58,32 +59,43 @@ const addNewAudioBook = catchAsync(async (req, res) => {
   );
 });
 
-//[🚧][🧑‍💻][] // 🚧 🧑‍💻✅  🧪🆗
+//[🚧][🧑‍💻][🧪] // 🚧 🧑‍💻✅  🧪🆗
 const getAllAudioBook = catchAsync(async (req, res) => {
-  const audioBook = await AudioBook.find();
+  const filter = pick(req.query, ["storyTitle"]);
+  const options = pick(req.query, []);
+
+  const result = await audioBookService.queryAudioBooks(filter, options);
+  // const audioBooks = await AudioBook.find();
 
   res.status(httpStatus.CREATED).json(
     response({
       message: "All AudioBooks",
       status: "OK",
       statusCode: httpStatus.OK,
+      data: result,
+    })
+  );
+});
+
+//[🚧][🧑‍💻✅][🧪🆗] // 🚧 🧑‍💻✅  🧪🆗
+const getAAudioBookById = catchAsync(async (req, res) => {
+  const audioBook = await AudioBook.findById(req.params.id);
+  if (!audioBook) {
+    throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+  }
+  res.status(httpStatus.OK).json(
+    response({
+      message: "AudioBook",
+      status: "OK",
+      statusCode: httpStatus.OK,
       data: audioBook,
     })
   );
 });
-//[][][] // 🚧 🧑‍💻✅  🧪🆗
-const getAAudioBookById = catchAsync(async (req, res) => {
-  res.status(httpStatus.CREATED).json(
-    response({
-      message: "User Created",
-      status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: user,
-    })
-  );
-});
+
 //[][][] // 🚧 🧑‍💻✅  🧪🆗
 const updateAudioBookById = catchAsync(async (req, res) => {
+  
   res.status(httpStatus.CREATED).json(
     response({
       message: "User Created",
@@ -93,6 +105,7 @@ const updateAudioBookById = catchAsync(async (req, res) => {
     })
   );
 });
+
 //[][][] // 🚧 🧑‍💻✅  🧪🆗
 const editPreviewById = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(

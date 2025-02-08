@@ -13,7 +13,7 @@ const router = express.Router();
 
 // router.route("/").get(auth("commonAdmin"), userController.getUsers); // common
 
-router.route("/").get(auth("commonAdmin"), userController.getAllUsers);
+router.route("/").get(auth("commonAdmin"), userController.getUsers); // getAllUsers
 router
   .route("/deactivate/:userId")
   .get(auth("commonAdmin"), userController.deactivateUserById);

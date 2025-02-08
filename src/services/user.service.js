@@ -24,10 +24,8 @@ const queryUsers = async (filter, options) => {
 
   // Loop through each filter field and add conditions if they exist
   for (const key of Object.keys(filter)) {
-    if (
-      (key === "fullName" || key === "email" || key === "username") &&
-      filter[key] !== ""
-    ) {
+    if (key === "fullName" && filter[key] !== "") {
+      // key === "email" || key === "username"
       query[key] = { $regex: filter[key], $options: "i" }; // Case-insensitive regex search for name
     } else if (filter[key] !== "") {
       query[key] = filter[key];

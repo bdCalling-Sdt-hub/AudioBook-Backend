@@ -20,8 +20,10 @@ const createUser = catchAsync(async (req, res) => {
 
 // TODO : Shahinur vai ke ask korte hobe .. shob user ke query korar bepar e ...
 const getUsers = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["name", "role", "gender"]);
-  const options = pick(req.query, ["sortBy", "limit", "page"]);
+  // const filter = pick(req.query, ["name", "role", "gender"]);
+  const filter = pick(req.query, ["fullName"]);
+  const options = pick(req.query, []);
+  // const options = pick(req.query, ["sortBy", "limit", "page"]);
   const result = await userService.queryUsers(filter, options);
   res.status(httpStatus.OK).json(
     response({
