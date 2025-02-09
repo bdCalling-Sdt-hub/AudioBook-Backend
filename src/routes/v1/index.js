@@ -9,6 +9,7 @@ const charactersRoute = require("./characters.routes");
 const landingPageAudioRoute = require("./landingPageAudio.routes");
 const languageRoute = require("./language.routes");
 const locationRoute = require("./location.routes");
+const adminRoute = require("./admin.routes");
 
 const router = express.Router();
 
@@ -44,6 +45,10 @@ const defaultRoutes = [
   {
     path: "/location",
     route: locationRoute,
+  },
+  {
+    path: "/admin",
+    route: adminRoute,
   },
 ];
 

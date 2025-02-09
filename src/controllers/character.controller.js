@@ -4,6 +4,7 @@ const characterService = require("../services/character.service");
 const response = require("../config/response");
 const { mongoose } = require("../config/config");
 const audioFileService = require("../services/audioFile.service");
+const ApiError = require("../utils/ApiError");
 
 //[🚧][🧑‍💻][🧪]  // ✅ 🆗
 const addNewCharacters = catchAsync(async (req, res) => {
