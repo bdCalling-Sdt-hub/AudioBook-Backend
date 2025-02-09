@@ -4,7 +4,6 @@ const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 const response = require("../config/response");
 const { userService } = require("../services");
-const unlinkImages = require("../common/unlinkImage");
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -18,23 +17,15 @@ const createUser = catchAsync(async (req, res) => {
   );
 });
 
-// TODO : Shahinur vai ke ask korte hobe .. shob user ke query korar bepar e ...
+//[🚧][🧑‍💻✅][🧪🆗✔️]  //
 const getUsers = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["name", "role", "gender"]);
-  const options = pick(req.query, ["sortBy", "limit", "page"]);
-  const result = await userService.queryUsers(filter, options);
-  res.status(httpStatus.OK).json(
-    response({
-      message: "All Users",
-      status: "OK",
-      statusCode: httpStatus.OK,
-      data: result,
-    })
-  );
-});
+  const filter = pick(req.query, ["fullName"]);
 
-const getAllUsers = catchAsync(async (req, res) => {
-  const result = await userService.getAllUsers();
+  // Add role filter to only fetch users with role "user"
+  filter.role = "user";
+
+  const options = pick(req.query, []);
+  const result = await userService.queryUsers(filter, options);
   res.status(httpStatus.OK).json(
     response({
       message: "All Users",
@@ -100,64 +91,10 @@ const deleteUser = catchAsync(async (req, res) => {
   );
 });
 
-// ----------------------Admin Functionality------------------
-
-// cross check korte hobe ..
-const deactivateUserById = catchAsync(async (req, res) => {
-  const user = await userService.deactivateUserById(req.params.userId);
-  res.status(httpStatus.OK).json(
-    response({
-      message: "User Deactivated",
-      status: "OK",
-      statusCode: httpStatus.OK,
-      data: user,
-    })
-  );
-});
-
-const createNewAdmin = catchAsync(async (req, res) => {
-  const user = await userService.createNewAdmin(req.body);
-  res.status(httpStatus.CREATED).json(
-    response({
-      message: "Admin Created",
-      status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: user,
-    })
-  );
-});
-
-const deactivateAdminById = catchAsync(async (req, res) => {
-  res.status(httpStatus.CREATED).json(
-    response({
-      message: "Admin deactivated",
-      status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: user,
-    })
-  );
-});
-
-const getAllAdminAndSuperAdmin = catchAsync(async (req, res) => {
-  res.status(httpStatus.CREATED).json(
-    response({
-      message: "getAllAdminAndSuperAdmin",
-      status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: user,
-    })
-  );
-});
-
 module.exports = {
   createUser,
-  getAllUsers,
   getUsers,
   getUser,
   updateUser,
   deleteUser,
-  deactivateUserById, // admin functionality
-  createNewAdmin,
-  deactivateAdminById,
-  getAllAdminAndSuperAdmin,
 };

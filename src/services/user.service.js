@@ -1,8 +1,7 @@
 const httpStatus = require("http-status");
-const { User, Interest } = require("../models");
+const { User } = require("../models");
 const ApiError = require("../utils/ApiError");
 const { sendEmailVerification } = require("./email.service");
-const unlinkImages = require("../common/unlinkImage");
 
 const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {
@@ -23,27 +22,13 @@ const queryUsers = async (filter, options) => {
 
   // Loop through each filter field and add conditions if they exist
   for (const key of Object.keys(filter)) {
-    if (
-      (key === "fullName" || key === "email" || key === "username") &&
-      filter[key] !== ""
-    ) {
+    if (key === "fullName" && filter[key] !== "") {
       query[key] = { $regex: filter[key], $options: "i" }; // Case-insensitive regex search for name
     } else if (filter[key] !== "") {
       query[key] = filter[key];
     }
   }
-
   const users = await User.paginate(query, options);
-
-  // Convert height and age to feet/inches here...
-
-  return users;
-};
-
-const getAllUsers = async () => {
-  const users = await User.find();
-
-  // Convert height and age to feet/inches here...
 
   return users;
 };
@@ -131,51 +116,44 @@ const isUpdateUser = async (userId, updateBody) => {
   return user;
 };
 
-const interestList = async () => {
-  const interest = await Interest.find({});
-  return interest;
+/////////////////// For Admin ////////////////////////
+
+const deactivateAdminById = async (adminId) => {
+  const admin = await User.findById(adminId);
+  if (!admin) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Admin not found");
+  }
+  Object.assign(admin, { status: "deactivate" });
+  await admin.save();
+  return admin;
 };
 
-const userInterestUpdate = async (id, updateBody) => {
-  const user = await getUserById(id);
+const deactivateUserById = async (userId) => {
+  const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
-  console.log(updateBody.interest);
-  if (updateBody.interest.length === 0) {
+
+  if (user.role === "admin" || user.role === "superAdmin") {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      "Please select at least one interest."
+      "Admin cannot be deactivated by user"
     );
   }
-  updateBody.isInterest = true;
-  Object.assign(user, updateBody);
-  await user.save();
-  return user;
-};
-
-const interestAdd = async (id, updateBody) => {
-  const user = await getUserById(id);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
-  updateBody.isInterest = true;
-  Object.assign(user, updateBody);
+  Object.assign(user, { status: "deactivate" });
   await user.save();
   return user;
 };
 
 module.exports = {
   createUser,
-  getAllUsers,
   queryUsers,
   getUserById,
   getUserByEmail,
   updateUserById,
   deleteUserById,
   isUpdateUser,
-
-  interestList,
-  userInterestUpdate,
-  interestAdd,
+  ////////////
+  deactivateAdminById,
+  deactivateUserById,
 };
