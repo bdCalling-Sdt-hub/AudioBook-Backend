@@ -1,4 +1,3 @@
-const { required } = require("joi");
 const mongoose = require("mongoose");
 
 const charactersSchema = mongoose.Schema(
@@ -9,15 +8,9 @@ const charactersSchema = mongoose.Schema(
     },
     audios: [
       {
-        audioFile: {
-          type: String,
-          required: true,
-        },
-        languageId: {
-          type: mongoose.Schema.Types.ObjectId, // Reference to the Language model
-          ref: "Language", // The name of the referenced model
-          required: true,
-        },
+        type: mongoose.Schema.Types.ObjectId, // Reference to the AudioFile model
+        ref: "AudioFile", // The name of the referenced model
+        required: true,
       },
     ],
 

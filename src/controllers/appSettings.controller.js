@@ -2,8 +2,9 @@ const catchAsync = require("../utils/catchAsync");
 const httpStatus = require("http-status");
 const response = require("../config/response");
 const AppSettings = require("../models/appSettings.model");
+const appSettingsService = require("../services/appSettings.service");
 
-//[🚧][🧑‍💻][🧪]  // ✅ 🆗 ✔️
+//[🚧][🧑‍💻✅][🧪🆗✔️]  //
 const getAppImages = catchAsync(async (req, res) => {
   const appImages = await AppSettings.find();
 
@@ -17,29 +18,36 @@ const getAppImages = catchAsync(async (req, res) => {
   );
 });
 
-//[🚧][🧑‍💻✅][🧪]  // ✅ 🆗 ✔️
+//[🚧][🧑‍💻✅][🧪🆗✔️]  //
 const uploadBackgroundAndCharacterBtnPhoto = catchAsync(async (req, res) => {
-  // TODO  : alreay exist korle  ki korte hobe ?
-  if (req.files.backgroundPhoto) {
-    req.body.backgroundPhoto =
-      "/uploads/appSettings/" + req.files.backgroundPhoto[0].filename;
+  const { type } = req.body; // Extract the type from the request body
+  const file = req.file; // Extract the uploaded file
+
+  if (!file) {
+    throw new Error("No file uploaded");
+  }
+  if (!type || !["backgroundPhoto", "characterBtnPhoto"].includes(type)) {
+    throw new Error(
+      "Invalid type. Type must be 'backgroundPhoto' or 'characterBtnPhoto'"
+    );
   }
 
-  if (req.files.characterBtnPhoto) {
-    req.body.characterBtnPhoto =
-      "/uploads/appSettings/" + req.files.characterBtnPhoto[0].filename;
-  }
+  // Construct the file path
+  const filePath = `/uploads/appSettings/${file.filename}`;
 
-  const backgroundAndCharacterBtnPhoto = await AppSettings.create(req.body);
-
-  res.status(httpStatus.CREATED).json(
-    response({
-      message: "Background And CharacterBtnPhoto Created",
-      status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: backgroundAndCharacterBtnPhoto,
-    })
+  // Call the service to handle the upload logic
+  const updatedOrCreatedSetting = await appSettingsService.uploadImage(
+    type,
+    filePath
   );
+
+  // Return success response
+  res.status(200).json({
+    message: "Image Uploaded Successfully",
+    status: "OK",
+    statusCode: 200,
+    data: updatedOrCreatedSetting,
+  });
 });
 
 module.exports = {

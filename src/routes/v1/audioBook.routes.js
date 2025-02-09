@@ -4,27 +4,62 @@ const auth = require("../../middlewares/auth");
 const audioBookController = require("../../controllers/audioBook.controller");
 const userFileUploadMiddleware = require("../../middlewares/fileUpload");
 const validate = require("../../middlewares/validate");
-const UPLOADS_FOLDER_LANGUAGE = "./public/uploads/audioFiles";
+
+const UPLOADS_FOLDER_AUDIO_BOOKS = "./public/uploads/audioBooks";
+
 const audioBookValidation = require("../../validations/audioBook.validation");
 
-const uploadLanguage = userFileUploadMiddleware(UPLOADS_FOLDER_LANGUAGE);
+const uploadAudioBooks = userFileUploadMiddleware(UPLOADS_FOLDER_AUDIO_BOOKS);
 
 // TODO : Search By Name  er case e idea lagbe Shahinur vai er theke
 router.route("/").get(auth("common"), audioBookController.getAllAudioBook);
+router.route("/").post(
+  [
+    uploadAudioBooks.fields([
+      { name: "coverPhotos", maxCount: 5 }, // Allow up to 5 cover photos
+      { name: "audios", maxCount: 10 }, // Allow up to 10 audio files
+    ]),
+  ],
+  auth("commonAdmin"),
+  validate(audioBookValidation.addNewAudioBook),
+  audioBookController.addNewAudioBook
+);
+
+// router
+// .route("/")
+// .post(
+//   [uploadCoverPhotos.array("coverPhotos")],
+//   auth("commonAdmin"),
+//   validate(audioBookValidation.addNewAudioBook),
+//   audioBookController.addNewAudioBook
+// );
+
+router.route("/:audioBookId").put(
+  [
+    uploadAudioBooks.fields([
+      { name: "coverPhotos", maxCount: 5 }, // Allow up to 5 cover photos
+      { name: "audios", maxCount: 10 }, // Allow up to 10 audio files
+    ]),
+  ],
+  auth("commonAdmin"),
+  // validate(audioBookValidation.addNewAudioBook), // TODO : put er jonno new Validation lagbe ..
+
+  audioBookController.updateAudioBookById
+);
+
 router
-  .route("/")
-  .post(
-    [uploadLanguage.array("coverPhotos")],
-    auth("commonAdmin"),
-    validate(audioBookValidation.addNewAudioBook),
-    audioBookController.addNewAudioBook
-  );
-router
-  .route("/:audioBookId")
-  .patch(auth("commonAdmin"), audioBookController.updateAudioBookById);
-router
-  .route("preview/:audioBookId")
-  .patch(auth("commonAdmin"), audioBookController.editPreviewById);
+  .route("/preview/:audioBookId")
+  .get(auth("commonAdmin"), audioBookController.showAudioFilesForPreview);
+
+router.route("/preview/:audioBookId").put(
+  [
+    uploadAudioBooks.fields([
+      { name: "audios", maxCount: 10 }, // Allow up to 10 audio files
+    ]),
+  ],
+  auth("commonAdmin"),
+  audioBookController.editAudioBookPreview
+);
 router
   .route("/:audioBookId")
   .get(auth("common"), audioBookController.getAAudioBookById);
