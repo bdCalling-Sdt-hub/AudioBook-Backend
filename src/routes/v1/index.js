@@ -8,6 +8,7 @@ const audioBookRoute = require("./audioBook.routes");
 const charactersRoute = require("./characters.routes");
 const landingPageAudioRoute = require("./landingPageAudio.routes");
 const languageRoute = require("./language.routes");
+const locationRoute = require("./location.routes");
 
 const router = express.Router();
 
@@ -39,6 +40,10 @@ const defaultRoutes = [
   {
     path: "/language",
     route: languageRoute,
+  },
+  {
+    path: "/location",
+    route: locationRoute,
   },
 ];
 

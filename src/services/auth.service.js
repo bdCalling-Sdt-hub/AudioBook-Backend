@@ -49,7 +49,7 @@ const resetPassword = async (newPassword, email) => {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  if (!user.isResetPassword && user.oneTimeCode == null) {
+  if (user.isResetPassword && user.oneTimeCode == null) {
     if (await user.isPasswordMatch(newPassword)) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
@@ -60,6 +60,28 @@ const resetPassword = async (newPassword, email) => {
     await userService.updateUserById(user.id, { password: newPassword });
   }
   return user;
+
+  /////////////////////////////////////////////////////////////////////////////////
+  // const user = await userService.getUserByEmail(email);
+
+  // if (!user) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  // }
+  // if (user.isResetPassword) {
+
+  //   if (await user.isPasswordMatch(newPassword)) {
+  //     throw new ApiError(
+  //       httpStatus.BAD_REQUEST,
+  //       "New password cannot be the same as old password"
+  //     );
+  //   }
+  //   await userService.updateUserById(user.id, { password: newPassword });
+  //   return user;
+  // } else {
+  //   if (await user.oneTimeCode) {
+  //     throw new ApiError(httpStatus.BAD_REQUEST, "OTP not verified yet");
+  //   }
+  // }
 };
 
 const changePassword = async (reqUser, reqBody) => {

@@ -24,6 +24,7 @@ router.route("/").post(
   validate(audioBookValidation.addNewAudioBook),
   audioBookController.addNewAudioBook
 );
+
 // router
 // .route("/")
 // .post(
@@ -33,12 +34,32 @@ router.route("/").post(
 //   audioBookController.addNewAudioBook
 // );
 
+router.route("/:audioBookId").put(
+  [
+    uploadAudioBooks.fields([
+      { name: "coverPhotos", maxCount: 5 }, // Allow up to 5 cover photos
+      { name: "audios", maxCount: 10 }, // Allow up to 10 audio files
+    ]),
+  ],
+  auth("commonAdmin"),
+  // validate(audioBookValidation.addNewAudioBook), // TODO : put er jonno new Validation lagbe ..
+
+  audioBookController.updateAudioBookById
+);
+
 router
-  .route("/:audioBookId")
-  .patch(auth("commonAdmin"), audioBookController.updateAudioBookById);
-router
-  .route("preview/:audioBookId")
-  .patch(auth("commonAdmin"), audioBookController.editPreviewById);
+  .route("/preview/:audioBookId")
+  .get(auth("commonAdmin"), audioBookController.showAudioFilesForPreview);
+
+router.route("/preview/:audioBookId").put(
+  [
+    uploadAudioBooks.fields([
+      { name: "audios", maxCount: 10 }, // Allow up to 10 audio files
+    ]),
+  ],
+  auth("commonAdmin"),
+  audioBookController.editAudioBookPreview
+);
 router
   .route("/:audioBookId")
   .get(auth("common"), audioBookController.getAAudioBookById);

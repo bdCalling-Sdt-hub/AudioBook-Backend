@@ -44,9 +44,11 @@ const addNewAudio = catchAsync(async (req, res) => {
   );
 });
 
-//[🚧][🧑‍💻✅][🧪🆗]  //
+//[🚧][🧑‍💻✅][🧪🆗]  // it returns without audioFile
 const getAllAudio = catchAsync(async (req, res) => {
-  const audios = await LandingPageAudios.find();
+  const audios = await LandingPageAudios.find()
+    .select("-audioFile")
+    .populate("languageId");
 
   res.status(httpStatus.OK).json(
     response({
@@ -58,14 +60,15 @@ const getAllAudio = catchAsync(async (req, res) => {
   );
 });
 
-//[🚧][][]  // 🧑‍💻✅  🧪🆗
+//[🚧][🧑‍💻✅][🧪🆗]  // 🧑‍💻✅  🧪🆗
 const getAAudioById = catchAsync(async (req, res) => {
-  res.status(httpStatus.CREATED).json(
+  const audio = await LandingPageAudios.findById(req.params.audioId);
+  res.status(httpStatus.OK).json(
     response({
-      message: "User Created",
+      message: "Audio",
       status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: user,
+      statusCode: httpStatus.OK,
+      data: audio,
     })
   );
 });

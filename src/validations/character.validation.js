@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const JoiObjectId = require("joi-objectid")(Joi);
 
 const addNewCharacter = {
   body: Joi.object().keys({
@@ -6,10 +7,12 @@ const addNewCharacter = {
     audios: Joi.array().items(
       Joi.object().keys({
         audioFile: Joi.string().required(),
-        languageId: Joi.string().required(), // TODO : issue thakte pare because this is reference ..
+        languageId: JoiObjectId().required().messages({
+          "string.pattern.name": "Language ID must be a valid ObjectId.",
+        }),
       })
     ),
-    coverPhoto: Joi.string().optional(), // TODO : optional ke required kora jacche na
+    coverPhoto: Joi.string().required(), // TODO : optional ke required kora jacche na
   }),
 };
 

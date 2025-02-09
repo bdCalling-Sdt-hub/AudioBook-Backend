@@ -16,10 +16,14 @@ const addNewAudioBook = {
     location: Joi.object().keys({
       name: Joi.string().required(),
       coordinates: Joi.object().keys({
-        latitude: Joi.number().required(),
-        longitude: Joi.number().required(),
+        latitude: Joi.string().required(),
+        longitude: Joi.string().required(),
       }),
     }),
+
+    // locationId: JoiObjectId().required().messages({
+    //   "string.pattern.name": "Language ID must be a valid ObjectId.", // Custom message when the value is not a valid ObjectId
+    // }),
   }),
 };
 

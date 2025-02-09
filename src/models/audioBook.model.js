@@ -19,35 +19,28 @@ const audioBookSchema = mongoose.Schema(
         required: true,
       },
     ],
-    //  [
-    //   {
-    //     audioFile: {
+    locationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Location",
+      required: false,
+    },
+
+    // location: {
+    //   name: {
+    //     type: String,
+    //     required: true,
+    //   },
+    //   coordinates: {
+    //     latitude: {
     //       type: String,
     //       required: true,
     //     },
-    //     languageId: {
-    //       type: mongoose.Schema.Types.ObjectId, // Reference to the Language model
-    //       ref: "Language", // The name of the referenced model
+    //     longitude: {
+    //       type: String,
     //       required: true,
     //     },
     //   },
-    // ],
-    location: {
-      name: {
-        type: String,
-        required: true,
-      },
-      coordinates: {
-        latitude: {
-          type: Number,
-          required: true,
-        },
-        longitude: {
-          type: Number,
-          required: true,
-        },
-      },
-    },
+    // },
   },
   {
     timestamps: true,

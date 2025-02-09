@@ -29,7 +29,8 @@ router.post(
   auth(),
   authController.sendVerificationEmail
 );
-// test korte hobe ..
+
+// test korte hobe ..  not working..
 router.post(
   "/reset-password",
   validate(authValidation.resetPassword),
@@ -42,7 +43,8 @@ router.post(
   validate(authValidation.changePassword),
   authController.changePassword
 );
-// test korte hobe
+
+// it sends verification code for the forgot password
 router.post(
   "/forgot-password",
   validate(authValidation.forgotPassword),

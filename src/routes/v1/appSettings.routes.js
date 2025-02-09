@@ -11,20 +11,13 @@ const uploadAppSettings = userFileUploadMiddleware(UPLOADS_FOLDER_APP_SETTINGS);
 
 router.route("/").get(auth("common"), appSettingsController.getAppImages);
 
-router.route("/").post(
-  auth("commonAdmin"),
-  [
-    uploadAppSettings.fields([
-      { name: "backgroundPhoto", maxCount: 1 },
-      { name: "characterBtnPhoto", maxCount: 1 },
-    ]),
-  ],
-
-  convertHeicToPngMiddleware(UPLOADS_FOLDER_APP_SETTINGS),
-
-  appSettingsController.uploadBackgroundAndCharacterBtnPhoto
-);
-
-// TODO : may be duita alada image upload korar jonno duita alada route lagbe ..
+router
+  .route("/")
+  .post(
+    auth("commonAdmin"),
+    [uploadAppSettings.single("image")],
+    convertHeicToPngMiddleware(UPLOADS_FOLDER_APP_SETTINGS),
+    appSettingsController.uploadBackgroundAndCharacterBtnPhoto
+  );
 
 module.exports = router;
