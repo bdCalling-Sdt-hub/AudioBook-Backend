@@ -73,14 +73,45 @@ const getAAudioById = catchAsync(async (req, res) => {
   );
 });
 
-//[🚧][][]  // 🧑‍💻✅  🧪🆗
+//[🚧][🧑‍💻][]  // 🧑‍💻✅  🧪🆗
 const updateAudioById = catchAsync(async (req, res) => {
-  res.status(httpStatus.CREATED).json(
+  if (!req.file) {
+    return res.status(httpStatus.BAD_REQUEST).json(
+      response({
+        message: "No audio file uploaded",
+        status: "ERROR",
+        statusCode: httpStatus.BAD_REQUEST,
+      })
+    );
+  }
+
+  if (req.file) {
+    req.body.audioFile = "/uploads/landingPageAudio/" + req.file.filename;
+  }
+
+  // Validate that languageId is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(req.body.languageId)) {
+    return res.status(400).json(
+      response({
+        message: "Invalid languageId. Please provide a valid ObjectId.",
+        status: "ERROR",
+        statusCode: httpStatus.BAD_REQUEST,
+      })
+    );
+  }
+
+  const audio = await LandingPageAudios.findByIdAndUpdate(
+    req.params.audioId,
+    req.body,
+    { new: true }
+  );
+
+  res.status(httpStatus.OK).json(
     response({
-      message: "User Created",
+      message: "Landing Page Audio Updated",
       status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: user,
+      statusCode: httpStatus.OK,
+      data: audio,
     })
   );
 });
