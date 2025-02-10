@@ -9,7 +9,7 @@ const UPLOADS_FOLDER_APP_SETTINGS = "./public/uploads/appSettings";
 
 const uploadAppSettings = userFileUploadMiddleware(UPLOADS_FOLDER_APP_SETTINGS);
 
-router.route("/").get(auth("common"), appSettingsController.getAppImages);
+router.route("/").get(appSettingsController.getAppImages);
 
 router
   .route("/")

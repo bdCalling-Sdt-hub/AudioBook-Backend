@@ -5,64 +5,127 @@ const response = require("../config/response");
 const { mongoose } = require("../config/config");
 const audioFileService = require("../services/audioFile.service");
 const ApiError = require("../utils/ApiError");
+const Characters = require("../models/characters.model");
+const AudioFile = require("../models/audioFile.model");
+
+const getAudioById = catchAsync(async (req, res) => {
+  const audioFile = await AudioFile.findById(req.params.audioId);
+  if (!audioFile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
+  }
+  res.status(httpStatus.OK).json(
+    response({
+      message: "Audio",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: audioFile,
+    })
+  );
+});
+
+// when a commonAdmin click to add Character button .. then it create a
+// empty character in database and return thats id ..
+
+const createCharacter = catchAsync(async (req, res) => {
+  const newCharacter = await Characters.create({ published: false });
+
+  res.status(httpStatus.CREATED).json(
+    response({
+      message: "Character Created",
+      status: "OK",
+      statusCode: httpStatus.CREATED,
+      data: newCharacter,
+    })
+  );
+});
+
+const addAudioWithLanguageIdForACharacter = catchAsync(async (req, res) => {
+  const characterId = req.params.characterId; // audioFile er attachedTo field e characterId save korbo
+
+  if (characterId) {
+    req.body.attachedTo = characterId;
+  }
+
+  if (!req.file) {
+    return res.status(httpStatus.BAD_REQUEST).json(
+      response({
+        message: "No audio file uploaded",
+        status: "ERROR",
+        statusCode: httpStatus.BAD_REQUEST,
+      })
+    );
+  }
+
+  if (req.file) {
+    req.body.audioFile = "/uploads/characters/" + req.file.filename;
+  }
+
+  // FIX: Validate that languageId is a valid .. but this give me error ..tai comment kore rakhsi .. but eta fix kora lagbe ..
+  // if (!mongoose.Types.ObjectId.isValid(req.body.languageId)) {
+  //   return res.status(400).json(
+  //     response({
+  //       message: "Invalid languageId. Please provide a valid ObjectId.",
+  //       status: "ERROR",
+  //       statusCode: httpStatus.BAD_REQUEST,
+  //     })
+  //   );
+  // }
+
+  const audioFile = AudioFile.create(req.body);
+
+  res.status(httpStatus.CREATED).json(
+    response({
+      message: "Audio Created",
+      status: "OK",
+      statusCode: httpStatus.CREATED,
+      data: audioFile,
+    })
+  );
+});
 
 //[🚧][🧑‍💻][🧪]  // ✅ 🆗
-const addNewCharacters = catchAsync(async (req, res) => {
-  if (req.file) {
-    req.body.coverPhoto = "/uploads/characters/" + req.file.filename;
+const updateCharacter = catchAsync(async (req, res) => {
+  if (req.files.coverPhoto) {
+    req.body.coverPhoto =
+      "/uploads/characters/" + req.files.coverPhoto[0].filename;
   }
 
-  ////////////////////////////////////////////////
+  // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are
+  // related to this character Id
+
+  const audioFileIds = await AudioFile.find(
+    {
+      attachedTo: req.params.characterId,
+    },
+    { _id: 1 }
+  );
 
   // Step 2: Process uploaded audio files
-  const audioFilesData = [];
-  if (req.files && req.files.audios) {
-    req.files.audios.forEach((file) => {
-      // Match the uploaded file with its corresponding languageId from the request body
-      const matchingAudio = req.body.audios.find(
-        (audio) => audio.audioFile === file.originalname
-      );
-      if (!matchingAudio) {
-        throw new Error(
-          `No matching languageId found for audio file: ${file.originalname}`
-        );
-      }
-      audioFilesData.push({
-        audioFile: "/uploads/audioFiles/" + file.filename, // Save the file path
-        languageId: matchingAudio.languageId,
-      });
-    });
-  }
+  const audioFileIDs = [];
 
-  // Step 3: Validate and create AudioFile documents
-  const audioFileIds = [];
-  for (const audioFileData of audioFilesData) {
-    if (!mongoose.Types.ObjectId.isValid(audioFileData.languageId)) {
-      return res.status(400).json({
-        message: `Invalid languageId for audio file: ${audioFileData.audioFile}`,
-        status: "ERROR",
-        statusCode: 400,
-      });
-    }
-    const audioFile = await audioFileService.createAudioFile(audioFileData); // Create AudioFile document
-    audioFileIds.push(audioFile._id);
+  for (const audioFileId of audioFileIds) {
+    audioFileIDs.push(audioFileId._id);
   }
-
-  ////////////////////////////////////////////////
 
   const characterData = {
     storyTitle: req.body.storyTitle,
     coverPhoto: req.body.coverPhoto,
-    audios: audioFileIds, // Reference the created AudioFile IDs
+    audios: audioFileIDs, // Reference the created AudioFile IDs
+    published: true,
   };
 
-  const character = await characterService.addNewCharacters(characterData);
-  res.status(httpStatus.CREATED).json(
+  // const character = await characterService.addNewCharacters(characterData);
+  const character = await Characters.findByIdAndUpdate(
+    req.params.characterId,
+    characterData,
+    { new: true }
+  );
+  res.status(httpStatus.OK).json(
     response({
-      message: "character Created",
+      message: "character Updated",
       status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: character,
+      statusCode: httpStatus.OK,
+      data: character, // character
     })
   );
 });
@@ -106,7 +169,10 @@ const getACharacterById = catchAsync(async (req, res) => {
 });
 
 module.exports = {
-  addNewCharacters,
+  createCharacter,
+  addAudioWithLanguageIdForACharacter,
+  updateCharacter,
   getAllCharacters,
   getACharacterById,
+  getAudioById,
 };
