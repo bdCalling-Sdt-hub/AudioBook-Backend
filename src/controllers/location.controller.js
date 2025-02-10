@@ -6,7 +6,7 @@ const Location = require("../models/location.model");
 //[🚧][🧑‍💻][] // 🧑‍💻✅  🧪🆗
 const getAllLocation = catchAsync(async (req, res) => {
   const result = await Location.find();
-  res.status(httpStatus.CREATED).json(
+  res.status(httpStatus.OK).json(
     response({
       message: "All language",
       status: "OK",

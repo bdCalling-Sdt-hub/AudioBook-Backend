@@ -11,7 +11,6 @@ const audioBookValidation = require("../../validations/audioBook.validation");
 
 const uploadAudioBooks = userFileUploadMiddleware(UPLOADS_FOLDER_AUDIO_BOOKS);
 
-// TODO : Search By Name  er case e idea lagbe Shahinur vai er theke
 router.route("/").get(auth("common"), audioBookController.getAllAudioBook);
 router.route("/").post(
   [
@@ -43,7 +42,6 @@ router.route("/:audioBookId").put(
   ],
   auth("commonAdmin"),
   // validate(audioBookValidation.addNewAudioBook), // TODO : put er jonno new Validation lagbe ..
-
   audioBookController.updateAudioBookById
 );
 

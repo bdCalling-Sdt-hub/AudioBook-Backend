@@ -30,8 +30,10 @@ router
 // validate(languagePageAudioValidation.addNewLandingPageAudio),
 // FIX :  after submit validation is not working properly \"audioFile\" is required, \"languageId\" is required
 
-router
-  .route("/:audioId")
-  .patch(auth("commonAdmin"), landingPageAudioController.updateAudioById);
+router.route("/:audioId").put(
+  auth("commonAdmin"),
+  [uploadLandingPageAudio.single("audioFile")], // TODO: validation add kora lagbe ..
+  landingPageAudioController.updateAudioById
+);
 
 module.exports = router;
