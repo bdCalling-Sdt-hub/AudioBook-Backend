@@ -12,6 +12,24 @@ const audioBookValidation = require("../../validations/audioBook.validation");
 const uploadAudioBooks = userFileUploadMiddleware(UPLOADS_FOLDER_AUDIO_BOOKS);
 
 router.route("/").get(auth("common"), audioBookController.getAllAudioBook);
+
+// 🧪
+// create new audioBook after click on add new audioBook button
+router.route("/create").get(
+  auth("commonAdmin"),
+  // validate(characterValidation.addNewCharacter),
+  audioBookController.createAudioBook
+);
+// 🧪
+router.route("/audios/:characterId").post(
+  [
+    uploadAudioBooks.single("audioFile"),
+    // validate(characterValidation.addNewCharacter),
+  ],
+  auth("commonAdmin"),
+  audioBookController.addAudioWithLanguageIdForAudioBook
+);
+
 router.route("/").post(
   [
     uploadAudioBooks.fields([
@@ -23,15 +41,6 @@ router.route("/").post(
   validate(audioBookValidation.addNewAudioBook),
   audioBookController.addNewAudioBook
 );
-
-// router
-// .route("/")
-// .post(
-//   [uploadCoverPhotos.array("coverPhotos")],
-//   auth("commonAdmin"),
-//   validate(audioBookValidation.addNewAudioBook),
-//   audioBookController.addNewAudioBook
-// );
 
 router.route("/:audioBookId").put(
   [

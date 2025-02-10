@@ -11,28 +11,38 @@ const uploadCharacters = userFileUploadMiddleware(UPLOADS_FOLDER_CHARACTER);
 
 // TODO : Search By Name kivabe kora jete pare .. shahinur vai er shathe discuss korte hobe ..
 router.route("/").get(auth("common"), characterController.getAllCharacters); // Search By Name
-// router
-//   .route("/")
-//   .post(
-//     auth("commonAdmin"),
-//     [uploadLanguage.single("coverPhoto")],
-//     convertHeicToPngMiddleware(UPLOADS_FOLDER_LANGUAGE),
-//     validate(characterValidation.addNewCharacter),
-//     characterController.addNewCharacters
-//   );
-
-router.route("/").post(
+// 🧪
+router.route("/create").get(
+  auth("commonAdmin"),
+  // validate(characterValidation.addNewCharacter),
+  characterController.createCharacter
+);
+// 🧪
+router.route("/audios/:characterId").post(
   [
-    uploadCharacters.fields([
-      { name: "coverPhoto", maxCount: 1 },
-      { name: "audios", maxCount: 10 }, // Allow up to 10 audio files
-    ]),
+    uploadCharacters.single("audioFile"),
+    // validate(characterValidation.addNewCharacter),
   ],
   auth("commonAdmin"),
-  validate(characterValidation.addNewCharacter),
-  characterController.addNewCharacters
+  characterController.addAudioWithLanguageIdForACharacter
 );
+// 🧪
+router
+  .route("/:characterId")
+  .put(
+    [uploadCharacters.fields([{ name: "coverPhoto", maxCount: 1 }])],
+    auth("commonAdmin"),
+    validate(characterValidation.addNewCharacter),
+    characterController.updateCharacter
+  );
 
+// 🧪
+router.route("/audio/:audioId").get(
+  // auth("common"),
+  // validate(characterValidation.addNewCharacter),
+  characterController.getAudioById
+);
+// 🧪
 router
   .route("/:characterId")
   .get(auth("common"), characterController.getACharacterById); // playAAudioById

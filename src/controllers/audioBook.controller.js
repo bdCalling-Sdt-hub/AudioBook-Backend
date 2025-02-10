@@ -8,8 +8,67 @@ const AudioBook = require("../models/audioBook.model");
 const mongoose = require("mongoose");
 const pick = require("../utils/pick");
 const Location = require("../models/location.model");
+const AudioFile = require("../models/audioFile.model");
 
 // TODO : Kono audio Book Delete korar time e .. location er count komano lagbe ..
+
+const createAudioBook = catchAsync(async (req, res) => {
+  const newCharacter = await AudioBook.create({ published: false });
+
+  res.status(httpStatus.CREATED).json(
+    response({
+      message: "AudioBook Created",
+      status: "OK",
+      statusCode: httpStatus.CREATED,
+      data: newCharacter,
+    })
+  );
+});
+
+const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
+  console.log("hit to controller 🧪🧪🧪🧪🧪");
+  const audioBookId = req.params.audioBookId; // audioFile er attachedTo field e characterId save korbo
+
+  if (audioBookId) {
+    req.body.attachedTo = audioBookId;
+  }
+
+  if (!req.file) {
+    return res.status(httpStatus.BAD_REQUEST).json(
+      response({
+        message: "No audio file uploaded",
+        status: "ERROR",
+        statusCode: httpStatus.BAD_REQUEST,
+      })
+    );
+  }
+
+  if (req.file) {
+    req.body.audioFile = "/uploads/audioFiles/" + req.file.filename;
+  }
+
+  // FIX: Validate that languageId is a valid .. but this give me error ..tai comment kore rakhsi .. but eta fix kora lagbe ..
+  // if (!mongoose.Types.ObjectId.isValid(req.body.languageId)) {
+  //   return res.status(400).json(
+  //     response({
+  //       message: "Invalid languageId. Please provide a valid ObjectId.",
+  //       status: "ERROR",
+  //       statusCode: httpStatus.BAD_REQUEST,
+  //     })
+  //   );
+  // }
+
+  const audioFile = AudioFile.create(req.body);
+
+  res.status(httpStatus.CREATED).json(
+    response({
+      message: "Audio Created",
+      status: "OK",
+      statusCode: httpStatus.CREATED,
+      data: audioFile,
+    })
+  );
+});
 
 //[🚧][🧑‍💻][🧪] //  🚧 🧑‍💻✅  🧪🆗✔️
 const addNewAudioBook = catchAsync(async (req, res) => {
@@ -440,6 +499,8 @@ const editAudioBookPreview = catchAsync(async (req, res) => {
 });
 
 module.exports = {
+  createAudioBook,
+  addAudioWithLanguageIdForAudioBook,
   addNewAudioBook,
   getAllAudioBook,
   getAAudioBookById,

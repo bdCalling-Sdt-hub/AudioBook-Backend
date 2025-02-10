@@ -6,7 +6,7 @@ const audioBookSchema = mongoose.Schema(
   {
     storyTitle: {
       type: String,
-      required: true,
+      required: false,
     },
     coverPhotos: {
       type: [String],
@@ -16,7 +16,7 @@ const audioBookSchema = mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId, // Reference to the AudioFile model
         ref: "AudioFile", // The name of the referenced model
-        required: true,
+        required: false,
       },
     ],
     locationId: {
@@ -25,22 +25,10 @@ const audioBookSchema = mongoose.Schema(
       required: false,
     },
 
-    // location: {
-    //   name: {
-    //     type: String,
-    //     required: true,
-    //   },
-    //   coordinates: {
-    //     latitude: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //     longitude: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //   },
-    // },
+    published: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

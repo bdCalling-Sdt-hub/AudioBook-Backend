@@ -4,19 +4,24 @@ const charactersSchema = mongoose.Schema(
   {
     storyTitle: {
       type: String,
-      required: true,
+      required: false,
     },
     audios: [
       {
         type: mongoose.Schema.Types.ObjectId, // Reference to the AudioFile model
         ref: "AudioFile", // The name of the referenced model
-        required: true,
+        required: false,
       },
     ],
 
     coverPhoto: {
       type: String,
       default: null,
+    },
+
+    published: {
+      type: Boolean,
+      default: false,
     },
   },
   {
