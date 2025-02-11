@@ -189,6 +189,23 @@ const verifyEmail = catchAsync(async (req, res) => {
   // res.status(httpStatus.  OK).send();
 });
 
+const verifyEmailWithoutToken = catchAsync(async (req, res) => {
+  console.log("Hit in verify email without token ..  🧪🧪", req.body);
+  const user = await authService.verifyEmailWithoutToken(req.body);
+
+  const tokens = await tokenService.generateAuthTokens(user);
+
+  res.status(httpStatus.OK).json(
+    response({
+      message: "Email Verified",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: { user, tokens },
+    })
+  );
+  // res.status(httpStatus.  OK).send();
+});
+
 const deleteMe = catchAsync(async (req, res) => {
   const user = await authService.deleteMe(req.body.password, req.user);
   res.status(httpStatus.OK).json(
@@ -210,6 +227,7 @@ module.exports = {
   resetPassword,
   sendVerificationEmail,
   verifyEmail,
+  verifyEmailWithoutToken,
   deleteMe,
   changePassword,
 };

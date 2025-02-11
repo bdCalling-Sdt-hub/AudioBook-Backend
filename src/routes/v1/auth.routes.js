@@ -23,6 +23,12 @@ router.post(
   authController.verifyEmail
 );
 
+router.post(
+  "/verify-email",
+  validate(authValidation.verifyEmailWithEmailAndOTP),
+  authController.verifyEmailWithoutToken
+);
+
 // 🔴 this is for web application
 router.post(
   "/send-verification-email",

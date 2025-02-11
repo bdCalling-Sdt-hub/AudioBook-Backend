@@ -56,6 +56,13 @@ const verifyEmail = {
   }),
 };
 
+const verifyEmailWithEmailAndOTP = {
+  body: Joi.object().keys({
+    email: Joi.string().optional(), // .required()
+    oneTimeCode: Joi.string().optional(), // .required()
+  }),
+};
+
 const deleteMe = {
   body: Joi.object().keys({
     password: Joi.string().required().custom(password),
@@ -83,4 +90,5 @@ module.exports = {
   verifyEmail,
   deleteMe,
   changePassword,
+  verifyEmailWithEmailAndOTP,
 };
