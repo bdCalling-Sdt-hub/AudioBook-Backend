@@ -12,7 +12,8 @@ const audioBookValidation = require("../../validations/audioBook.validation");
 const uploadAudioBooks = userFileUploadMiddleware(UPLOADS_FOLDER_AUDIO_BOOKS);
 
 // 🧪
-router.route("/").get(auth("common"), audioBookController.getAllAudioBook);
+router.route("/").get(audioBookController.getAllAudioBook);
+// auth("common"),
 
 // 🧪
 // create new audioBook after click on add new audioBook button
