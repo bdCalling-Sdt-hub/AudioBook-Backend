@@ -32,6 +32,10 @@ router.route("/audios/:audioBookId").post(
   audioBookController.addAudioWithLanguageIdForAudioBook
 );
 
+router
+  .route("/audioFile/:audioFileId")
+  .delete(auth("commonAdmin"), audioBookController.deleteAudioFile);
+
 router.route("/:audioBookId").put(
   [
     upload.fields([

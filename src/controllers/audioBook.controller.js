@@ -9,7 +9,10 @@ const mongoose = require("mongoose");
 const pick = require("../utils/pick");
 const Location = require("../models/location.model");
 const AudioFile = require("../models/audioFile.model");
-const { uploadFileToSpace } = require("../middlewares/digitalOcean");
+const {
+  uploadFileToSpace,
+  deleteFileFromSpace,
+} = require("../middlewares/digitalOcean");
 
 // TODO : Kono audio Book Delete korar time e .. location er count komano lagbe ..
 
@@ -87,6 +90,37 @@ const getAllAudioBook = catchAsync(async (req, res) => {
       status: "OK",
       statusCode: httpStatus.OK,
       data: audioBook,
+    })
+  );
+});
+
+//Delete AudioFile .. this is also for Character
+const deleteAudioFile = catchAsync(async (req, res) => {
+  const audioFileId = req.params.audioFileId;
+
+  const audioFile = await AudioFile.findById(audioFileId);
+  if (!audioFile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
+  }
+
+  try {
+    // Delete image from DigitalOcean Space
+    await deleteFileFromSpace(audioFile.audioFile);
+  } catch (error) {
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to delete image from DigitalOcean Space"
+    );
+  }
+
+  await audioFile.deleteOne();
+
+  res.status(httpStatus.OK).json(
+    response({
+      message: "Audio File Deleted",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: audioFile,
     })
   );
 });
@@ -287,4 +321,5 @@ module.exports = {
   updateAudioBookById,
   showAudioFilesForPreview,
   editAudioBookPreview,
+  deleteAudioFile,
 };
