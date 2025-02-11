@@ -21,7 +21,7 @@ router.route("/create").get(
   audioBookController.createAudioBook
 );
 // 🧪
-router.route("/audios/:characterId").post(
+router.route("/audios/:audioBookId").post(
   [
     uploadAudioBooks.single("audioFile"),
     // validate(characterValidation.addNewCharacter),
@@ -30,23 +30,10 @@ router.route("/audios/:characterId").post(
   audioBookController.addAudioWithLanguageIdForAudioBook
 );
 
-router.route("/").post(
-  [
-    uploadAudioBooks.fields([
-      { name: "coverPhotos", maxCount: 5 }, // Allow up to 5 cover photos
-      { name: "audios", maxCount: 10 }, // Allow up to 10 audio files
-    ]),
-  ],
-  auth("commonAdmin"),
-  validate(audioBookValidation.addNewAudioBook),
-  audioBookController.addNewAudioBook
-);
-
 router.route("/:audioBookId").put(
   [
     uploadAudioBooks.fields([
       { name: "coverPhotos", maxCount: 5 }, // Allow up to 5 cover photos
-      { name: "audios", maxCount: 10 }, // Allow up to 10 audio files
     ]),
   ],
   auth("commonAdmin"),
