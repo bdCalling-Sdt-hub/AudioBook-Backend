@@ -1,6 +1,6 @@
 const { required } = require("joi");
 const mongoose = require("mongoose");
-
+// TODO : Spotlyt kotha ta remove korte hobe .. email theke + readme theke
 const languageSchema = mongoose.Schema(
   {
     flagImage: {
