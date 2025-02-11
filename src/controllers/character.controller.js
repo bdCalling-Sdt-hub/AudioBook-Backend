@@ -179,6 +179,8 @@ const getACharacterById = catchAsync(async (req, res) => {
   );
 });
 
+// TODO :  Character delete korte hobe ..
+
 module.exports = {
   createCharacter,
   addAudioWithLanguageIdForACharacter,

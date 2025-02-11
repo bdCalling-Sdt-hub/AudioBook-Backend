@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 const pick = require("../utils/pick");
 const Location = require("../models/location.model");
 const AudioFile = require("../models/audioFile.model");
+const { uploadFileToSpace } = require("../middlewares/digitalOcean");
 
 // TODO : Kono audio Book Delete korar time e .. location er count komano lagbe ..
 
@@ -28,8 +29,7 @@ const createAudioBook = catchAsync(async (req, res) => {
 
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
-  console.log("hit to controller 🧪🧪🧪🧪🧪");
-  const audioBookId = req.params.audioBookId; // audioFile er attachedTo field e characterId save korbo
+  const audioBookId = req.params.audioBookId;
 
   if (audioBookId) {
     req.body.attachedTo = audioBookId;
@@ -46,7 +46,9 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
   }
 
   if (req.file) {
-    req.body.audioFile = "/uploads/audioFiles/" + req.file.filename;
+    req.body.audioFile = await uploadFileToSpace(req.file, "audioBooks"); // images // TODO: eta ki folder Name ? rakib vai ke ask korte hobe
+
+    // req.body.audioFile = "/uploads/audioFiles/" + req.file.filename;
   }
 
   // FIX: Validate that languageId is a valid .. but this give me error ..tai comment kore rakhsi .. but eta fix kora lagbe ..
@@ -116,8 +118,6 @@ const getAAudioBookById = catchAsync(async (req, res) => {
 });
 
 //[🚧][🧑‍💻✅][🧪🆗] //
-// TODO : location er count update kora .. eta location name er upor base kore hocche
-// TODO May be location id er upor base kore kora lagbe ..
 
 const updateAudioBookById = catchAsync(async (req, res) => {
   const { audioBookId } = req.params; // Assuming the audiobook ID is passed as a URL parameter
@@ -131,8 +131,12 @@ const updateAudioBookById = catchAsync(async (req, res) => {
   // Step 1: Process uploaded cover photos (if any)
   const coverPhotos = [];
   if (req.files && req.files.coverPhotos) {
-    req.files.coverPhotos.forEach((file) => {
-      coverPhotos.push("/uploads/coverPhotos/" + file.filename); // Save the file path
+    req.files.coverPhotos.forEach(async (file) => {
+      // coverPhotos.push("/uploads/coverPhotos/" + file.filename); // Save the file path
+
+      const coverPhotoUrl = await uploadFileToSpace(file, "audioBooks");
+
+      await coverPhotos.push(coverPhotoUrl);
     });
   }
 
@@ -160,14 +164,29 @@ const updateAudioBookById = catchAsync(async (req, res) => {
     published: true,
   };
 
+  // Step 4: Handle location updates
   if (req.body.locationId) {
-    const locationExist = await Location.findById(req?.body?.locationId);
+    const locationExist = await Location.findById(req.body.locationId);
 
     if (locationExist) {
-      audioBookData.locationId = locationExist._id;
-      await Location.findByIdAndUpdate(locationExist._id, {
-        count: locationExist.count + 1,
-      });
+      // Check if the locationId is being changed
+      if (audioBook.locationId?.toString() !== req.body.locationId) {
+        audioBookData.locationId = locationExist._id;
+
+        // Increment the count for the new location
+        await Location.findByIdAndUpdate(locationExist._id, {
+          $inc: { count: 1 }, // Increment the count by 1
+        });
+
+        // Decrement the count for the previous location (if it exists)
+        if (audioBook.locationId) {
+          await Location.findByIdAndUpdate(audioBook.locationId, {
+            $inc: { count: -1 }, // Decrement the count by 1
+          });
+        }
+      }
+    } else {
+      throw new ApiError(httpStatus.NOT_FOUND, "Location not found");
     }
   }
 
@@ -210,58 +229,45 @@ const showAudioFilesForPreview = catchAsync(async (req, res) => {
 });
 
 //[🚧][🧑‍💻][] // 🚧 🧑‍💻✅  🧪🆗
+// Fix: Must korte hobe ImageUpload Update korte hobe .. digitalocean e
 const editAudioBookPreview = catchAsync(async (req, res) => {
   const { audioBookId } = req.params; // Extract the audiobook ID from the URL parameters
 
-  // Step 1: Process uploaded audio files (if any)
-  const audioFilesData = [];
-  if (req.files && req.files.audios) {
-    req.files.audios.forEach((file) => {
-      // Match the uploaded file with its corresponding languageId from the request body
-      const matchingAudio = req.body.audios.find(
-        (audio) => audio.audioFile === file.originalname
-      );
-      if (!matchingAudio) {
-        throw new Error(
-          `No matching languageId found for audio file: ${file.originalname}`
-        );
-      }
-      audioFilesData.push({
-        audioFile: "/uploads/audioFiles/" + file.filename, // Save the file path
-        languageId: matchingAudio.languageId,
-      });
-    });
+  // Step 0: Validate the existence of the AudioBook
+  const audioBook = await AudioBook.findById(audioBookId);
+  if (!audioBook) {
+    throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
   }
 
-  // Step 2: Validate and create AudioFile documents (if any new audio files are uploaded)
-  const audioFileIds = [];
-  for (const audioFileData of audioFilesData) {
-    if (!mongoose.Types.ObjectId.isValid(audioFileData.languageId)) {
-      return res.status(400).json({
-        message: `Invalid languageId for audio file: ${audioFileData.audioFile}`,
-        status: "ERROR",
-        statusCode: 400,
-      });
-    }
-    const audioFile = await audioFileService.createAudioFile(audioFileData); // Create new AudioFile document
-    audioFileIds.push(audioFile._id);
-  }
+  const audioFileIds = await AudioFile.find(
+    {
+      attachedTo: req.params.audioBookId,
+    },
+    { _id: 1 }
+  );
 
-  // Step 3: Prepare data for updating the audiobook's preview
-  const updateData = {};
-  if (audioFileIds.length > 0) {
-    updateData.audios = audioFileIds; // Replace the existing audios with the new ones
-  }
+  // Step 2: Process uploaded audio files
+  const audioFileIDs = [];
 
-  // Step 4: Update the audiobook document
+  for (const audioFileId of audioFileIds) {
+    audioFileIDs.push(audioFileId._id);
+  }
+  const updateData = {
+    audios: audioFileIDs, // Update the `audios` field with the fetched audio file IDs
+  };
+
+  // Step 3: Update the audiobook document in the database
   const updatedAudioBook = await AudioBook.findByIdAndUpdate(
     audioBookId,
-    { $set: updateData }, // Use $set to update only the specified fields
+    { $set: updateData }, // Use `$set` to update only the specified fields
     { new: true } // Return the updated document
-  ).populate("audios"); // Populate the 'audios' field to include the referenced AudioFile documents
+  ).populate("audios"); // Populate the `audios` field to include referenced AudioFile documents
 
   if (!updatedAudioBook) {
-    throw new Error("AudioBook not found");
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to update AudioBook"
+    );
   }
 
   // Return success response

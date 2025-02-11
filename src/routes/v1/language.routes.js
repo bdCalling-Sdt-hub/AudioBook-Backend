@@ -14,6 +14,7 @@ const upload = multer({ storage: storage });
 
 router.route("/").get(auth("commonAdmin"), languageController.getAllLanguage);
 
+// 🧪
 router.route("/").post(
   auth("commonAdmin"),
   // [uploadLanguage.single("flagImage")],
@@ -22,5 +23,7 @@ router.route("/").post(
   // validate(languageValidation.addNewLanguage),
   languageController.addNewLanguage
 );
+
+// TODO : getLanguageById And updateLanguageById
 
 module.exports = router;
