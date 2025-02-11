@@ -17,7 +17,7 @@ router.post(
 router.post("/login", validate(authValidation.login), authController.login);
 
 router.post(
-  "/verify-email",
+  "/verify-email-with-token",
   auth("common"),
   validate(authValidation.verifyEmail),
   authController.verifyEmail
