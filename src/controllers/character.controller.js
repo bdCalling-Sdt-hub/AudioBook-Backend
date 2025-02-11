@@ -85,6 +85,8 @@ const addAudioWithLanguageIdForACharacter = catchAsync(async (req, res) => {
 
 //[🚧][🧑‍💻][🧪]  // ✅ 🆗
 const updateCharacter = catchAsync(async (req, res) => {
+  // TODO : already created character chara update kora jabe na ..
+  // TODO : validation lagbe must ..
   if (req.files.coverPhoto) {
     req.body.coverPhoto =
       "/uploads/characters/" + req.files.coverPhoto[0].filename;
