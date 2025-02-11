@@ -110,14 +110,30 @@ const verifyEmail = async (reqBody, user) => {
   // const { email, oneTimeCode } = reqBody;
 
   const user1 = await userService.getUserByEmail(user.email);
-  // console.log("user", user);
 
-  // if(user.oneTimeCode === 'verified'){
-  //   throw new ApiError(
-  //     httpStatus.  BAD_REQUEST,
-  //     "try 3 minute later"
-  //   );
-  // }
+  if (!user1) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
+  } else if (user1.oneTimeCode === null) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "OTP expired");
+  } else if (oneTimeCode != user1.oneTimeCode) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid OTP");
+  } else if (user1.isEmailVerified && !user1.isResetPassword) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Email already verified");
+  } else {
+    user1.isEmailVerified = true;
+    user1.oneTimeCode = null;
+    user1.isResetPassword = false;
+    await user1.save();
+    return user1;
+  }
+};
+
+const verifyEmailWithoutToken = async (reqBody) => {
+  // (reqBody, reqQuery)
+  const { oneTimeCode, email } = reqBody;
+
+  const user1 = await userService.getUserByEmail(email);
+
   if (!user1) {
     throw new ApiError(httpStatus.NOT_FOUND, "User does not exist");
   } else if (user1.oneTimeCode === null) {
@@ -175,6 +191,7 @@ module.exports = {
   refreshAuth,
   resetPassword,
   verifyEmail,
+  verifyEmailWithoutToken,
   deleteMe,
   changePassword,
   verifyNumber,
