@@ -2,11 +2,13 @@ const catchAsync = require("../utils/catchAsync");
 const httpStatus = require("http-status");
 const response = require("../config/response");
 const languageService = require("../services/language.service");
+const { uploadFileToSpace } = require("../middlewares/digitalOcean");
 
 //[🚧][🧑‍💻✅][🧪🆗]
 const addNewLanguage = catchAsync(async (req, res) => {
   if (req.file) {
-    req.body.flagImage = "/uploads/languages/" + req.file.filename;
+    // req.body.flagImage = "/uploads/languages/" + req.file.filename;
+    req.body.flagImage = await uploadFileToSpace(req.file, "languages"); // images // TODO: eta ki folder Name ? rakib vai ke ask korte hobe
   }
 
   const language = await languageService.addNewLanguage(req.body);

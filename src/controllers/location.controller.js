@@ -3,7 +3,6 @@ const httpStatus = require("http-status");
 const response = require("../config/response");
 const Location = require("../models/location.model");
 
-// TODO : Must Fix : emon kono location  front-end e send kora jabe na .. jeta
 //[🚧][🧑‍💻][] // 🧑‍💻✅  🧪🆗
 const getAllLocation = catchAsync(async (req, res) => {
   const result = await Location.find({ count: { $gt: 0 } });
