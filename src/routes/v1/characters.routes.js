@@ -4,10 +4,12 @@ const auth = require("../../middlewares/auth");
 const characterController = require("../../controllers/character.controller");
 const characterValidation = require("../../validations/character.validation");
 const validate = require("../../middlewares/validate");
-const userFileUploadMiddleware = require("../../middlewares/fileUpload");
-const UPLOADS_FOLDER_CHARACTER = "./public/uploads/characters";
-
-const uploadCharacters = userFileUploadMiddleware(UPLOADS_FOLDER_CHARACTER);
+// const userFileUploadMiddleware = require("../../middlewares/fileUpload");
+// const UPLOADS_FOLDER_CHARACTER = "./public/uploads/characters";
+// const uploadCharacters = userFileUploadMiddleware(UPLOADS_FOLDER_CHARACTER);
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // TODO: Auth middleware
 router.route("/").get(characterController.getAllCharacters);
@@ -18,18 +20,20 @@ router.route("/create").get(
   // validate(characterValidation.addNewCharacter),
   characterController.createCharacter
 );
-// 🧪
+// 🧪🧪
 router.route("/audios/:characterId").post(
   [
-    uploadCharacters.single("audioFile"),
+    // uploadCharacters.single("audioFile"),
+    upload.single("audioFile"),
     // validate(characterValidation.addNewCharacter),
   ],
   // auth("commonAdmin"),
   characterController.addAudioWithLanguageIdForACharacter
 );
-// 🧪
+// 🧪🧪
 router.route("/:characterId").put(
-  [uploadCharacters.fields([{ name: "coverPhoto", maxCount: 1 }])],
+  // [uploadCharacters.fields([{ name: "coverPhoto", maxCount: 1 }])],
+  upload.fields([{ name: "coverPhoto", maxCount: 1 }]),
   // auth("commonAdmin"),
   validate(characterValidation.addNewCharacter),
   characterController.updateCharacter

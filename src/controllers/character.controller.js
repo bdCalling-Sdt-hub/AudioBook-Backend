@@ -7,6 +7,7 @@ const audioFileService = require("../services/audioFile.service");
 const ApiError = require("../utils/ApiError");
 const Characters = require("../models/characters.model");
 const AudioFile = require("../models/audioFile.model");
+const { uploadFileToSpace } = require("../middlewares/digitalOcean");
 
 const getAudioById = catchAsync(async (req, res) => {
   const audioFile = await AudioFile.findById(req.params.audioId);
@@ -56,9 +57,12 @@ const addAudioWithLanguageIdForACharacter = catchAsync(async (req, res) => {
     );
   }
 
-  if (req.file) {
-    req.body.audioFile = "/uploads/characters/" + req.file.filename;
-  }
+  // if (req.file) {
+  //   req.body.audioFile = "/uploads/characters/" + req.file.filename;
+  // }
+
+  // const imageUrl =
+  req.body.audioFile = await uploadFileToSpace(req.file, "characters"); // images // TODO: eta ki folder Name ? rakib vai ke ask korte hobe
 
   // FIX: Validate that languageId is a valid .. but this give me error ..tai comment kore rakhsi .. but eta fix kora lagbe ..
   // if (!mongoose.Types.ObjectId.isValid(req.body.languageId)) {
@@ -88,8 +92,13 @@ const updateCharacter = catchAsync(async (req, res) => {
   // TODO : already created character chara update kora jabe na ..
   // TODO : validation lagbe must ..
   if (req.files.coverPhoto) {
-    req.body.coverPhoto =
-      "/uploads/characters/" + req.files.coverPhoto[0].filename;
+    // req.body.coverPhoto =
+    //   "/uploads/characters/" + req.files.coverPhoto[0].filename;
+
+    req.body.coverPhoto = await uploadFileToSpace(
+      req.files.coverPhoto[0],
+      "characters"
+    ); // images // TODO: eta ki folder Name ? rakib vai ke ask korte hobe
   }
 
   // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are
@@ -169,6 +178,8 @@ const getACharacterById = catchAsync(async (req, res) => {
     })
   );
 });
+
+// TODO :  Character delete korte hobe ..
 
 module.exports = {
   createCharacter,
