@@ -76,6 +76,7 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
 const getAllAudioBook = catchAsync(async (req, res) => {
   const filter = pick(req.query, ["storyTitle"]);
   const options = pick(req.query, []);
+
   const audioBook = await audioBookService.queryAudioBooks(filter, options);
 
   res.status(httpStatus.OK).json(
@@ -90,7 +91,15 @@ const getAllAudioBook = catchAsync(async (req, res) => {
 
 //[🚧][ 🧑‍💻✅][🧪🆗]
 const getAAudioBookById = catchAsync(async (req, res) => {
-  let audioBook = await AudioBook.findById(req.params.audioBookId);
+  let audioBook = await AudioBook.findById(req.params.audioBookId).populate({
+    path: "audios", // Populate the 'audios' field
+    select: "-audioFile -createdAt -updatedAt -__v", // Exclude the 'audioFile' field
+    populate: {
+      path: "languageId", // Populate the 'languageId' field within 'audios'
+      select: "-createdAt -updatedAt -__v", // Include only specific fields from the Language model
+      // name flagImage
+    },
+  });
 
   if (!audioBook) {
     throw new ApiError(httpStatus.NOT_FOUND, "audioBook not found");

@@ -16,6 +16,17 @@ const queryAudioBooks = async (filter, options) => {
     }
   }
 
+  // Add populate options for 'audios' and nested 'languageId'
+  options.populate = [
+    {
+      path: "audios",
+      select: "-audioFile -createdAt -updatedAt -__v",
+      populate: {
+        path: "languageId",
+        select: "-createdAt -updatedAt -__v",
+      },
+    },
+  ];
   const audioBooks = await AudioBook.paginate(query, options);
 
   return audioBooks;
