@@ -2,22 +2,17 @@ const express = require("express");
 const router = express.Router();
 const appSettingsController = require("../../controllers/appSettings.controller");
 const auth = require("../../middlewares/auth");
-
-const userFileUploadMiddleware = require("../../middlewares/fileUpload");
-const convertHeicToPngMiddleware = require("../../middlewares/converter");
-const UPLOADS_FOLDER_APP_SETTINGS = "./public/uploads/appSettings";
-
-const uploadAppSettings = userFileUploadMiddleware(UPLOADS_FOLDER_APP_SETTINGS);
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.route("/").get(appSettingsController.getAppImages);
 
-router
-  .route("/")
-  .post(
-    auth("commonAdmin"),
-    [uploadAppSettings.single("image")],
-    convertHeicToPngMiddleware(UPLOADS_FOLDER_APP_SETTINGS),
-    appSettingsController.uploadBackgroundAndCharacterBtnPhoto
-  );
+router.route("/").post(
+  auth("commonAdmin"),
+  [upload.single("image")],
+
+  appSettingsController.uploadBackgroundAndCharacterBtnPhoto
+);
 
 module.exports = router;

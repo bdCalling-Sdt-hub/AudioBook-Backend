@@ -78,9 +78,8 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
 
 //[🚧][🧑‍💻✅][🧪🆗]
 const getAllAudioBook = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["storyTitle"]);
+  const filter = pick(req.query, ["storyTitle", "locationId"]);
   const options = pick(req.query, []);
-
   const audioBook = await audioBookService.queryAudioBooks(filter, options);
 
   res.status(httpStatus.OK).json(
@@ -103,13 +102,7 @@ const deleteAudioFile = catchAsync(async (req, res) => {
   }
 
   // Delete image from DigitalOcean Space
-  const result = await deleteFileFromSpace(audioFile.audioFile);
-  if (!result) {
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      "Failed to delete image from DigitalOcean Space"
-    );
-  }
+  await deleteFileFromSpace(audioFile.audioFile);
 
   await audioFile.deleteOne();
 
@@ -309,6 +302,7 @@ const editAudioBookPreview = catchAsync(async (req, res) => {
   });
 });
 
+//TODO: AudioBook Delete korle location er count komtese kina check kora lagbe
 const deleteAudioBookById = catchAsync(async (req, res) => {
   const { audioBookId } = req.params;
 
@@ -344,17 +338,7 @@ const deleteAudioBookById = catchAsync(async (req, res) => {
 
     // Delete the audio file record from the database
 
-    // if (result) {
     await AudioFile.findByIdAndDelete(audioFile._id);
-    // }
-
-    // if (!result) {
-    //   console.error("Failed to delete audio file:");
-    //   throw new ApiError(
-    //     httpStatus.INTERNAL_SERVER_ERROR,
-    //     "Failed to delete audio file"
-    //   );
-    // }
   }
 
   // Step 4: Update the location count (if the audiobook is associated with a location)

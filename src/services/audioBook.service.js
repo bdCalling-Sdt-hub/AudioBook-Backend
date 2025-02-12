@@ -6,7 +6,6 @@ const createAudioBook = async (audioBookData) => {
 
 const queryAudioBooks = async (filter, options) => {
   const query = {};
-
   // Loop through each filter field and add conditions if they exist
   for (const key of Object.keys(filter)) {
     if (key === "storyTitle" && filter[key] !== "") {
@@ -15,7 +14,9 @@ const queryAudioBooks = async (filter, options) => {
       query[key] = filter[key];
     }
   }
-
+  if (filter?.locationId) {
+    query.locationId = filter?.locationId;
+  }
   // Add populate options for 'audios' and nested 'languageId'
   options.populate = [
     {

@@ -9,7 +9,10 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-router.route("/").get(auth("common"), landingPageAudioController.getAllAudio);
+router.route("/").get(
+  // auth("common"),
+  landingPageAudioController.getAllAudio
+);
 router
   .route("/:audioId")
   .get(auth("common"), landingPageAudioController.getAAudioById); // playAAudioById

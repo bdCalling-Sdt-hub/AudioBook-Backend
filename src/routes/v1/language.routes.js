@@ -13,7 +13,6 @@ router.route("/").post(
   auth("commonAdmin"),
   // [uploadLanguage.single("flagImage")],
   [upload.single("flagImage")],
-  // convertHeicToPngMiddleware(UPLOADS_FOLDER_LANGUAGE),
   // validate(languageValidation.addNewLanguage),
   languageController.addNewLanguage
 );

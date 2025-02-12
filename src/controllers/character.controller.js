@@ -5,7 +5,10 @@ const response = require("../config/response");
 const ApiError = require("../utils/ApiError");
 const Characters = require("../models/characters.model");
 const AudioFile = require("../models/audioFile.model");
-const { uploadFileToSpace } = require("../middlewares/digitalOcean");
+const {
+  uploadFileToSpace,
+  deleteFileFromSpace,
+} = require("../middlewares/digitalOcean");
 
 const getAudioById = catchAsync(async (req, res) => {
   const audioFile = await AudioFile.findById(req.params.audioId);
@@ -177,7 +180,41 @@ const getACharacterById = catchAsync(async (req, res) => {
   );
 });
 
-// TODO :  Character delete korte hobe ..
+const deleteCharacterById = catchAsync(async (req, res) => {
+  const { characterId } = req.params;
+  const character = await Characters.findById(characterId);
+
+  if (!character) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Character not found");
+  }
+
+  // Step 2: Delete associated cover photos from DigitalOcean Space
+  if (character.coverPhoto) {
+    await deleteFileFromSpace(character.coverPhoto);
+  }
+
+  const audioFiles = await AudioFile.find({ attachedTo: characterId });
+
+  console.log("audioFiles🧪", audioFiles);
+  if (audioFiles) {
+    for (const audioFile of audioFiles) {
+      await deleteFileFromSpace(audioFile.audioFile);
+
+      await AudioFile.findByIdAndDelete(audioFile._id);
+    }
+  }
+
+  // delete the character content
+  await Characters.findByIdAndDelete(characterId);
+  res.status(httpStatus.OK).json(
+    response({
+      message: "Character",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: {},
+    })
+  );
+});
 
 module.exports = {
   createCharacter,
@@ -186,4 +223,5 @@ module.exports = {
   getAllCharacters,
   getACharacterById,
   getAudioById,
+  deleteCharacterById,
 };

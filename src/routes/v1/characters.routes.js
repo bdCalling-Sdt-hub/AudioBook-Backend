@@ -44,4 +44,9 @@ router
   .route("/:characterId")
   .get(auth("common"), characterController.getACharacterById); // playAAudioById
 
+router.route("/:characterId").delete(
+  // auth("commonAdmin"),
+  characterController.deleteCharacterById
+);
+
 module.exports = router;

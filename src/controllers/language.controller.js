@@ -49,13 +49,8 @@ const deleteLanguage = catchAsync(async (req, res) => {
   }
 
   // Delete image from DigitalOcean Space
-  const result = await deleteFileFromSpace(language.flagImage);
-  if (!result) {
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      "Failed to delete image from DigitalOcean Space"
-    );
-  }
+  await deleteFileFromSpace(language.flagImage);
+
   await language.deleteOne();
 
   res.status(httpStatus.OK).json(

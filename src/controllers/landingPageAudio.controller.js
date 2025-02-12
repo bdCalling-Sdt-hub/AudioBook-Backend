@@ -52,7 +52,7 @@ const addNewAudio = catchAsync(async (req, res) => {
 //[🚧][🧑‍💻✅][🧪🆗]  // it returns without audioFile
 const getAllAudio = catchAsync(async (req, res) => {
   const audios = await LandingPageAudios.find()
-    .select("-audioFile")
+    .select("-updatedAt") // its not working
     .populate("languageId");
 
   res.status(httpStatus.OK).json(
@@ -133,13 +133,8 @@ const deleteLandingPageAudio = catchAsync(async (req, res) => {
 
     // TODO : Test  Delete hocche kina check korte hobe ..
     // Delete image from DigitalOcean Space
-    const result = await deleteFileFromSpace(landingPageAudio.audioFile);
-    if (!result) {
-      throw new ApiError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        "Failed to delete image from DigitalOcean Space"
-      );
-    }
+    await deleteFileFromSpace(landingPageAudio.audioFile);
+
     await landingPageAudio.deleteOne();
 
     res.status(httpStatus.OK).json(

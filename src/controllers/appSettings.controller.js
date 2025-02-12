@@ -33,12 +33,12 @@ const uploadBackgroundAndCharacterBtnPhoto = catchAsync(async (req, res) => {
   }
 
   // Construct the file path
-  const filePath = `/uploads/appSettings/${file.filename}`;
+  // const filePath = `/uploads/appSettings/${file.filename}`;
 
   // Call the service to handle the upload logic
   const updatedOrCreatedSetting = await appSettingsService.uploadImage(
     type,
-    filePath
+    file
   );
 
   // Return success response
