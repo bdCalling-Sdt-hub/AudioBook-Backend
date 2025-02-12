@@ -9,8 +9,6 @@ router.route("/").post(locationController.createLocation);
 
 router.route("/:locationId").delete(locationController.deleteLocation);
 
-// TODO: CreateLocation
 // TODO: UpdateLocation
-// TODO: DeleteLocation
 
 module.exports = router;

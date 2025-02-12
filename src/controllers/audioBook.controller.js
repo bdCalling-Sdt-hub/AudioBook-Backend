@@ -3,12 +3,11 @@ const httpStatus = require("http-status");
 const response = require("../config/response");
 const ApiError = require("../utils/ApiError");
 const audioBookService = require("../services/audioBook.service");
-const audioFileService = require("../services/audioFile.service");
 const AudioBook = require("../models/audioBook.model");
-const mongoose = require("mongoose");
 const pick = require("../utils/pick");
 const Location = require("../models/location.model");
 const AudioFile = require("../models/audioFile.model");
+
 const {
   uploadFileToSpace,
   deleteFileFromSpace,
@@ -103,10 +102,9 @@ const deleteAudioFile = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
   }
 
-  try {
-    // Delete image from DigitalOcean Space
-    await deleteFileFromSpace(audioFile.audioFile);
-  } catch (error) {
+  // Delete image from DigitalOcean Space
+  const result = await deleteFileFromSpace(audioFile.audioFile);
+  if (!result) {
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       "Failed to delete image from DigitalOcean Space"
@@ -246,8 +244,6 @@ const showAudioFilesForPreview = catchAsync(async (req, res) => {
     .populate("audios")
     .lean(); // Optional: Use .lean() to return plain JavaScript objects instead of Mongoose documents
 
-  console.log("show audioFile preview 🧪🧪", audioFiles);
-
   if (!audioFiles) {
     throw new Error("AudioBook not found");
   }
@@ -313,6 +309,80 @@ const editAudioBookPreview = catchAsync(async (req, res) => {
   });
 });
 
+const deleteAudioBookById = catchAsync(async (req, res) => {
+  const { audioBookId } = req.params;
+
+  // Step 1: Fetch the existing audiobook
+  const audioBook = await AudioBook.findById(audioBookId);
+  if (!audioBook) {
+    throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+  }
+
+  // Step 2: Delete associated cover photos from DigitalOcean Space
+  if (audioBook.coverPhotos && audioBook.coverPhotos.length > 0) {
+    for (const coverPhotoUrl of audioBook.coverPhotos) {
+      try {
+        // Extract the file key from the URL (if needed)
+        await deleteFileFromSpace(coverPhotoUrl);
+      } catch (error) {
+        console.error("Failed to delete cover photo:", error.message);
+        throw new ApiError(
+          httpStatus.INTERNAL_SERVER_ERROR,
+          "Failed to delete cover photo from DigitalOcean Space"
+        );
+      }
+    }
+  }
+
+  // Step 3: Delete associated audio files from the database and DigitalOcean Space
+  const audioFiles = await AudioFile.find({ attachedTo: audioBookId });
+
+  for (const audioFile of audioFiles) {
+    // Delete the audio file from DigitalOcean Space
+
+    await deleteFileFromSpace(audioFile.audioFile);
+
+    // Delete the audio file record from the database
+
+    // if (result) {
+    await AudioFile.findByIdAndDelete(audioFile._id);
+    // }
+
+    // if (!result) {
+    //   console.error("Failed to delete audio file:");
+    //   throw new ApiError(
+    //     httpStatus.INTERNAL_SERVER_ERROR,
+    //     "Failed to delete audio file"
+    //   );
+    // }
+  }
+
+  // Step 4: Update the location count (if the audiobook is associated with a location)
+  if (audioBook.locationId) {
+    try {
+      await Location.findByIdAndUpdate(audioBook.locationId, {
+        $inc: { count: -1 }, // Decrement the count by 1
+      });
+    } catch (error) {
+      console.error("Failed to update location count:", error.message);
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Failed to update location count"
+      );
+    }
+  }
+
+  // Step 5: Delete the audiobook document
+  await AudioBook.findByIdAndDelete(audioBookId);
+
+  // Return success response
+  res.status(httpStatus.OK).json({
+    message: "AudioBook Deleted",
+    status: "OK",
+    statusCode: httpStatus.OK,
+  });
+});
+
 module.exports = {
   createAudioBook,
   addAudioWithLanguageIdForAudioBook,
@@ -322,4 +392,5 @@ module.exports = {
   showAudioFilesForPreview,
   editAudioBookPreview,
   deleteAudioFile,
+  deleteAudioBookById,
 };

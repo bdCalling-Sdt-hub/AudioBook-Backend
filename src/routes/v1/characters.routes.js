@@ -4,9 +4,7 @@ const auth = require("../../middlewares/auth");
 const characterController = require("../../controllers/character.controller");
 const characterValidation = require("../../validations/character.validation");
 const validate = require("../../middlewares/validate");
-// const userFileUploadMiddleware = require("../../middlewares/fileUpload");
-// const UPLOADS_FOLDER_CHARACTER = "./public/uploads/characters";
-// const uploadCharacters = userFileUploadMiddleware(UPLOADS_FOLDER_CHARACTER);
+
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });

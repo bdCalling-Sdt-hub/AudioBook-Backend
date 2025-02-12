@@ -1,6 +1,4 @@
-const httpStatus = require("http-status");
 const { Language } = require("../models");
-const ApiError = require("../utils/ApiError");
 
 const addNewLanguage = async (languageBody) => {
   return Language.create({ ...languageBody });

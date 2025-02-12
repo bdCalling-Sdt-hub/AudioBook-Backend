@@ -13,11 +13,10 @@ const { Language } = require("../models");
 const addNewLanguage = catchAsync(async (req, res) => {
   if (req.file) {
     // req.body.flagImage = "/uploads/languages/" + req.file.filename;
-    req.body.flagImage = await uploadFileToSpace(req.file, "languages"); // images // TODO: eta ki folder Name ? rakib vai ke ask korte hobe
+    req.body.flagImage = await uploadFileToSpace(req.file, "languages");
   }
 
   const language = await languageService.addNewLanguage(req.body);
-  // console.log(req.file);
 
   res.status(httpStatus.CREATED).json(
     response({
@@ -42,17 +41,16 @@ const getAllLanguage = catchAsync(async (req, res) => {
   );
 });
 
-// TODO:🔴 not tested api endpoint not created ..
+// TODO:🔴 Delete hocche kina check / test korte hobe
 const deleteLanguage = catchAsync(async (req, res) => {
   const language = await Language.findById(req.params.languageId);
   if (!language) {
     throw new ApiError(httpStatus.NOT_FOUND, "Language not found");
   }
 
-  try {
-    // Delete image from DigitalOcean Space
-    await deleteFileFromSpace(language.flagImage);
-  } catch (error) {
+  // Delete image from DigitalOcean Space
+  const result = await deleteFileFromSpace(language.flagImage);
+  if (!result) {
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       "Failed to delete image from DigitalOcean Space"

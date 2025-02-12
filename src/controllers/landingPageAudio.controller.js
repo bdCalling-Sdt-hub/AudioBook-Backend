@@ -24,8 +24,7 @@ const addNewAudio = catchAsync(async (req, res) => {
   }
 
   if (req.file) {
-    // req.body.audioFile = "/uploads/landingPageAudio/" + req.file.filename;
-    req.body.audioFile = await uploadFileToSpace(req.file, "landingPageAudio"); // images // TODO: eta ki folder Name ? rakib vai ke ask korte hobe
+    req.body.audioFile = await uploadFileToSpace(req.file, "landingPageAudio");
   }
 
   // Validate that languageId is a valid ObjectId
@@ -132,16 +131,15 @@ const deleteLandingPageAudio = catchAsync(async (req, res) => {
       throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
     }
 
-    try {
-      // Delete image from DigitalOcean Space
-      await deleteFileFromSpace(landingPageAudio.audioFile);
-    } catch (error) {
+    // TODO : Test  Delete hocche kina check korte hobe ..
+    // Delete image from DigitalOcean Space
+    const result = await deleteFileFromSpace(landingPageAudio.audioFile);
+    if (!result) {
       throw new ApiError(
         httpStatus.INTERNAL_SERVER_ERROR,
         "Failed to delete image from DigitalOcean Space"
       );
     }
-
     await landingPageAudio.deleteOne();
 
     res.status(httpStatus.OK).json(
