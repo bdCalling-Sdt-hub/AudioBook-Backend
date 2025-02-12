@@ -42,9 +42,9 @@ const getAllLanguage = catchAsync(async (req, res) => {
   );
 });
 
-// 🔴 not tested api endpoint not created ..
+// TODO:🔴 not tested api endpoint not created ..
 const deleteLanguage = catchAsync(async (req, res) => {
-  const language = Language.findById(req.params.languageId);
+  const language = await Language.findById(req.params.languageId);
   if (!language) {
     throw new ApiError(httpStatus.NOT_FOUND, "Language not found");
   }

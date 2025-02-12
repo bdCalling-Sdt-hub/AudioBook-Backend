@@ -9,19 +9,25 @@ const uploadLandingPageAudio = userFileUploadMiddleware(
   UPLOADS_FOLDER_LANDING_PAGE_AUDIO
 );
 const languagePageAudioValidation = require("../../validations/landingPageAudio.validation");
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.route("/").get(auth("common"), landingPageAudioController.getAllAudio);
 router
   .route("/:audioId")
   .get(auth("common"), landingPageAudioController.getAAudioById); // playAAudioById
-router
-  .route("/")
-  .post(
-    auth("commonAdmin"),
-    [uploadLandingPageAudio.single("audioFile")],
-    validate(languagePageAudioValidation.addNewLandingPageAudio),
-    landingPageAudioController.addNewAudio
-  );
+router.route("/").post(
+  // auth("commonAdmin"),
+  [upload.single("audioFile")], // uploadLandingPageAudio
+  validate(languagePageAudioValidation.addNewLandingPageAudio),
+  landingPageAudioController.addNewAudio
+);
+
+router.route("/:landingPageAudioId").delete(
+  // auth("commonAdmin"),
+  landingPageAudioController.deleteLandingPageAudio
+);
 
 // [uploadLandingPageAudio.fields([{ name: "audioFile", maxCount: 1 }])],
 

@@ -26,4 +26,9 @@ router.route("/").post(
 
 // TODO : getLanguageById And updateLanguageById
 
+router.route("/:languageId").delete(
+  // auth("commonAdmin"),
+  languageController.deleteLanguage
+);
+
 module.exports = router;
