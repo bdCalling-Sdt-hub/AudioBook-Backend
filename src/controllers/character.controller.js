@@ -2,8 +2,6 @@ const catchAsync = require("../utils/catchAsync");
 const httpStatus = require("http-status");
 const characterService = require("../services/character.service");
 const response = require("../config/response");
-const { mongoose } = require("../config/config");
-const audioFileService = require("../services/audioFile.service");
 const ApiError = require("../utils/ApiError");
 const Characters = require("../models/characters.model");
 const AudioFile = require("../models/audioFile.model");
@@ -62,7 +60,7 @@ const addAudioWithLanguageIdForACharacter = catchAsync(async (req, res) => {
   // }
 
   // const imageUrl =
-  req.body.audioFile = await uploadFileToSpace(req.file, "characters"); // images // TODO: eta ki folder Name ? rakib vai ke ask korte hobe
+  req.body.audioFile = await uploadFileToSpace(req.file, "characters");
 
   // FIX: Validate that languageId is a valid .. but this give me error ..tai comment kore rakhsi .. but eta fix kora lagbe ..
   // if (!mongoose.Types.ObjectId.isValid(req.body.languageId)) {

@@ -4,6 +4,11 @@ const response = require("../config/response");
 const LandingPageAudios = require("../models/landingPageAudio.model");
 const LandingPageAUdioService = require("../services/landingPageAudio.service");
 const mongoose = require("mongoose");
+const {
+  uploadFileToSpace,
+  deleteFileFromSpace,
+} = require("../middlewares/digitalOcean");
+const ApiError = require("../utils/ApiError");
 
 //[🚧][🧑‍💻✅][🧪🆗✔️]  //
 const addNewAudio = catchAsync(async (req, res) => {
@@ -19,7 +24,7 @@ const addNewAudio = catchAsync(async (req, res) => {
   }
 
   if (req.file) {
-    req.body.audioFile = "/uploads/landingPageAudio/" + req.file.filename;
+    req.body.audioFile = await uploadFileToSpace(req.file, "landingPageAudio");
   }
 
   // Validate that languageId is a valid ObjectId
@@ -73,6 +78,7 @@ const getAAudioById = catchAsync(async (req, res) => {
   );
 });
 
+// TODO :FIX update korte hobe .. othoba abar test korte hobe
 //[🚧][🧑‍💻][]  // 🧑‍💻✅  🧪🆗
 const updateAudioById = catchAsync(async (req, res) => {
   if (!req.file) {
@@ -116,9 +122,41 @@ const updateAudioById = catchAsync(async (req, res) => {
   );
 });
 
+const deleteLandingPageAudio = catchAsync(async (req, res) => {
+  const audioFileId = req.params.landingPageAudioId;
+  if (audioFileId) {
+    const landingPageAudio = await LandingPageAudios.findById(audioFileId);
+
+    if (!landingPageAudio) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
+    }
+
+    // TODO : Test  Delete hocche kina check korte hobe ..
+    // Delete image from DigitalOcean Space
+    const result = await deleteFileFromSpace(landingPageAudio.audioFile);
+    if (!result) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Failed to delete image from DigitalOcean Space"
+      );
+    }
+    await landingPageAudio.deleteOne();
+
+    res.status(httpStatus.OK).json(
+      response({
+        message: "Landing Page Audio Deleted",
+        status: "OK",
+        statusCode: httpStatus.OK,
+        data: null,
+      })
+    );
+  }
+});
+
 module.exports = {
   addNewAudio,
   getAllAudio,
   getAAudioById,
   updateAudioById,
+  deleteLandingPageAudio,
 };

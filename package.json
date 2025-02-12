@@ -1,7 +1,7 @@
 {
-  "name": "spotlyt-task-server",
+  "name": "audio-book-server",
   "version": "1.0.0",
-  "description": "Spotlyt Task Server",
+  "description": "Audio Book Server",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
@@ -9,7 +9,7 @@
     "seed": "node src/utils/seeder.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Sahinur Islam",
+  "author": "Mohammad Sheakh",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.744.0",

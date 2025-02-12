@@ -2,11 +2,6 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middlewares/auth");
 const audioBookController = require("../../controllers/audioBook.controller");
-// const userFileUploadMiddleware = require("../../middlewares/fileUpload");
-const validate = require("../../middlewares/validate");
-// const UPLOADS_FOLDER_AUDIO_BOOKS = "./public/uploads/audioBooks";
-const audioBookValidation = require("../../validations/audioBook.validation");
-// const uploadAudioBooks = userFileUploadMiddleware(UPLOADS_FOLDER_AUDIO_BOOKS);
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -64,5 +59,10 @@ router.route("/preview/:audioBookId").put(
 router
   .route("/:audioBookId")
   .get(auth("common"), audioBookController.getAAudioBookById);
+
+router.route("/:audioBookId").delete(
+  // auth("commonAdmin"),
+  audioBookController.deleteAudioBookById
+);
 
 module.exports = router;

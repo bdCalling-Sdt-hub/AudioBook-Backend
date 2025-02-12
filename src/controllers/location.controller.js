@@ -2,6 +2,7 @@ const catchAsync = require("../utils/catchAsync");
 const httpStatus = require("http-status");
 const response = require("../config/response");
 const Location = require("../models/location.model");
+const ApiError = require("../utils/ApiError");
 
 //[🚧][🧑‍💻][] // 🧑‍💻✅  🧪🆗
 const getAllLocation = catchAsync(async (req, res) => {
@@ -16,6 +17,41 @@ const getAllLocation = catchAsync(async (req, res) => {
   );
 });
 
+const deleteLocation = catchAsync(async (req, res) => {
+  const location = Location.findById(req.params.locationId);
+  if (!location) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Location not found");
+  }
+
+  // await location.deleteOne();
+
+  // Delete the location
+  await Location.deleteOne({ _id: req.params.locationId });
+
+  res.status(httpStatus.OK).json(
+    response({
+      message: "Location Deleted",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: null,
+    })
+  );
+});
+
+const createLocation = catchAsync(async (req, res) => {
+  const location = await Location.create(req.body);
+  res.status(httpStatus.CREATED).json(
+    response({
+      message: "Location Created",
+      status: "OK",
+      statusCode: httpStatus.CREATED,
+      data: location,
+    })
+  );
+});
+
 module.exports = {
+  createLocation,
+  deleteLocation,
   getAllLocation,
 };

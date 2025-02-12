@@ -5,8 +5,10 @@ const locationController = require("../../controllers/location.controller");
 
 router.route("/").get(locationController.getAllLocation);
 
-// TODO: CreateLocation
+router.route("/").post(locationController.createLocation);
+
+router.route("/:locationId").delete(locationController.deleteLocation);
+
 // TODO: UpdateLocation
-// TODO: DeleteLocation
 
 module.exports = router;
