@@ -93,13 +93,10 @@ const updateCharacter = catchAsync(async (req, res) => {
   // TODO : already created character chara update kora jabe na ..
   // TODO : validation lagbe must ..
   if (req.files.coverPhoto) {
-    // req.body.coverPhoto =
-    //   "/uploads/characters/" + req.files.coverPhoto[0].filename;
-
     req.body.coverPhoto = await uploadFileToSpace(
       req.files.coverPhoto[0],
       "characters"
-    ); // images // TODO: eta ki folder Name ? rakib vai ke ask korte hobe
+    );
   }
 
   // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are

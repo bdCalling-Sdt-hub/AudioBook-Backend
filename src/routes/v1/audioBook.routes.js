@@ -3,8 +3,10 @@ const router = express.Router();
 const auth = require("../../middlewares/auth");
 const audioBookController = require("../../controllers/audioBook.controller");
 const multer = require("multer");
+const validate = require("../../middlewares/validate");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const audioBookValidation = require("../../validations/audioBook.validation");
 
 // 🧪
 router.route("/").get(audioBookController.getAllAudioBook);
@@ -18,14 +20,16 @@ router.route("/create").get(
   audioBookController.createAudioBook
 );
 // 🧪
-router.route("/audios/:audioBookId").post(
-  [
-    upload.single("audioFile"),
-    // validate(characterValidation.addNewCharacter),
-  ],
-  auth("commonAdmin"),
-  audioBookController.addAudioWithLanguageIdForAudioBook
-);
+router
+  .route("/audios/:audioBookId")
+  .post(
+    [
+      upload.single("audioFile"),
+      validate(audioBookValidation.addAudioWithLanguageIdForAudioBook),
+    ],
+    auth("commonAdmin"),
+    audioBookController.addAudioWithLanguageIdForAudioBook
+  );
 
 router
   .route("/audioFile/:audioFileId")
@@ -38,7 +42,7 @@ router.route("/:audioBookId").put(
     ]),
   ],
   auth("commonAdmin"),
-  // validate(audioBookValidation.addNewAudioBook), // TODO : put er jonno new Validation lagbe ..
+  validate(audioBookValidation.updateAudioBook), // TODO : put er jonno new Validation lagbe ..
   audioBookController.updateAudioBookById
 );
 

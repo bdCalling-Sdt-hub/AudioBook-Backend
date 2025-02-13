@@ -61,6 +61,11 @@ const userSchema = mongoose.Schema(
       required: false,
     },
 
+    otpExpires: {
+      type: Date, // Store OTP expiration as a date
+      default: null,
+    },
+
     isEmailVerified: {
       type: Boolean,
       default: false,

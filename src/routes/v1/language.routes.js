@@ -24,4 +24,12 @@ router.route("/:languageId").delete(
   languageController.deleteLanguage
 );
 
+router.route("/").put(
+  auth("commonAdmin"),
+  // [uploadLanguage.single("flagImage")],
+  [upload.single("flagImage")],
+  // validate(languageValidation.addNewLanguage),
+  languageController.updateNewLanguage
+);
+
 module.exports = router;
