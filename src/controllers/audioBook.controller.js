@@ -12,6 +12,7 @@ const {
   uploadFileToSpace,
   deleteFileFromSpace,
 } = require("../middlewares/digitalOcean");
+const { mongoose } = require("../config/config");
 
 // TODO : Kono audio Book Delete korar time e .. location er count komano lagbe ..
 
@@ -29,9 +30,22 @@ const createAudioBook = catchAsync(async (req, res) => {
   );
 });
 
+// FIX : audioBook Id valid kina sheta niye pore chinta kortesi ...
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
   const audioBookId = req.params.audioBookId;
+
+  // Check if audioBookId is a valid ObjectId
+  console.log("Audio Book ID 🧪🧪", audioBookId);
+
+  // if (!mongoose.Types.ObjectId.isValid(audioBookId)) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, "Invalid audio book ID");
+  // }
+
+  const audioBook = await AudioBook.findById(audioBookId);
+  if (!audioBook) {
+    throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+  }
 
   if (audioBookId) {
     req.body.attachedTo = audioBookId;
@@ -48,21 +62,8 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
   }
 
   if (req.file) {
-    req.body.audioFile = await uploadFileToSpace(req.file, "audioBooks"); // images // TODO: eta ki folder Name ? rakib vai ke ask korte hobe
-
-    // req.body.audioFile = "/uploads/audioFiles/" + req.file.filename;
+    req.body.audioFile = await uploadFileToSpace(req.file, "audioBooks");
   }
-
-  // FIX: Validate that languageId is a valid .. but this give me error ..tai comment kore rakhsi .. but eta fix kora lagbe ..
-  // if (!mongoose.Types.ObjectId.isValid(req.body.languageId)) {
-  //   return res.status(400).json(
-  //     response({
-  //       message: "Invalid languageId. Please provide a valid ObjectId.",
-  //       status: "ERROR",
-  //       statusCode: httpStatus.BAD_REQUEST,
-  //     })
-  //   );
-  // }
 
   const audioFile = AudioFile.create(req.body);
 
@@ -154,15 +155,31 @@ const updateAudioBookById = catchAsync(async (req, res) => {
   }
 
   // Step 1: Process uploaded cover photos (if any)
+
+  // ❌ Bad Way
+  // const coverPhotos = [];
+  // if (req.files && req.files.coverPhotos) {
+  //   req.files.coverPhotos.forEach(async (file) => {
+  //     const coverPhotoUrl = await uploadFileToSpace(file, "audioBooks");
+
+  //     await coverPhotos.push(coverPhotoUrl);
+  //   });
+  // }
+
+  // ✅ Right Way  // TODO : Right Way te shob gula korte hobe baki shob jaygay ..
+
   const coverPhotos = [];
+
   if (req.files && req.files.coverPhotos) {
-    req.files.coverPhotos.forEach(async (file) => {
-      // coverPhotos.push("/uploads/coverPhotos/" + file.filename); // Save the file path
+    coverPhotos.push(
+      ...(await Promise.all(
+        req.files.coverPhotos.map(async (file) => {
+          const coverPhotoUrl = await uploadFileToSpace(file, "audioBooks");
 
-      const coverPhotoUrl = await uploadFileToSpace(file, "audioBooks");
-
-      await coverPhotos.push(coverPhotoUrl);
-    });
+          return coverPhotoUrl;
+        })
+      ))
+    );
   }
 
   // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are

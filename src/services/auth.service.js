@@ -43,45 +43,45 @@ const refreshAuth = async (refreshToken) => {
   }
 };
 
-const resetPassword = async (newPassword, email) => {
+//working
+const resetPassword = async (newPassword, email, oneTimeCode) => {
   const user = await userService.getUserByEmail(email);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  if (user.isResetPassword && user.oneTimeCode == null) {
-    if (await user.isPasswordMatch(newPassword)) {
-      throw new ApiError(
-        httpStatus.BAD_REQUEST,
-        "New password cannot be the same as old password"
-      );
-    }
+  // check OTP is correct
 
-    await userService.updateUserById(user.id, { password: newPassword });
+  if (user.oneTimeCode !== oneTimeCode) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid or expired OTP");
   }
+
+  // Check if OTP has expired
+  if (user.otpExpires < Date.now()) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "OTP expired. Request a new one."
+    );
+  }
+
+  // Check if new password is same as old password
+  if (await user.isPasswordMatch(newPassword)) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "New password cannot be the same as old password"
+    );
+  }
+
+  // ✅ Update Password and Hash it
+  user.password = newPassword; // Ensure password hashing is applied
+
+  // Clear OTP and expiry after successful reset
+  user.oneTimeCode = null;
+  user.otpExpires = null;
+  user.isResetPassword = false;
+  await user.save();
+
   return user;
-
-  /////////////////////////////////////////////////////////////////////////////////
-  // const user = await userService.getUserByEmail(email);
-
-  // if (!user) {
-  //   throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  // }
-  // if (user.isResetPassword) {
-
-  //   if (await user.isPasswordMatch(newPassword)) {
-  //     throw new ApiError(
-  //       httpStatus.BAD_REQUEST,
-  //       "New password cannot be the same as old password"
-  //     );
-  //   }
-  //   await userService.updateUserById(user.id, { password: newPassword });
-  //   return user;
-  // } else {
-  //   if (await user.oneTimeCode) {
-  //     throw new ApiError(httpStatus.BAD_REQUEST, "OTP not verified yet");
-  //   }
-  // }
 };
 
 const changePassword = async (reqUser, reqBody) => {

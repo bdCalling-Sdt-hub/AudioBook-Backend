@@ -92,9 +92,10 @@ const updateAudioById = catchAsync(async (req, res) => {
   }
 
   if (req.file) {
-    req.body.audioFile = "/uploads/landingPageAudio/" + req.file.filename;
+    req.body.audioFile = await uploadFileToSpace(req.file, "landingPageAudio");
   }
 
+  // FIX  .. eta test korte hobe .. kaj kore kina ..
   // Validate that languageId is a valid ObjectId
   if (!mongoose.Types.ObjectId.isValid(req.body.languageId)) {
     return res.status(400).json(

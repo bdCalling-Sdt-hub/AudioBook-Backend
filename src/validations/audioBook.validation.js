@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const JoiObjectId = require("joi-objectid")(Joi);
 
 const addNewAudioBook = {
   body: Joi.object().keys({
@@ -23,6 +24,15 @@ const addNewAudioBook = {
   }),
 };
 
+const addAudioWithLanguageIdForAudioBook = {
+  body: Joi.object().keys({
+    languageId: JoiObjectId().required().messages({
+      "string.pattern.name": "Language ID must be a valid ObjectId.",
+    }),
+  }),
+};
+
 module.exports = {
   addNewAudioBook,
+  addAudioWithLanguageIdForAudioBook,
 };

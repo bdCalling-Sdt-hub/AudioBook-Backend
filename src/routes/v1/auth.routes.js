@@ -6,13 +6,17 @@ const auth = require("../../middlewares/auth");
 
 const router = express.Router();
 
+//🧪 working
 router.post(
   "/register",
   validate(authValidation.register),
   authController.register
 );
+
+//🧪 working
 router.post("/login", validate(authValidation.login), authController.login);
 
+//🧪 working
 router.post(
   "/verify-email-with-token",
   auth("common"),
@@ -20,10 +24,18 @@ router.post(
   authController.verifyEmail
 );
 
+//🧪 working
 router.post(
   "/verify-email",
   validate(authValidation.verifyEmailWithEmailAndOTP),
   authController.verifyEmailWithoutToken
+);
+
+// it sends verification code for the forgot password
+router.post(
+  "/forgot-password",
+  validate(authValidation.forgotPassword),
+  authController.forgotPassword
 );
 
 // 🔴 this is for web application
@@ -33,13 +45,13 @@ router.post(
   authController.sendVerificationEmail
 );
 
-// test korte hobe ..  not working..
+//🧪 working
 router.post(
   "/reset-password",
   validate(authValidation.resetPassword),
   authController.resetPassword
 );
-// test korte hobe
+//🧪 working
 router.post(
   "/change-password",
   auth("common"),
@@ -47,12 +59,6 @@ router.post(
   authController.changePassword
 );
 
-// it sends verification code for the forgot password
-router.post(
-  "/forgot-password",
-  validate(authValidation.forgotPassword),
-  authController.forgotPassword
-);
 router.post("/logout", validate(authValidation.logout), authController.logout);
 // test korte hobe ..
 router.post(

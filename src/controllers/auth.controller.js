@@ -102,6 +102,7 @@ const refreshTokens = catchAsync(async (req, res) => {
   // res.send({ ...tokens });
 });
 
+// gptFixd
 const forgotPassword = catchAsync(async (req, res) => {
   const user = await userService.getUserByEmail(req.body.email);
   if (!user) {
@@ -110,22 +111,25 @@ const forgotPassword = catchAsync(async (req, res) => {
       "No users found with this email"
     );
   }
-  // if(user.oneTimeCode === 'verified'){
-  //   throw new ApiError(
-  //     httpStatus.  BAD_REQUEST,
-  //     "try 3 minute later"
-  //   );
-  // }
-  // Generate OTC (One-Time Code)
+
+  // Check if OTP was recently requested (e.g., last 5 minutes)
+  if (user.otpExpires && user.otpExpires > Date.now()) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Please wait before requesting a new code"
+    );
+  }
+
+  // generate otp
   const oneTimeCode =
     Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
 
   // Store the OTC and its expiration time in the database
   user.oneTimeCode = oneTimeCode;
   user.isResetPassword = true;
+  user.otpExpires = Date.now() + 3 * 60 * 1000; // Expire in 5 minutes
   await user.save();
 
-  //console.log("oneTimeCode", user);
   await emailService.sendResetPasswordEmail(req.body.email, oneTimeCode);
   res.status(httpStatus.OK).json(
     response({
@@ -137,8 +141,10 @@ const forgotPassword = catchAsync(async (req, res) => {
   );
 });
 
+// gptFixd
 const resetPassword = catchAsync(async (req, res) => {
-  await authService.resetPassword(req.body.password, req.body.email);
+  const { email, oneTimeCode, password } = req.body;
+  await authService.resetPassword(password, email, oneTimeCode);
   res.status(httpStatus.OK).json(
     response({
       message: "Password Reset Successful",
