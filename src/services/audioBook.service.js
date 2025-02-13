@@ -21,7 +21,7 @@ const queryAudioBooks = async (filter, options) => {
   options.populate = [
     {
       path: "audios",
-      select: "-audioFile -createdAt -updatedAt -__v",
+      select: " -createdAt -updatedAt -__v", //-audioFile
       populate: {
         path: "languageId",
         select: "-createdAt -updatedAt -__v",

@@ -50,8 +50,32 @@ const createLocation = catchAsync(async (req, res) => {
   );
 });
 
+const updateLocation = catchAsync(async (req, res) => {
+  const location = await Location.findById(req.params.locationId);
+
+  if (!location) {
+    throw new Error("Location not found");
+  }
+
+  const updatedLocation = await Location.findByIdAndUpdate(
+    req.params.locationId,
+    req.body,
+    { new: true }
+  );
+
+  res.status(httpStatus.OK).json(
+    response({
+      message: "Location Updated",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: updatedLocation,
+    })
+  );
+});
+
 module.exports = {
   createLocation,
   deleteLocation,
   getAllLocation,
+  updateLocation,
 };

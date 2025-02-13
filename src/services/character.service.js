@@ -7,7 +7,7 @@ const addNewCharacters = async (characterBody) => {
 const getAllCharacters = async () => {
   const characters = await Characters.find().populate({
     path: "audios",
-    select: "-audioFile",
+    select: "",
     populate: {
       path: "languageId",
       select: "name flagImage",

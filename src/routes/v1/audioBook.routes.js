@@ -42,7 +42,7 @@ router.route("/:audioBookId").put(
     ]),
   ],
   auth("commonAdmin"),
-  // validate(audioBookValidation.addNewAudioBook), // TODO : put er jonno new Validation lagbe ..
+  validate(audioBookValidation.updateAudioBook), // TODO : put er jonno new Validation lagbe ..
   audioBookController.updateAudioBookById
 );
 

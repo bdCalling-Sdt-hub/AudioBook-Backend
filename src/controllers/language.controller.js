@@ -63,8 +63,29 @@ const deleteLanguage = catchAsync(async (req, res) => {
   );
 });
 
+const updateNewLanguage = catchAsync(async (req, res) => {
+  if (req.file) {
+    req.body.flagImage = await uploadFileToSpace(req.file, "languages");
+  }
+
+  const language = await languageService.updateLanguageById(
+    req.params.languageId,
+    req.body
+  );
+
+  res.status(httpStatus.OK).json(
+    response({
+      message: "Language Updated",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: language,
+    })
+  );
+});
+
 module.exports = {
   addNewLanguage,
   getAllLanguage,
   deleteLanguage,
+  updateNewLanguage,
 };

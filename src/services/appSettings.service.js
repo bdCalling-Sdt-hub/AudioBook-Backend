@@ -5,7 +5,7 @@ const {
 const AppSettings = require("../models/appSettings.model");
 
 // TODO : eta fix korte hobe .. previous image Digital Ocean theke delete hocche na ..
-
+// FIXME:
 const uploadImage = async (type, file) => {
   try {
     // Check if a document with the same type already exists
