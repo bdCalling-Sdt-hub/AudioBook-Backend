@@ -12,7 +12,6 @@ const {
   uploadFileToSpace,
   deleteFileFromSpace,
 } = require("../middlewares/digitalOcean");
-const { mongoose } = require("../config/config");
 
 // TODO : Kono audio Book Delete korar time e .. location er count komano lagbe ..
 

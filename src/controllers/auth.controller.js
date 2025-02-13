@@ -27,8 +27,9 @@ const register = catchAsync(async (req, res) => {
   } else if (isUser && isUser.isDeleted === false) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
   } else if (isUser && isUser.isDeleted === true) {
-    const user = await userService.isUpdateUser(isUser.id, req.body);
-    const tokens = await tokenService.generateAuthTokens(user);
+    // TODO : Logic ta test korte hobe ..
+    // const user = await userService.isUpdateUser(isUser.id, req.body);
+    // const tokens = await tokenService.generateAuthTokens(user);
     res.status(httpStatus.CREATED).json(
       response({
         message: "Thank you for registering. Please verify your email",
