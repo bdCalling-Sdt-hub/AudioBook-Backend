@@ -36,7 +36,7 @@ router
   );
 
 // 🧪
-router.route("/audio/:audioId").get(characterController.getAudioById);
+router.route("/audio/:audioId").get(auth("common"),characterController.getAudioById);
 // 🧪
 // auth("common"),
 router.route("/:characterId").get(characterController.getACharacterById); // playAAudioById
