@@ -40,10 +40,6 @@ const getAudioById = catchAsync(async (req, res) => {
     audioFile = {...audioFile._doc, ...newListeningHistory._doc};
   }
 
-  // audioFile.progress = listeningHistory.progress;
-  // audioFile.completed = listeningHistory.completed;
-  // audioFile.lastListenedAt = listeningHistory.lastListenedAt;
-
 
   res.status(httpStatus.OK).json(
     response({
