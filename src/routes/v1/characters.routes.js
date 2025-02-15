@@ -13,40 +13,36 @@ const upload = multer({ storage: storage });
 router.route("/").get(characterController.getAllCharacters);
 // auth("common"),
 // 🧪
-router.route("/create").get(
-  // auth("commonAdmin"),
-  // validate(characterValidation.addNewCharacter),
-  characterController.createCharacter
-);
+router
+  .route("/create")
+  .get(auth("commonAdmin"), characterController.createCharacter);
 // 🧪🧪
 router.route("/audios/:characterId").post(
   [
-    // uploadCharacters.single("audioFile"),
     upload.single("audioFile"),
     // validate(characterValidation.addNewCharacter),
   ],
-  // auth("commonAdmin"),
+  auth("commonAdmin"),
   characterController.addAudioWithLanguageIdForACharacter
 );
 // 🧪🧪
-router.route("/:characterId").put(
-  // [uploadCharacters.fields([{ name: "coverPhoto", maxCount: 1 }])],
-  upload.fields([{ name: "coverPhoto", maxCount: 1 }]),
-  // auth("commonAdmin"),
-  validate(characterValidation.addNewCharacter),
-  characterController.updateCharacter
-);
+router
+  .route("/:characterId")
+  .put(
+    upload.fields([{ name: "coverPhoto", maxCount: 1 }]),
+    auth("commonAdmin"),
+    validate(characterValidation.addNewCharacter),
+    characterController.updateCharacter
+  );
 
 // 🧪
 router.route("/audio/:audioId").get(characterController.getAudioById);
 // 🧪
+// auth("common"),
+router.route("/:characterId").get(characterController.getACharacterById); // playAAudioById
+
 router
   .route("/:characterId")
-  .get(auth("common"), characterController.getACharacterById); // playAAudioById
-
-router.route("/:characterId").delete(
-  // auth("commonAdmin"),
-  characterController.deleteCharacterById
-);
+  .delete(auth("commonAdmin"), characterController.deleteCharacterById);
 
 module.exports = router;

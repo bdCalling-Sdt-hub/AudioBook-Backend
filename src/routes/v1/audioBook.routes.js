@@ -10,15 +10,13 @@ const audioBookValidation = require("../../validations/audioBook.validation");
 
 // 🧪
 router.route("/").get(audioBookController.getAllAudioBook);
-// auth("common"),
 
 // 🧪
 // create new audioBook after click on add new audioBook button
-router.route("/create").get(
-  auth("commonAdmin"),
-  // validate(characterValidation.addNewCharacter),
-  audioBookController.createAudioBook
-);
+router
+  .route("/create")
+  .get(auth("commonAdmin"), audioBookController.createAudioBook);
+
 // 🧪
 router
   .route("/audios/:audioBookId")
@@ -51,11 +49,13 @@ router
   .get(auth("commonAdmin"), audioBookController.showAudioFilesForPreview);
 
 // TODO : Must Fix .. etar controller update korte hobe .. Digital Ocean e upload korar jonno
+// INFO :  eta update kora lagbe na ..   Manik vai eta niye kaj shuru korle bujha jabe
 router.route("/preview/:audioBookId").put(
   [
     upload.fields([
       { name: "audios", maxCount: 10 }, // Allow up to 10 audio files
-    ]),
+    ]), // FIX : upload kora lagbe na ... check korte hobe
+    // INFO : Karon upload korle onno api hit hobe .. etar kaj just information update kora
   ],
   auth("commonAdmin"),
   audioBookController.editAudioBookPreview
@@ -64,9 +64,8 @@ router
   .route("/:audioBookId")
   .get(auth("common"), audioBookController.getAAudioBookById);
 
-router.route("/:audioBookId").delete(
-  // auth("commonAdmin"),
-  audioBookController.deleteAudioBookById
-);
+router
+  .route("/:audioBookId")
+  .delete(auth("commonAdmin"), audioBookController.deleteAudioBookById);
 
 module.exports = router;
