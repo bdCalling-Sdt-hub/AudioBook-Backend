@@ -19,10 +19,9 @@ router.route("/").post(
 
 // TODO : getLanguageById And updateLanguageById
 
-router.route("/:languageId").delete(
-  // auth("commonAdmin"),
-  languageController.deleteLanguage
-);
+router
+  .route("/:languageId")
+  .delete(auth("commonAdmin"), languageController.deleteLanguage);
 
 router.route("/").put(
   auth("commonAdmin"),

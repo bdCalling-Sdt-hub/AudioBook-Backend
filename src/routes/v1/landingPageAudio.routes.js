@@ -16,17 +16,20 @@ router.route("/").get(
 router
   .route("/:audioId")
   .get(auth("common"), landingPageAudioController.getAAudioById); // playAAudioById
+
 router.route("/").post(
-  // auth("commonAdmin"),
+  auth("commonAdmin"),
   [upload.single("audioFile")], // uploadLandingPageAudio
   validate(languagePageAudioValidation.addNewLandingPageAudio),
   landingPageAudioController.addNewAudio
 );
 
-router.route("/:landingPageAudioId").delete(
-  // auth("commonAdmin"),
-  landingPageAudioController.deleteLandingPageAudio
-);
+router
+  .route("/:landingPageAudioId")
+  .delete(
+    auth("commonAdmin"),
+    landingPageAudioController.deleteLandingPageAudio
+  );
 
 // [uploadLandingPageAudio.fields([{ name: "audioFile", maxCount: 1 }])],
 
