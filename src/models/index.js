@@ -10,3 +10,4 @@ module.exports.Characters = require("./characters.model");
 module.exports.LandingPageAudios = require("./landingPageAudio.model");
 module.exports.Language = require("./language.model");
 module.exports.Location = require("./location.model");
+module.exports.ListeningHistory = require("./history.model");

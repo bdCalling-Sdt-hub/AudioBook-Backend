@@ -9,12 +9,38 @@ const {
   uploadFileToSpace,
   deleteFileFromSpace,
 } = require("../middlewares/digitalOcean");
+const { ListeningHistory } = require("../models");
 
 const getAudioById = catchAsync(async (req, res) => {
-  const audioFile = await AudioFile.findById(req.params.audioId);
+  let audioFile = await AudioFile.findById(req.params.audioId);
   if (!audioFile) {
     throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
   }
+
+
+
+  // Fetch the user's listening history for this audio file
+  const listeningHistory = await ListeningHistory.findOne({
+    userId: req.user._id,
+    audioFileId: req.params.audioId, // Find history for the user and this specific audio file
+  });
+
+  if(listeningHistory){
+    const listeningHistoryObject = {
+      progress: listeningHistory.progress,
+      completed: listeningHistory.completed,
+      lastListenedAt: listeningHistory.lastListenedAt,
+    }
+    audioFile = {...audioFile._doc, ...listeningHistoryObject};
+  } else {
+  const newListeningHistory = await ListeningHistory.create({
+    userId: req.user._id,
+    audioFileId: req.params.audioId,
+  });
+    audioFile = {...audioFile._doc, ...newListeningHistory._doc};
+  }
+
+
   res.status(httpStatus.OK).json(
     response({
       message: "Audio",

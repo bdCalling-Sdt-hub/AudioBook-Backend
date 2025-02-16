@@ -174,7 +174,6 @@ const updateAudioBookById = catchAsync(async (req, res) => {
       ...(await Promise.all(
         req.files.coverPhotos.map(async (file) => {
           const coverPhotoUrl = await uploadFileToSpace(file, "audioBooks");
-
           return coverPhotoUrl;
         })
       ))
