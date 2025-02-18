@@ -44,7 +44,8 @@ const refreshAuth = async (refreshToken) => {
 };
 
 //working
-const resetPassword = async (newPassword, email, oneTimeCode) => {
+const resetPassword = async (newPassword, email) => {
+  // , oneTimeCode
   const user = await userService.getUserByEmail(email);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
@@ -52,9 +53,9 @@ const resetPassword = async (newPassword, email, oneTimeCode) => {
 
   // check OTP is correct
 
-  if (user.oneTimeCode !== oneTimeCode) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid or expired OTP");
-  }
+  // if (user.oneTimeCode !== oneTimeCode) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, "Invalid or expired OTP");
+  // }
 
   // Check if OTP has expired
   if (user.otpExpires < Date.now()) {

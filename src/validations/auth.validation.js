@@ -40,7 +40,7 @@ const resetPassword = {
   body: Joi.object().keys({
     password: Joi.string().required().custom(password),
     email: Joi.string().required(),
-    oneTimeCode: Joi.string().required(),
+    oneTimeCode: Joi.string().optional(),
   }),
 };
 const changePassword = {

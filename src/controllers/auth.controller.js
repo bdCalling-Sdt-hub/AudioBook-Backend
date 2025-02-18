@@ -42,6 +42,20 @@ const register = catchAsync(async (req, res) => {
     const user = await userService.createUser(req.body);
     const tokens = await tokenService.generateAuthTokens(user);
 
+
+    if(user.role == "admin")
+    {
+      res.status(httpStatus.CREATED).json(
+        response({
+          message: "Thank you for registering.",
+          status: "OK",
+          statusCode: httpStatus.CREATED,
+          data: {},
+          tokens,
+        })
+      );
+    }
+
     res.status(httpStatus.CREATED).json(
       response({
         message: "Thank you for registering. Please verify your email",
@@ -144,8 +158,8 @@ const forgotPassword = catchAsync(async (req, res) => {
 
 // gptFixd
 const resetPassword = catchAsync(async (req, res) => {
-  const { email, oneTimeCode, password } = req.body;
-  await authService.resetPassword(password, email, oneTimeCode);
+  const { email,  password } = req.body; // oneTimeCode,
+  await authService.resetPassword(password, email); // , oneTimeCode
   res.status(httpStatus.OK).json(
     response({
       message: "Password Reset Successful",
