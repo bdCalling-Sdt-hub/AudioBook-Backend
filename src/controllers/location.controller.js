@@ -3,6 +3,7 @@ const httpStatus = require("http-status");
 const response = require("../config/response");
 const Location = require("../models/location.model");
 const ApiError = require("../utils/ApiError");
+const { deleteFileFromSpace } = require("../middlewares/digitalOcean");
 
 //[🚧][🧑‍💻][] // 🧑‍💻✅  🧪🆗
 const getAllLocation = catchAsync(async (req, res) => {
@@ -24,6 +25,10 @@ const deleteLocation = catchAsync(async (req, res) => {
   }
 
   // await location.deleteOne();
+
+  // Bad Way
+
+  await deleteFileFromSpace(location.flagImage);
 
   // Delete the location
   await Location.deleteOne({ _id: req.params.locationId });
