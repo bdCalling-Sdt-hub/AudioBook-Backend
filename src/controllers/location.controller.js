@@ -24,9 +24,6 @@ const deleteLocation = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Location not found");
   }
 
-  // await location.deleteOne();
-
-  // Bad Way
 
   await deleteFileFromSpace(location.flagImage);
 
