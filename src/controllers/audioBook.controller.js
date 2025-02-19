@@ -249,7 +249,12 @@ const updateAudioBookById = catchAsync(async (req, res) => {
 const showAudioFilesForPreview = catchAsync(async (req, res) => {
   const audioFiles = await AudioBook.findById(req.params.audioBookId)
     .select("audios")
-    .populate("audios")
+    .populate({
+      path: "audios",
+      populate: {
+        path: "languageId",
+      }
+    })
     .lean(); // Optional: Use .lean() to return plain JavaScript objects instead of Mongoose documents
 
   if (!audioFiles) {

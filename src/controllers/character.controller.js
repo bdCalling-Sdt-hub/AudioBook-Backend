@@ -17,8 +17,6 @@ const getAudioById = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
   }
 
-
-
   // Fetch the user's listening history for this audio file
   const listeningHistory = await ListeningHistory.findOne({
     userId: req.user._id,
