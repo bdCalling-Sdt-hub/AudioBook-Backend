@@ -45,6 +45,8 @@ const register = catchAsync(async (req, res) => {
 
     if(user.role == "admin")
     {
+
+
       res.status(httpStatus.CREATED).json(
         response({
           message: "Thank you for registering.",
@@ -63,6 +65,71 @@ const register = catchAsync(async (req, res) => {
         statusCode: httpStatus.CREATED,
         data: {},
         tokens,
+      })
+    );
+  }
+});
+
+// send Invitation Link for a admin
+const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
+  const isUser = await userService.getUserByEmail(req.body.email);
+
+  if (isUser && isUser.isEmailVerified === false) {
+    const user = await userService.isUpdateUser(isUser.id, req.body);
+    const tokens = await tokenService.generateAuthTokens(user);
+    res.status(httpStatus.OK).json(
+      response({
+        message: "Thank you for registering. Please verify your email",
+        status: "OK",
+        statusCode: httpStatus.CREATED,
+        data: {},
+        tokens,
+      })
+    );
+  } else if (isUser && isUser.isDeleted === false) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
+  } else if (isUser && isUser.isDeleted === true) {
+    // TODO : Logic ta test korte hobe ..
+    // const user = await userService.isUpdateUser(isUser.id, req.body);
+    // const tokens = await tokenService.generateAuthTokens(user);
+    res.status(httpStatus.CREATED).json(
+      response({
+        message: "Thank you for registering. Please verify your email",
+        status: "OK",
+        statusCode: httpStatus.CREATED,
+        data: {},
+      })
+    );
+  } else {
+    const user = await userService.createUser(req.body);
+    // const tokens = await tokenService.generateAuthTokens(user);
+
+
+    if(user.role == "admin")
+    {
+
+      // 🟢 ekhon amra email and password ta admin er email e send korbo .. 
+
+      await emailService.sendInvitationLinkToAdminEmail(req.body.email, req?.body?.password, req?.body?.message ?? "welcome to the team");
+
+      res.status(httpStatus.CREATED).json(
+        response({
+          message: "Thank you for registering.",
+          status: "OK",
+          statusCode: httpStatus.CREATED,
+          data: {},
+          // tokens,
+        })
+      );
+    }
+
+    res.status(httpStatus.CREATED).json(
+      response({
+        message: "Thank you for registering. Please verify your email",
+        status: "OK",
+        statusCode: httpStatus.CREATED,
+        data: {},
+        // tokens,
       })
     );
   }
@@ -251,4 +318,5 @@ module.exports = {
   verifyEmailWithoutToken,
   deleteMe,
   changePassword,
+  sendInvitationLinkToAdminEmail
 };
