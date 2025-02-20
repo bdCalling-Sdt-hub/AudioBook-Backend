@@ -13,6 +13,15 @@ router.post(
   authController.register
 );
 
+
+// send Invitation Link for a admin
+router.post(
+  "/send-invitation-link-to-admin-email",
+  auth('superAdmin'),
+  validate(authValidation.register),
+  authController.sendInvitationLinkToAdminEmail
+);
+
 //🧪 working
 router.post("/login", validate(authValidation.login), authController.login);
 
@@ -44,6 +53,9 @@ router.post(
   auth(),
   authController.sendVerificationEmail
 );
+
+
+
 
 //🧪 working
 router.post(

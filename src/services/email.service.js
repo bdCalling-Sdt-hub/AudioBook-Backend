@@ -71,6 +71,36 @@ const sendResetPasswordEmail = async (to, otp) => {
   await sendEmail(to, subject, html);
 };
 
+const sendInvitationLinkToAdminEmail = async (to, password, message) => {
+  console.log("Otp", to, password);
+  const subject = "Verification Code";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+            <h2 style="color: #4CAF50; text-align: center;">Welcome to Audio Book!</h2>
+            <p style="font-size: 16px; color: #333;">Congratulations! You have been promoted to an <strong>Admin</strong> on <strong>Audio Book</strong>. Below are your credentials to access your account:</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+              <tr>
+                <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Email</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">${to}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Password</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">${password}</td>
+              </tr>
+            </table>
+            <p style="font-size: 16px; color: #333;">${message}</p>
+            <p style="font-size: 16px; color: #333;">For your security, we recommend changing your password upon first login.</p>
+            <p style="text-align: center; margin-top: 30px;">
+              <a href="https://audiobook.com/login" style="background-color: #4CAF50; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">Login to CoBag</a>
+            </p>
+            <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+            <p style="font-size: 12px; color: #888; text-align: center;">If you did not request this, please contact us immediately at support@audiobook.com.</p>
+          </div>
+  `;
+  await sendEmail(to, subject, html);
+};
+
+
 const sendVerificationEmail = async (to, token) => {
   const subject = "Email Verification";
   // replace this url with the link to the email verification page of your front-end app
@@ -87,4 +117,5 @@ module.exports = {
   sendResetPasswordEmail,
   sendVerificationEmail,
   sendEmailVerification,
+  sendInvitationLinkToAdminEmail
 };
