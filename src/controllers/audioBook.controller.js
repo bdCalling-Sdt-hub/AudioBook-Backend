@@ -101,10 +101,19 @@ const deleteAudioFile = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
   }
 
+
+  try {
+
   // Delete image from DigitalOcean Space
   await deleteFileFromSpace(audioFile.audioFile);
 
   await audioFile.deleteOne();
+
+} catch (error) {
+  // Error handling for file deletion or DB deletion failure
+  console.error("Error during file deletion:", error);
+  throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete audio file");
+}
 
   res.status(httpStatus.OK).json(
     response({
@@ -355,11 +364,16 @@ const deleteAudioBookById = catchAsync(async (req, res) => {
   for (const audioFile of audioFiles) {
     // Delete the audio file from DigitalOcean Space
 
-    await deleteFileFromSpace(audioFile.audioFile);
+    try {
+      await deleteFileFromSpace(audioFile.audioFile);
+      // Delete the audio file record from the database
+      await AudioFile.findByIdAndDelete(audioFile._id);
 
-    // Delete the audio file record from the database
-
-    await AudioFile.findByIdAndDelete(audioFile._id);
+     } catch (error) {
+      // Error handling for file deletion or DB deletion failure
+      console.error("Error during file deletion:", error);
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete audio file");
+    }
   }
 
   // Step 4: Update the location count (if the audiobook is associated with a location)

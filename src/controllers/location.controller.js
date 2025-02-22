@@ -24,11 +24,16 @@ const deleteLocation = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Location not found");
   }
 
-
+  try {
   await deleteFileFromSpace(location.flagImage);
-
   // Delete the location
   await Location.deleteOne({ _id: req.params.locationId });
+
+  } catch (error) {
+    // Error handling for file deletion or DB deletion failure
+    console.error("Error during file deletion:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete flag image");
+  }
 
   res.status(httpStatus.OK).json(
     response({

@@ -38,7 +38,6 @@ const getAudioById = catchAsync(async (req, res) => {
     audioFile = {...audioFile._doc, ...newListeningHistory._doc};
   }
 
-
   res.status(httpStatus.OK).json(
     response({
       message: "Audio",
@@ -211,7 +210,14 @@ const deleteCharacterById = catchAsync(async (req, res) => {
 
   // Step 2: Delete associated cover photos from DigitalOcean Space
   if (character.coverPhoto) {
-    await deleteFileFromSpace(character.coverPhoto);
+    try {
+      await deleteFileFromSpace(character.coverPhoto);
+    } catch (error) {
+      // Error handling for file deletion or DB deletion failure
+      console.error("Error during file deletion:", error);
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete cover photo");
+    }
+
   }
 
   const audioFiles = await AudioFile.find({ attachedTo: characterId });
@@ -219,9 +225,16 @@ const deleteCharacterById = catchAsync(async (req, res) => {
   console.log("audioFiles🧪", audioFiles);
   if (audioFiles) {
     for (const audioFile of audioFiles) {
-      await deleteFileFromSpace(audioFile.audioFile);
 
-      await AudioFile.findByIdAndDelete(audioFile._id);
+      try {
+        await deleteFileFromSpace(audioFile.audioFile);
+
+        await AudioFile.findByIdAndDelete(audioFile._id);
+    } catch (error) {
+      // Error handling for file deletion or DB deletion failure
+      console.error("Error during file deletion:", error);
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete audio file");
+    }
     }
   }
 

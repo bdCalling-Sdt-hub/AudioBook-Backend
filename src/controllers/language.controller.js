@@ -48,10 +48,18 @@ const deleteLanguage = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Language not found");
   }
 
+
+  try {
   // Delete image from DigitalOcean Space
   await deleteFileFromSpace(language.flagImage);
 
   await language.deleteOne();
+
+} catch (error) {
+  // Error handling for file deletion or DB deletion failure
+  console.error("Error during file deletion:", error);
+  throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete flag Image");
+}
 
   res.status(httpStatus.OK).json(
     response({

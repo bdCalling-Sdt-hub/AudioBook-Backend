@@ -1,8 +1,10 @@
+const httpStatus = require("http-status");
 const {
   uploadFileToSpace,
   deleteFileFromSpace,
 } = require("../middlewares/digitalOcean");
 const AppSettings = require("../models/appSettings.model");
+const ApiError = require("../utils/ApiError");
 
 // TODO : eta fix korte hobe .. previous image Digital Ocean theke delete hocche na ..
 // FIXME:
@@ -17,9 +19,15 @@ const uploadImage = async (type, file) => {
 
       // last image ta age delete korte hobe
 
-      const res = await deleteFileFromSpace(existingSetting.image);
-
-      await console.log("🧪 app settings ", type, "🧪  ", res);
+      try {
+       await deleteFileFromSpace(existingSetting.image);
+      
+      } catch (error) {
+        // Error handling for file deletion or DB deletion failure
+        console.error("Error during file deletion:", error);
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete settings image");
+      }
+     
 
       existingSetting.image = await uploadFileToSpace(file, "appSettings");
 
