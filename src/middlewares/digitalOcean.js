@@ -58,7 +58,8 @@ const deleteFileFromSpace = async (fileUrl) => {
 
   try {
     const command = new DeleteObjectCommand(deleteParams);
-    await s3.send(command);
+    const result = await s3.send(command);
+    console.log("command" , command)
     console.log(`Successfully deleted ${fileKey} from DigitalOcean Space`);
   } catch (error) {
     console.error("Error deleting from DigitalOcean Space:", error);

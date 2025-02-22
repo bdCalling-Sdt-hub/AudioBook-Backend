@@ -124,6 +124,38 @@ const updateAudioById = catchAsync(async (req, res) => {
   );
 });
 
+// const deleteLandingPageAudio = catchAsync(async (req, res) => {
+//   const audioFileId = req.params.landingPageAudioId;
+//   if (audioFileId) {
+//     const landingPageAudio = await LandingPageAudios.findById(audioFileId);
+
+//     if (!landingPageAudio) {
+//       throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
+//     }
+
+//     console.log("😁 Landing Page Audio File Delete ::::::" , landingPageAudio)
+
+
+//     // TODO : Test  Delete hocche kina check korte hobe ..
+//     // Delete image from DigitalOcean Space
+    
+//     await deleteFileFromSpace(landingPageAudio?.audioFile);
+
+//     // await landingPageAudio.deleteOne();
+
+    
+
+//     res.status(httpStatus.OK).json(
+//       response({
+//         message: "Landing Page Audio Deleted",
+//         status: "OK",
+//         statusCode: httpStatus.OK,
+//         data: landingPageAudio,
+//       })
+//     );
+//   }
+// });
+
 const deleteLandingPageAudio = catchAsync(async (req, res) => {
   const audioFileId = req.params.landingPageAudioId;
   if (audioFileId) {
@@ -133,22 +165,34 @@ const deleteLandingPageAudio = catchAsync(async (req, res) => {
       throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
     }
 
-    // TODO : Test  Delete hocche kina check korte hobe ..
-    // Delete image from DigitalOcean Space
-    await deleteFileFromSpace(landingPageAudio.audioFile);
+    console.log("😁 Landing Page Audio File Delete ::::::", landingPageAudio);
 
-    await landingPageAudio.deleteOne();
+    try {
+      // Delete file from DigitalOcean Space
+      await deleteFileFromSpace(landingPageAudio?.audioFile);
 
-    res.status(httpStatus.OK).json(
-      response({
-        message: "Landing Page Audio Deleted",
-        status: "OK",
-        statusCode: httpStatus.OK,
-        data: null,
-      })
-    );
+      // Delete the audio record from the database
+      await landingPageAudio.deleteOne();
+
+      res.status(httpStatus.OK).json(
+        response({
+          message: "Landing Page Audio Deleted",
+          status: "OK",
+          statusCode: httpStatus.OK,
+          data: landingPageAudio, // Optionally, return null since the file is deleted
+        })
+      );
+    } catch (error) {
+      // Error handling for file deletion or DB deletion failure
+      console.error("Error during file deletion:", error);
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete audio file");
+    }
+  } else {
+    // Handling case when `audioFileId` is not provided
+    throw new ApiError(httpStatus.BAD_REQUEST, "Landing Page Audio ID is required");
   }
 });
+
 
 module.exports = {
   addNewAudio,
