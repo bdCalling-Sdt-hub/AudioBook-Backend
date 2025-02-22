@@ -125,12 +125,17 @@ const isUpdateUser = async (userId, updateBody) => {
 
 /////////////////// For Admin ////////////////////////
 
-const deactivateAdminById = async (adminId) => {
+const activeDeactivateToggleAdminById = async (adminId) => {
   const admin = await User.findById(adminId);
   if (!admin) {
     throw new ApiError(httpStatus.NOT_FOUND, "Admin not found");
   }
-  Object.assign(admin, { status: "deactivate" });
+
+  if(admin.status === "deactivate") {
+  Object.assign(admin, { status: "active" });
+  }else{
+    Object.assign(admin, { status: "deactivate" });
+  }
   await admin.save();
   return admin;
 };
@@ -147,7 +152,13 @@ const deactivateUserById = async (userId) => {
       "Admin cannot be deactivated by user"
     );
   }
-  Object.assign(user, { status: "deactivate" });
+
+  if (user.status === "deactivate") {
+    
+    Object.assign(user, { status: "active" });
+  }else{
+    Object.assign(user, { status: "deactivate" });
+  }
   await user.save();
   return user;
 };
@@ -161,6 +172,6 @@ module.exports = {
   deleteUserById,
   isUpdateUser,
   ////////////
-  deactivateAdminById,
+  activeDeactivateToggleAdminById,
   deactivateUserById,
 };

@@ -6,14 +6,15 @@ const router = express.Router();
 
 router
   .route("/deactivateUser/:userId")
-  .get(auth("commonAdmin"), adminController.deactivateUserById);
+  .patch(auth("commonAdmin"), adminController.deactivateUserById);
 //----------------------------------------------------------------
 // router
 //   .route("/createNewAdmin")
 //   .post(auth("superAdmin"), userController.createNewAdmin);
 router
-  .route("/deactivateAdmin/:adminId")
-  .get(auth("superAdmin"), adminController.deactivateAdminById);
+  .route("/activeDeactivateToggle/:adminId")
+  .patch(auth("superAdmin"), adminController.activeDeactivateToggleAdminById);
+
 router
   .route("/getAllAdminAndSuperAdmin")
   .get(auth("commonAdmin"), adminController.getAllAdminAndSuperAdmin);

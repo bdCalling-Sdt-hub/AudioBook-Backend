@@ -7,6 +7,7 @@ const { userService } = require("../services");
 // cross check korte hobe ..
 const deactivateUserById = catchAsync(async (req, res) => {
   const user = await userService.deactivateUserById(req.params.userId);
+  if(user.status == 'deactivate'){
   res.status(httpStatus.OK).json(
     response({
       message: "User Deactivated",
@@ -15,18 +16,39 @@ const deactivateUserById = catchAsync(async (req, res) => {
       data: user,
     })
   );
-});
-
-const deactivateAdminById = catchAsync(async (req, res) => {
-  const user = await userService.deactivateAdminById(req.params.adminId);
+} else{
   res.status(httpStatus.OK).json(
     response({
-      message: "Admin deactivated",
+      message: "User Activated",
       status: "OK",
       statusCode: httpStatus.OK,
       data: user,
     })
   );
+}
+});
+
+const activeDeactivateToggleAdminById = catchAsync(async (req, res) => {
+  const user = await userService.activeDeactivateToggleAdminById(req.params.adminId);
+  if(user.status == 'deactivate'){
+    res.status(httpStatus.OK).json(
+      response({
+        message: "Admin Deactivated",
+        status: "OK",
+        statusCode: httpStatus.OK,
+        data: user,
+      })
+    );
+  } else{
+    res.status(httpStatus.OK).json(
+      response({
+        message: "Admin Activated",
+        status: "OK",
+        statusCode: httpStatus.OK,
+        data: user,
+      })
+    );
+  }
 });
 
 //[🚧][🧑‍💻][]  // ✅  🧪🆗✔️
@@ -52,6 +74,6 @@ const getAllAdminAndSuperAdmin = catchAsync(async (req, res) => {
 module.exports = {
   deactivateUserById, // admin functionality
 
-  deactivateAdminById,
+  activeDeactivateToggleAdminById,
   getAllAdminAndSuperAdmin,
 };
