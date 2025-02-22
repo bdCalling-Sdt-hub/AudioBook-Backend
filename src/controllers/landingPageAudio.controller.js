@@ -33,18 +33,19 @@ const addNewAudio = catchAsync(async (req, res) => {
       response({
         message: "Invalid languageId. Please provide a valid ObjectId.",
         status: "ERROR",
+        
         statusCode: httpStatus.BAD_REQUEST,
       })
     );
   }
 
-  const landingPageAudio = LandingPageAUdioService.addNewAudio(req.body);
-  res.status(httpStatus.CREATED).json(
+  const landingPageAudio = await LandingPageAUdioService.addNewAudio(req.body);
+  res.status(httpStatus.OK).json(
     response({
       message: "Audio Created",
       status: "OK",
-      statusCode: httpStatus.CREATED,
-      data: landingPageAudio,
+      statusCode: httpStatus.OK,
+      data: landingPageAudio
     })
   );
 });
