@@ -56,13 +56,12 @@ const getAudioById = catchAsync(async (req, res, userId) => {
 
 // update History for a audio File
 const updateHistoryOfAAudioFile = catchAsync(async (req, res, userId) => {
+  //
   const audioFileId = req.params.audioId;
-  // const userId = req.user._id;
 
   if (userId) {
     const { progress, completed } = req.body;
 
-    console.log("progress :: completed :: ✔️✔️", progress);
     const listeningHistory = await ListeningHistory.findOne({
       userId: userId,
       audioFileId: audioFileId,
@@ -81,8 +80,6 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res, userId) => {
       },
       { new: true }
     );
-
-    console.log("updatedHistory ✔️✔️✔️", updatedHistory);
 
     res.status(httpStatus.OK).json(
       response({

@@ -63,17 +63,17 @@ router.route("/audio/:audioId").get(async (req, res) => {
   }
 });
 
-// router.route("/audio/update-history/:audioId").get(auth("common"),characterController.updateHistoryOfAAudioFile);
+// router
+//   .route("/audio/update-history/:audioId")
+//   .post(auth("common"), characterController.updateHistoryOfAAudioFile);
 
 router.route("/audio/update-history/:audioId").patch(async (req, res) => {
-  console.log("req.body from patch routes 🩷🩷🩷 :", req);
   const token = req.headers.authorization?.split(" ")[1];
-  // If no token is provided, handle as anonymous access
+
   if (!token) {
     await characterController.updateHistoryOfAAudioFile(req, res, null);
   } else {
     try {
-      // eslint-disable-next-line no-undef
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const userId = decoded.sub;
 
