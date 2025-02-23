@@ -4,6 +4,44 @@ const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 const response = require("../config/response");
 const { userService } = require("../services");
+const { ListeningHistory, AudioFile } = require("../models");
+
+
+const getHistory = catchAsync(async (req, res) => {
+  const history = await ListeningHistory.find({ userId: req.user._id });
+
+
+  console.log("history 😁😁", history );
+  // loop to history and get audioFileId and check if that audioFile exist in audioFile database
+  if (!history) {
+    throw new ApiError(httpStatus.NOT_FOUND, "History not found");
+  }
+
+  const histories = [];
+
+  if(history){
+    for (const h of history) {
+      const audioFile = await AudioFile.findById(h.audioFileId);
+      console.log("audioFile 😁😁", audioFile);
+      if (audioFile) {
+        
+        histories.push({  h }); // ...h._doc,
+      }
+    }
+  }
+
+  console.log("histories 😁😁😁", histories);
+  
+  res.status(httpStatus.OK).json(
+    response({
+      message: "User History",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: histories,
+    })
+  );
+
+})
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -97,4 +135,5 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
+  getHistory
 };

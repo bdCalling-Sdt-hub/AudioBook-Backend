@@ -10,14 +10,26 @@ const {
   deleteFileFromSpace,
 } = require("../middlewares/digitalOcean");
 const { ListeningHistory } = require("../models");
-const getAudioById = catchAsync(async (req, res, next, userId) => {
+const { mongoose } = require("../config/config");
+
+const getAudioById = catchAsync(async (req, res, userId) => {
   // const userId = req.user?._id;  // Ensure userId is optional (in case of anonymous users)
 
+  // if (!mongoose.Types.ObjectId.isValid(req?.params?.audioId)) {
+  //   res.status(httpStatus.OK).json(
+  //     response({
+  //       message: "Audio not found",
+  //       status: "NOT_FOUND",
+  //       statusCode: httpStatus.NOT_FOUND,
+  //       data: null,
+  //     })
+  //   );
+  // }
 
   let audioFile = await AudioFile.findById(req?.params?.audioId);
   if (!audioFile) {
-    // throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
-    next(new ApiError(httpStatus.NOT_FOUND, "Audio not found"));
+    throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
+   
   }
 
   if (userId) {
@@ -55,8 +67,10 @@ const getAudioById = catchAsync(async (req, res, next, userId) => {
 });
 
 // update History for a audio File
-const updateHistoryOfAAudioFile = catchAsync(async (req, res, userId) => {
-  //
+const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
+  // , userId
+
+  const userId = req?.user?._id; 
   const audioFileId = req.params.audioId;
 
   if (userId) {
@@ -75,7 +89,7 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res, userId) => {
       listeningHistory._id,
       {
         progress: progress,
-        completed: completed, //req?.body?.completed ?? false,
+        completed: completed  ?? false, //req?.body?.completed ?? false,
         lastListenedAt: Date.now(),
       },
       { new: true }
