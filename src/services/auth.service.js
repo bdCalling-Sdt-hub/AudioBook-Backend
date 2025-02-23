@@ -58,12 +58,12 @@ const resetPassword = async (newPassword, email) => {
   // }
 
   // Check if OTP has expired
-  if (user.otpExpires < Date.now()) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "OTP expired. Request a new one."
-    );
-  }
+  // if (user.otpExpires < Date.now()) {
+  //   throw new ApiError(
+  //     httpStatus.BAD_REQUEST,
+  //     "OTP expired. Request a new one."
+  //   );
+  // }
 
   // Check if new password is same as old password
   if (await user.isPasswordMatch(newPassword)) {

@@ -62,8 +62,9 @@ router.route("/preview/:audioBookId").put(
 );
 router
   .route("/:audioBookId")
-  .get(auth("common"), audioBookController.getAAudioBookById);
+  .get( audioBookController.getAAudioBookById);
 
+  // auth("common"),
 router
   .route("/:audioBookId")
   .delete(auth("commonAdmin"), audioBookController.deleteAudioBookById);
