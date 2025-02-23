@@ -12,9 +12,9 @@ const {
 const { ListeningHistory } = require("../models");
 const getAudioById = catchAsync(async (req, res, userId) => {
   // const userId = req.user?._id;  // Ensure userId is optional (in case of anonymous users)
- 
+
   console.log("userId 🔴🔴🔴🔴", userId);
- 
+
   let audioFile = await AudioFile.findById(req.params.audioId);
   if (!audioFile) {
     throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
@@ -54,31 +54,36 @@ const getAudioById = catchAsync(async (req, res, userId) => {
   );
 });
 
-// update History for a audio File 
-const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
+// update History for a audio File
+const updateHistoryOfAAudioFile = catchAsync(async (req, res, userId) => {
   const audioFileId = req.params.audioId;
-  const userId = req.user._id;
+  // const userId = req.user._id;
 
-  if(userId){
+  if (userId) {
+    const { progress, completed } = req.body;
+
+    console.log("progress :: completed :: ✔️✔️", progress);
     const listeningHistory = await ListeningHistory.findOne({
       userId: userId,
       audioFileId: audioFileId,
     });
-    
+
     if (!listeningHistory) {
       throw new ApiError(httpStatus.NOT_FOUND, "Listening History not found");
     }
-  
+
     const updatedHistory = await ListeningHistory.findByIdAndUpdate(
       listeningHistory._id,
       {
-        progress: req?.body?.progress,
-        completed: req?.body?.completed,
+        progress: progress,
+        completed: completed, //req?.body?.completed ?? false,
         lastListenedAt: Date.now(),
       },
       { new: true }
     );
-  
+
+    console.log("updatedHistory ✔️✔️✔️", updatedHistory);
+
     res.status(httpStatus.OK).json(
       response({
         message: "Listening History Updated",
@@ -97,13 +102,7 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
       })
     );
   }
-
-
-  
 });
-
-
-
 
 // when a commonAdmin click to add Character button .. then it create a
 // empty character in database and return thats id ..
@@ -272,9 +271,11 @@ const deleteCharacterById = catchAsync(async (req, res) => {
     } catch (error) {
       // Error handling for file deletion or DB deletion failure
       console.error("Error during file deletion:", error);
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete cover photo");
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Failed to delete cover photo"
+      );
     }
-
   }
 
   const audioFiles = await AudioFile.find({ attachedTo: characterId });
@@ -282,16 +283,18 @@ const deleteCharacterById = catchAsync(async (req, res) => {
   console.log("audioFiles🧪", audioFiles);
   if (audioFiles) {
     for (const audioFile of audioFiles) {
-
       try {
         await deleteFileFromSpace(audioFile.audioFile);
 
         await AudioFile.findByIdAndDelete(audioFile._id);
-    } catch (error) {
-      // Error handling for file deletion or DB deletion failure
-      console.error("Error during file deletion:", error);
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete audio file");
-    }
+      } catch (error) {
+        // Error handling for file deletion or DB deletion failure
+        console.error("Error during file deletion:", error);
+        throw new ApiError(
+          httpStatus.INTERNAL_SERVER_ERROR,
+          "Failed to delete audio file"
+        );
+      }
     }
   }
 
@@ -315,5 +318,5 @@ module.exports = {
   getACharacterById,
   getAudioById,
   deleteCharacterById,
-  updateHistoryOfAAudioFile
+  updateHistoryOfAAudioFile,
 };
