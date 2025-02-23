@@ -54,7 +54,7 @@ router.route("/audio/:audioId").get(async (req, res) => {
       // If token is valid, decode it and extract the userId
       const userId = decoded.sub;
       await characterController.getAudioById(req, res, userId);
-      console.log("Authenticated user, userId:", userId);
+      
     } catch (error) {
       // Handle errors related to invalid or expired tokens
       console.error("Invalid or expired token:", error.message);

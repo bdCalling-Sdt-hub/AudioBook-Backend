@@ -21,7 +21,7 @@ const uploadFileToSpace = async (
   file, // : Express.Multer.File
   folder // : string
 ) => {
-  const fileName = `${folder}/${Date.now()}-${file.originalname}`;
+  const fileName = `${folder}/${Date.now()}-${file.originalname.replace(/\s+/g, '-')}`;
   const uploadParams = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileName,

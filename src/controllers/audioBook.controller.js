@@ -129,7 +129,7 @@ const deleteAudioFile = catchAsync(async (req, res) => {
 const getAAudioBookById = catchAsync(async (req, res) => {
   let audioBook = await AudioBook.findById(req.params.audioBookId).populate({
     path: "audios", // Populate the 'audios' field
-    select: "-audioFile -createdAt -updatedAt -__v", // Exclude the 'audioFile' field
+    select: " -createdAt -updatedAt -__v", // -audioFile 
     populate: {
       path: "languageId", // Populate the 'languageId' field within 'audios'
       select: "-createdAt -updatedAt -__v", // Include only specific fields from the Language model
