@@ -4,14 +4,19 @@ const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 const response = require("../config/response");
 const { userService } = require("../services");
-const { ListeningHistory, AudioFile } = require("../models");
+const { ListeningHistory, AudioFile, AudioBook, Characters } = require("../models");
 
 
 const getHistory = catchAsync(async (req, res) => {
-  const history = await ListeningHistory.find({ userId: req.user._id });
+  const history = await ListeningHistory.find({ userId: req.user._id }).select('-createdAt -updatedAt -userId -lastListenedAt -__v').populate({
+    path: "audioFileId",
+    select: "-createdAt -updatedAt -__v",
+    populate: {
+      path: "languageId",
+      select: "name flagImage",
+    },
+  });
 
-
-  console.log("history 😁😁", history );
   // loop to history and get audioFileId and check if that audioFile exist in audioFile database
   if (!history) {
     throw new ApiError(httpStatus.NOT_FOUND, "History not found");
@@ -22,16 +27,23 @@ const getHistory = catchAsync(async (req, res) => {
   if(history){
     for (const h of history) {
       const audioFile = await AudioFile.findById(h.audioFileId);
-      console.log("audioFile 😁😁", audioFile);
       if (audioFile) {
+        let audioFileBelongTo = audioFile.attachedTo;
+
+        const audioBookData = await AudioBook.findById(audioFileBelongTo).select(' -audios -locationId -published -createdAt -updatedAt -__v');
         
-        histories.push({  h }); // ...h._doc,
+        const characterData = await Characters.findById(audioFileBelongTo).select(' -audios -published -createdAt -updatedAt -__v');
+
+        if(audioBookData){
+          audioFileBelongTo =  audioBookData;
+        }else if(characterData){
+          audioFileBelongTo =  characterData;
+        } 
+        histories.push({  ...h._doc, audioFileBelongTo  });
       }
     }
   }
 
-  console.log("histories 😁😁😁", histories);
-  
   res.status(httpStatus.OK).json(
     response({
       message: "User History",
