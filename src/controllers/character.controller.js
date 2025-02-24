@@ -15,23 +15,21 @@ const { mongoose } = require("../config/config");
 const getAudioById = catchAsync(async (req, res, userId) => {
   // const userId = req.user?._id;  // Ensure userId is optional (in case of anonymous users)
 
-  // if (!mongoose.Types.ObjectId.isValid(req?.params?.audioId)) {
-  //   res.status(httpStatus.OK).json(
-  //     response({
-  //       message: "Audio not found",
-  //       status: "NOT_FOUND",
-  //       statusCode: httpStatus.NOT_FOUND,
-  //       data: null,
-  //     })
-  //   );
-  // }
-
+  
   let audioFile = await AudioFile.findById(req?.params?.audioId);
   if (!audioFile) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
-   
+    // throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
+     return res.status(httpStatus.NOT_FOUND).json(
+      response({
+        message: "Audio not found",
+        status: "NOT_FOUND",
+        statusCode: httpStatus.NOT_FOUND,
+        data: audioFile,
+      })
+    );
   }
-
+  
+  
   if (userId) {
     // For authenticated users, fetch listening history
     const listeningHistory = await ListeningHistory.findOne({

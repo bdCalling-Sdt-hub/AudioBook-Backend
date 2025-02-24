@@ -43,7 +43,17 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
 
   const audioBook = await AudioBook.findById(audioBookId);
   if (!audioBook) {
-    throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+    // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+
+    return res.status(httpStatus.NOT_FOUND).json(
+      response({
+        message: "AudioBook not found",
+        status: "NOT_FOUND",
+        statusCode: httpStatus.NOT_FOUND,
+        data: null,
+      })
+    );
+
   }
 
   if (audioBookId) {
@@ -98,7 +108,16 @@ const deleteAudioFile = catchAsync(async (req, res) => {
 
   const audioFile = await AudioFile.findById(audioFileId);
   if (!audioFile) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
+    // throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
+
+    return res.status(httpStatus.NOT_FOUND).json(
+      response({
+        message: "Audio not found",
+        status: "NOT_FOUND",
+        statusCode: httpStatus.NOT_FOUND,
+        data: null,
+      })
+    );
   }
 
 
@@ -138,7 +157,16 @@ const getAAudioBookById = catchAsync(async (req, res) => {
   });
 
   if (!audioBook) {
-    throw new ApiError(httpStatus.NOT_FOUND, "audioBook not found");
+    // throw new ApiError(httpStatus.NOT_FOUND, "audioBook not found");
+
+    return res.status(httpStatus.NOT_FOUND).json(
+      response({
+        message: "AudioBook not found",
+        status: "NOT_FOUND",
+        statusCode: httpStatus.NOT_FOUND,
+        data: null,
+      })
+    );
   }
 
   res.status(httpStatus.OK).json(
@@ -159,7 +187,16 @@ const updateAudioBookById = catchAsync(async (req, res) => {
   // Step 0: Fetch the existing audiobook
   const audioBook = await AudioBook.findById(audioBookId);
   if (!audioBook) {
-    throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+    // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+
+    return res.status(httpStatus.NOT_FOUND).json(
+      response({
+        message: "Audio Book not found",
+        status: "NOT_FOUND",
+        statusCode: httpStatus.NOT_FOUND,
+        data: null,
+      })
+    );
   }
 
   // Step 1: Process uploaded cover photos (if any)
