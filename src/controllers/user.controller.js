@@ -8,8 +8,9 @@ const { ListeningHistory, AudioFile, AudioBook, Characters } = require("../model
 
 
 const getHistory = catchAsync(async (req, res) => {
-  const history = await ListeningHistory.find({ userId: req.user._id }).select('-createdAt -updatedAt -userId -lastListenedAt -__v').populate({
+  const history = await ListeningHistory.find({ userId: req.user._id }).sort({ lastListenedAt: -1 }).select('-createdAt -updatedAt -lastListenedAt -__v').populate({
     path: "audioFileId",
+    
     select: "-createdAt -updatedAt -__v",
     populate: {
       path: "languageId",

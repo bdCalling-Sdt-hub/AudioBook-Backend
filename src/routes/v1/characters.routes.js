@@ -38,35 +38,26 @@ router
     characterController.updateCharacter
   );
 
-
-router.route("/audio/:audioId").get(async (req, res) => {
-  // Get the token from the Authorization header
-  const token = req.headers.authorization?.split(" ")[1];
-  // If no token is provided, handle as anonymous access
-  if (!token) {
-    try {
-    await characterController.getAudioById(req, res, null);
-    }
-    catch (error) {
-      return res.status(401).json({ message: "Invalid or expired token" });
-    }
-  } else {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-     
-      const userId = decoded.sub;
-      await characterController.getAudioById(req, res, userId);
-    } catch (error) {
-      
-      return res.status(401).json({ message: "Invalid or expired token" });
-    }
-  }
-});
-
+router.route("/audio/:audioId").get(characterController.getAudioById);
  
 router
   .route("/audio/update-history/:audioId")
   .patch(auth("common"), characterController.updateHistoryOfAAudioFile);
+
+// 🧪
+// auth("common"),
+router.route("/:characterId").get(characterController.getACharacterById); // playAAudioById
+
+router
+  .route("/:characterId")
+  .delete(auth("commonAdmin"), characterController.deleteCharacterById);
+
+module.exports = router;
+
+
+
+
+
 
 // router.route("/audio/update-history/:audioId").patch(async (req, res) => {
 //   const token = req.headers.authorization?.split(" ")[1];
@@ -90,13 +81,3 @@ router
 //     }
 //   }
 // });
-
-// 🧪
-// auth("common"),
-router.route("/:characterId").get(characterController.getACharacterById); // playAAudioById
-
-router
-  .route("/:characterId")
-  .delete(auth("commonAdmin"), characterController.deleteCharacterById);
-
-module.exports = router;
