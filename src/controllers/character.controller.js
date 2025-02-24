@@ -24,7 +24,7 @@ const getAudioById = catchAsync(async (req, res, userId) => {
         message: "Audio not found",
         status: "NOT_FOUND",
         statusCode: httpStatus.NOT_FOUND,
-        data: audioFile,
+        data: null,
       })
     );
   }
