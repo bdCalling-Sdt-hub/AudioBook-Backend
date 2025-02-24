@@ -33,18 +33,10 @@ const createAudioBook = catchAsync(async (req, res) => {
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
   const audioBookId = req.params.audioBookId;
-
-  // Check if audioBookId is a valid ObjectId
-  console.log("Audio Book ID 🧪🧪", audioBookId);
-
-  // if (!mongoose.Types.ObjectId.isValid(audioBookId)) {
-  //   throw new ApiError(httpStatus.BAD_REQUEST, "Invalid audio book ID");
-  // }
-
+console.log(req.file)
   const audioBook = await AudioBook.findById(audioBookId);
   if (!audioBook) {
     // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
-
     return res.status(httpStatus.NOT_FOUND).json(
       response({
         message: "AudioBook not found",
@@ -53,7 +45,6 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
         data: null,
       })
     );
-
   }
 
   if (audioBookId) {

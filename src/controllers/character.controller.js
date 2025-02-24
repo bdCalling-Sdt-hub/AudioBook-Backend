@@ -5,55 +5,22 @@ const response = require("../config/response");
 const ApiError = require("../utils/ApiError");
 const Characters = require("../models/characters.model");
 const AudioFile = require("../models/audioFile.model");
+const jwt = require("jsonwebtoken"); // Assuming you're using JWT
 const {
   uploadFileToSpace,
   deleteFileFromSpace,
 } = require("../middlewares/digitalOcean");
 const { ListeningHistory } = require("../models");
-const { mongoose } = require("../config/config");
 
-const getAudioById = catchAsync(async (req, res, userId) => {
-  // const userId = req.user?._id;  // Ensure userId is optional (in case of anonymous users)
 
-  
-  let audioFile = await AudioFile.findById(req?.params?.audioId);
-  if (!audioFile) {
-    // throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
-     return res.status(httpStatus.NOT_FOUND).json(
-      response({
-        message: "Audio not found",
-        status: "NOT_FOUND",
-        statusCode: httpStatus.NOT_FOUND,
-        data: null,
-      })
-    );
-  }
-  
-  
-  if (userId) {
-    // For authenticated users, fetch listening history
-    const listeningHistory = await ListeningHistory.findOne({
-      userId: userId,
-      audioFileId: req.params.audioId,
-    });
-
-    if (listeningHistory) {
-      const listeningHistoryObject = {
-        progress: listeningHistory.progress,
-        completed: listeningHistory.completed,
-        lastListenedAt: listeningHistory.lastListenedAt,
-      };
-      audioFile = { ...audioFile._doc, ...listeningHistoryObject };
-    } else {
-      const newListeningHistory = await ListeningHistory.create({
-        userId: userId,
-        audioFileId: req.params.audioId,
-      });
-      audioFile = { ...audioFile._doc, ...newListeningHistory._doc };
+const getAudioById = catchAsync(async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    let audioFile = await AudioFile.findById(req?.params?.audioId);
+    if (!audioFile) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
     }
-  }
-
-  // For both authenticated and non-authenticated users
+     // For both authenticated and non-authenticated users
   res.status(httpStatus.OK).json(
     response({
       message: "Audio",
@@ -62,17 +29,77 @@ const getAudioById = catchAsync(async (req, res, userId) => {
       data: audioFile,
     })
   );
+  } else {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded?.sub;
+    let audioFile = await AudioFile.findById(req.params.audioId);
+    if (!audioFile) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
+    }
+    if (userId) {
+      // For authenticated users, fetch listening history
+      const listeningHistory = await ListeningHistory.findOne({
+        userId: userId,
+        audioFileId: req.params.audioId,
+      });
+
+      if (listeningHistory) {
+        const listeningHistoryObject = {
+          progress: listeningHistory.progress,
+          completed: listeningHistory.completed,
+          lastListenedAt: listeningHistory.lastListenedAt,
+        };
+        audioFile = { ...audioFile._doc, ...listeningHistoryObject };
+
+        res.status(httpStatus.OK).json(
+          response({
+            message: "Audio",
+            status: "OK",
+            statusCode: httpStatus.OK,
+            data: audioFile,
+          })
+        );
+
+      } else {
+        const newListeningHistory = await ListeningHistory.create({
+          userId: userId,
+          audioFileId: req.params.audioId,
+        });
+
+        audioFile = { ...audioFile._doc, ...newListeningHistory._doc };
+
+
+        res.status(httpStatus.OK).json(
+          response({
+            message: "Audio",
+            status: "OK",
+            statusCode: httpStatus.OK,
+            data: audioFile,
+          })
+        );
+      }
+    }
+    // For both authenticated and non-authenticated users
+    // res.status(httpStatus.OK).json(
+    //   response({
+    //     message: "Audio",
+    //     status: "OK",
+    //     statusCode: httpStatus.OK,
+    //     data: audioFile,
+    //   })
+    // );
+  }
 });
 
 // update History for a audio File
 const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
   // , userId
 
-  const userId = req?.user?._id; 
+  const userId = req?.user?._id;
   const audioFileId = req.params.audioId;
 
   if (userId) {
-    const { progress, completed } = req.body;
+    const { progress } = req.body;
 
     const listeningHistory = await ListeningHistory.findOne({
       userId: userId,
@@ -80,18 +107,39 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
     });
 
     if (!listeningHistory) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Listening History not found");
-    }
+      // throw new ApiError(httpStatus.NOT_FOUND, "Listening History not found");
+
+
+      const newListeningHistory = await ListeningHistory.create({
+        userId: userId,
+        audioFileId: req.params.audioId,
+        progress: progress,
+        lastListenedAt: Date.now(),
+      });
+
+      console.log("newListeningHistory 😁😁", newListeningHistory)
+
+      res.status(httpStatus.OK).json(
+        response({
+          message: "Listening History Created",
+          status: "OK",
+          statusCode: httpStatus.OK,
+          data: newListeningHistory,
+        })
+      );
+
+    }else{
 
     const updatedHistory = await ListeningHistory.findByIdAndUpdate(
       listeningHistory._id,
       {
         progress: progress,
-        completed: completed  ?? false, //req?.body?.completed ?? false,
         lastListenedAt: Date.now(),
       },
       { new: true }
     );
+
+    console.log("updatedHistory 🔴🔴", updatedHistory)
 
     res.status(httpStatus.OK).json(
       response({
@@ -101,6 +149,8 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
         data: updatedHistory,
       })
     );
+
+  }
   } else {
     res.status(httpStatus.OK).json(
       response({
