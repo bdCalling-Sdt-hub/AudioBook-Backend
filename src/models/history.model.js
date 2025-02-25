@@ -13,7 +13,7 @@ const listeningHistorySchema = mongoose.Schema(
       required: true,
     },
     progress: {
-      type: Number, // Time in seconds of how much was listened
+      type: String, // Time in seconds of how much was listened
       default: 0,
     },
     completed: {
