@@ -241,8 +241,11 @@ const updateAudioBookById = catchAsync(async (req, res) => {
     published: true,
   };
 
+  console.log( "req.body from update Audio Book 😥😥😥", req.body);
   // Step 4: Handle location updates
   if (req.body.locationId) {
+
+    
     const locationExist = await Location.findById(req.body.locationId);
 
     if (locationExist) {

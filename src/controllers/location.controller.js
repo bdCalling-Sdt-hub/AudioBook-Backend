@@ -10,7 +10,19 @@ const getAllLocation = catchAsync(async (req, res) => {
   const result = await Location.find({ count: { $gt: 0 } });
   res.status(httpStatus.OK).json(
     response({
-      message: "All language",
+      message: "All location",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: result,
+    })
+  );
+});
+
+const getAllLocationForAdmin = catchAsync(async (req, res) => {
+  const result = await Location.find();
+  res.status(httpStatus.OK).json(
+    response({
+      message: "All location",
       status: "OK",
       statusCode: httpStatus.OK,
       data: result,
@@ -85,4 +97,5 @@ module.exports = {
   deleteLocation,
   getAllLocation,
   updateLocation,
+  getAllLocationForAdmin
 };

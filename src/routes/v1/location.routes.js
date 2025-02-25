@@ -7,6 +7,10 @@ const auth = require("../../middlewares/auth");
 
 router.route("/").get(locationController.getAllLocation);
 
+
+router.route("/forAdmin").get(locationController.getAllLocationForAdmin);
+
+
 router.route("/").post(auth("commonAdmin"), locationController.createLocation);
 
 router

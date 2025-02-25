@@ -130,25 +130,29 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
 
     }else{
 
-    const updatedHistory = await ListeningHistory.findByIdAndUpdate(
-      listeningHistory._id,
-      {
-        progress: progress,
-        lastListenedAt: Date.now(),
-      },
-      { new: true }
-    );
+      if(progress !==  "0:00:00"){
+        const updatedHistory = await ListeningHistory.findByIdAndUpdate(
+          listeningHistory._id,
+          {
+            progress: progress,
+            lastListenedAt: Date.now(),
+          },
+          { new: true }
+        );
+    
+        console.log("updatedHistory 🔴🔴", updatedHistory)
+    
+        res.status(httpStatus.OK).json(
+          response({
+            message: "Listening History Updated",
+            status: "OK",
+            statusCode: httpStatus.OK,
+            data: updatedHistory,
+          })
+        );
+      }
 
-    console.log("updatedHistory 🔴🔴", updatedHistory)
-
-    res.status(httpStatus.OK).json(
-      response({
-        message: "Listening History Updated",
-        status: "OK",
-        statusCode: httpStatus.OK,
-        data: updatedHistory,
-      })
-    );
+      
 
   }
   } else {
