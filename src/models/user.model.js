@@ -18,11 +18,12 @@ const userSchema = mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error("Invalid email");
-        }
-      },
+      match: [/^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]+$/, 'Invalid email format'],  // [a-zA-Z]{2,4}
+      // validate(value) {
+      //   if (!validator.isEmail(value)) {
+      //     throw new Error("Invalid email");
+      //   }
+      // },
     },
 
     password: {
