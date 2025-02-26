@@ -4,11 +4,7 @@ const auth = require("../../middlewares/auth");
 const characterController = require("../../controllers/character.controller");
 const characterValidation = require("../../validations/character.validation");
 const validate = require("../../middlewares/validate");
-const jwt = require("jsonwebtoken"); // Assuming you're using JWT
-const audioBookValidation = require("../../validations/audioBook.validation");
 const multer = require("multer");
-const { error } = require("winston");
-const catchAsync = require("../../utils/catchAsync");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -59,24 +55,3 @@ router
 
 module.exports = router;
 
-// router.route("/audio/update-history/:audioId").patch(async (req, res) => {
-//   const token = req.headers.authorization?.split(" ")[1];
-
-//   if (!token) {
-//     try{
-//     await characterController.updateHistoryOfAAudioFile(req, res, null);
-//   }
-//   catch (error) {
-//     return res.status(401).json({ message: "Error from updateHistoryOfAAudioFile" });
-//   }
-//   } else {
-//     try {
-//       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//       const userId = decoded.sub;
-//       await characterController.updateHistoryOfAAudioFile(req, res, userId);
-
-//     } catch (error) {
-//       return res.status(401).json({ message: "Invalid or expired token" });
-//     }
-//   }
-// });

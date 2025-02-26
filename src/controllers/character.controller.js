@@ -76,22 +76,13 @@ const getAudioById = catchAsync(async (req, res) => {
         );
       }
     }
-    // For both authenticated and non-authenticated users
-    // res.status(httpStatus.OK).json(
-    //   response({
-    //     message: "Audio",
-    //     status: "OK",
-    //     statusCode: httpStatus.OK,
-    //     data: audioFile,
-    //   })
-    // );
+    
   }
 });
 
 // update History for a audio File
 const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
-  // , userId
-
+  
   const userId = req?.user?._id;
   const audioFileId = req.params.audioId;
 
@@ -113,7 +104,7 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
         lastListenedAt: Date.now(),
       });
 
-      console.log("newListeningHistory 😁😁", newListeningHistory);
+      
 
       res.status(httpStatus.OK).json(
         response({
@@ -134,7 +125,7 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
           { new: true }
         );
 
-        console.log("updatedHistory 🔴🔴", updatedHistory);
+        
 
         res.status(httpStatus.OK).json(
           response({
@@ -158,8 +149,7 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
   }
 });
 
-// when a commonAdmin click to add Character button .. then it create a
-// empty character in database and return thats id ..
+
 
 const createCharacter = catchAsync(async (req, res) => {
   const newCharacter = await Characters.create({ published: false });
@@ -191,23 +181,8 @@ const addAudioWithLanguageIdForACharacter = catchAsync(async (req, res) => {
     );
   }
 
-  // if (req.file) {
-  //   req.body.audioFile = "/uploads/characters/" + req.file.filename;
-  // }
 
-  // const imageUrl =
   req.body.audioFile = await uploadFileToSpace(req.file, "characters");
-
-  // FIX: Validate that languageId is a valid .. but this give me error ..tai comment kore rakhsi .. but eta fix kora lagbe ..
-  // if (!mongoose.Types.ObjectId.isValid(req.body.languageId)) {
-  //   return res.status(400).json(
-  //     response({
-  //       message: "Invalid languageId. Please provide a valid ObjectId.",
-  //       status: "ERROR",
-  //       statusCode: httpStatus.BAD_REQUEST,
-  //     })
-  //   );
-  // }
 
   const audioFile = AudioFile.create(req.body);
 
@@ -306,7 +281,7 @@ const updateCharacterForPreviewById = catchAsync(async (req, res) => {
     published: true,
   };
 
-  // const character = await characterService.addNewCharacters(characterData);
+  
   const updatedCharacter = await Characters.findByIdAndUpdate(
     req.params.characterId,
     characterData,
@@ -384,7 +359,7 @@ const deleteCharacterById = catchAsync(async (req, res) => {
 
   const audioFiles = await AudioFile.find({ attachedTo: characterId });
 
-  console.log("audioFiles🧪", audioFiles);
+ 
   if (audioFiles) {
     for (const audioFile of audioFiles) {
       try {

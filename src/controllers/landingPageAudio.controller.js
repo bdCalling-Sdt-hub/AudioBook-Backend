@@ -12,7 +12,7 @@ const ApiError = require("../utils/ApiError");
 
 //[🚧][🧑‍💻✅][🧪🆗✔️]  //
 const addNewAudio = catchAsync(async (req, res) => {
-  // Ensure a file was uploaded
+  
   if (!req.file) {
     return res.status(httpStatus.BAD_REQUEST).json(
       response({
@@ -124,37 +124,6 @@ const updateAudioById = catchAsync(async (req, res) => {
   );
 });
 
-// const deleteLandingPageAudio = catchAsync(async (req, res) => {
-//   const audioFileId = req.params.landingPageAudioId;
-//   if (audioFileId) {
-//     const landingPageAudio = await LandingPageAudios.findById(audioFileId);
-
-//     if (!landingPageAudio) {
-//       throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
-//     }
-
-//     console.log("😁 Landing Page Audio File Delete ::::::" , landingPageAudio)
-
-
-//     // TODO : Test  Delete hocche kina check korte hobe ..
-//     // Delete image from DigitalOcean Space
-    
-//     await deleteFileFromSpace(landingPageAudio?.audioFile);
-
-//     // await landingPageAudio.deleteOne();
-
-    
-
-//     res.status(httpStatus.OK).json(
-//       response({
-//         message: "Landing Page Audio Deleted",
-//         status: "OK",
-//         statusCode: httpStatus.OK,
-//         data: landingPageAudio,
-//       })
-//     );
-//   }
-// });
 
 const deleteLandingPageAudio = catchAsync(async (req, res) => {
   const audioFileId = req.params.landingPageAudioId;
@@ -164,8 +133,6 @@ const deleteLandingPageAudio = catchAsync(async (req, res) => {
     if (!landingPageAudio) {
       throw new ApiError(httpStatus.NOT_FOUND, "Audio File not found");
     }
-
-    console.log("😁 Landing Page Audio File Delete ::::::", landingPageAudio);
 
     try {
       // Delete file from DigitalOcean Space

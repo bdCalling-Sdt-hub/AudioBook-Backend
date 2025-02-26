@@ -7,10 +7,7 @@ const router = express.Router();
 router
   .route("/deactivateUser/:userId")
   .patch(auth("commonAdmin"), adminController.deactivateUserById);
-//----------------------------------------------------------------
-// router
-//   .route("/createNewAdmin")
-//   .post(auth("superAdmin"), userController.createNewAdmin);
+
 router
   .route("/activeDeactivateToggle/:adminId")
   .patch(auth("superAdmin"), adminController.activeDeactivateToggleAdminById);

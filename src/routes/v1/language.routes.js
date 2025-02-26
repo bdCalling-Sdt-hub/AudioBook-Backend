@@ -13,7 +13,7 @@ router.route("/").post(
   auth("commonAdmin"),
   // [uploadLanguage.single("flagImage")],
   [upload.single("flagImage")],
-  // validate(languageValidation.addNewLanguage),
+ 
   languageController.addNewLanguage
 );
 
@@ -27,7 +27,6 @@ router.route("/").put(
   auth("commonAdmin"),
   // [uploadLanguage.single("flagImage")],
   [upload.single("flagImage")],
-  // validate(languageValidation.addNewLanguage),
   languageController.updateNewLanguage
 );
 
