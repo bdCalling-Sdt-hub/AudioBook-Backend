@@ -76,9 +76,6 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
     })
   );
 });
-// ---------------------------------------  For Update A Audio File By id
-
-///////////////////////////////  Update Audio File By Id
 
 //[🚧][🧑‍💻✅][🧪🆗]
 const getAllAudioBook = catchAsync(async (req, res) => {
@@ -352,6 +349,53 @@ const updateAudioBookForPreviewById = catchAsync(async (req, res) => {
   });
 });
 
+//////////////////////////////////////// Update Audio File By Id
+
+const updateAudioFileByAudioId = catchAsync(async (req, res) => {
+  const { audioFileId } = req.params; // Assuming the audiobook ID is passed as a URL parameter
+
+  // Step 0: Fetch the existing audiobook
+  const audioFile = await AudioFile.findById(audioFileId);
+  if (!audioFile) {
+    // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+
+    res.status(200).json({
+      message: "No AudioFile Found",
+      status: "OK",
+      statusCode: 200,
+      data: null,
+    });
+  }
+
+  if (!req.file) {
+    res.status(200).json({
+      message: "No File Uploaded",
+      status: "OK",
+      statusCode: 200,
+      data: null,
+    });
+  }
+
+  if (req.file) {
+    req.body.audioFile = await uploadFileToSpace(req.file, "audioBooks");
+  }
+
+  const updatedAudioFile = await AudioFile.findByIdAndUpdate(
+    audioFileId,
+    req.body,
+    {
+      new: true,
+    }
+  ).lean();
+
+  res.status(200).json({
+    message: "Audio Updated",
+    status: "OK",
+    statusCode: 200,
+    data: updatedAudioFile,
+  });
+});
+
 //[🚧][🧑‍💻✅][🧪🆗] // 🚧 🧑‍💻✅  🧪🆗
 const showAudioFilesForPreview = catchAsync(async (req, res) => {
   const audioFiles = await AudioBook.findById(req.params.audioBookId)
@@ -521,4 +565,5 @@ module.exports = {
   deleteAudioFile,
   deleteAudioBookById,
   updateAudioBookForPreviewById,
+  updateAudioFileByAudioId,
 };

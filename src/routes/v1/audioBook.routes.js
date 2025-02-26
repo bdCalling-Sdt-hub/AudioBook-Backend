@@ -50,6 +50,18 @@ router.route("/preview/update/:audioBookId").put(
   audioBookController.updateAudioBookForPreviewById
 );
 
+//////////////////////////////////////// updateAudioFileByAudioId
+router
+  .route("/audio/:audioFileId")
+  .patch(
+    [
+      upload.single("audioFile"),
+      validate(audioBookValidation.addAudioWithLanguageIdForAudioBook),
+    ],
+    auth("commonAdmin"),
+    audioBookController.updateAudioFileByAudioId
+  );
+
 router
   .route("/preview/:audioBookId")
   .get(auth("commonAdmin"), audioBookController.showAudioFilesForPreview);

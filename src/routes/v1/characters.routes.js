@@ -5,7 +5,7 @@ const characterController = require("../../controllers/character.controller");
 const characterValidation = require("../../validations/character.validation");
 const validate = require("../../middlewares/validate");
 const jwt = require("jsonwebtoken"); // Assuming you're using JWT
-
+const audioBookValidation = require("../../validations/audioBook.validation");
 const multer = require("multer");
 const { error } = require("winston");
 const catchAsync = require("../../utils/catchAsync");
@@ -38,8 +38,13 @@ router
     characterController.updateCharacter
   );
 
+//////////////////////////////////////////////////////////////////
+router
+  .route("/preview/update/:characterId")
+  .put(auth("commonAdmin"), characterController.updateCharacterForPreviewById);
+
 router.route("/audio/:audioId").get(characterController.getAudioById);
- 
+
 router
   .route("/audio/update-history/:audioId")
   .patch(auth("common"), characterController.updateHistoryOfAAudioFile);
@@ -53,11 +58,6 @@ router
   .delete(auth("commonAdmin"), characterController.deleteCharacterById);
 
 module.exports = router;
-
-
-
-
-
 
 // router.route("/audio/update-history/:audioId").patch(async (req, res) => {
 //   const token = req.headers.authorization?.split(" ")[1];
@@ -74,7 +74,6 @@ module.exports = router;
 //       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 //       const userId = decoded.sub;
 //       await characterController.updateHistoryOfAAudioFile(req, res, userId);
-
 
 //     } catch (error) {
 //       return res.status(401).json({ message: "Invalid or expired token" });

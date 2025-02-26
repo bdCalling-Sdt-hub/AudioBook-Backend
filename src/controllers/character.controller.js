@@ -12,7 +12,6 @@ const {
 } = require("../middlewares/digitalOcean");
 const { ListeningHistory } = require("../models");
 
-
 const getAudioById = catchAsync(async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
@@ -20,15 +19,15 @@ const getAudioById = catchAsync(async (req, res) => {
     if (!audioFile) {
       throw new ApiError(httpStatus.NOT_FOUND, "Audio not found");
     }
-     // For both authenticated and non-authenticated users
-  res.status(httpStatus.OK).json(
-    response({
-      message: "Audio",
-      status: "OK",
-      statusCode: httpStatus.OK,
-      data: audioFile,
-    })
-  );
+    // For both authenticated and non-authenticated users
+    res.status(httpStatus.OK).json(
+      response({
+        message: "Audio",
+        status: "OK",
+        statusCode: httpStatus.OK,
+        data: audioFile,
+      })
+    );
   } else {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded?.sub;
@@ -59,7 +58,6 @@ const getAudioById = catchAsync(async (req, res) => {
             data: audioFile,
           })
         );
-
       } else {
         const newListeningHistory = await ListeningHistory.create({
           userId: userId,
@@ -67,7 +65,6 @@ const getAudioById = catchAsync(async (req, res) => {
         });
 
         audioFile = { ...audioFile._doc, ...newListeningHistory._doc };
-
 
         res.status(httpStatus.OK).json(
           response({
@@ -109,7 +106,6 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
     if (!listeningHistory) {
       // throw new ApiError(httpStatus.NOT_FOUND, "Listening History not found");
 
-
       const newListeningHistory = await ListeningHistory.create({
         userId: userId,
         audioFileId: req.params.audioId,
@@ -117,7 +113,7 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
         lastListenedAt: Date.now(),
       });
 
-      console.log("newListeningHistory 😁😁", newListeningHistory)
+      console.log("newListeningHistory 😁😁", newListeningHistory);
 
       res.status(httpStatus.OK).json(
         response({
@@ -127,10 +123,8 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
           data: newListeningHistory,
         })
       );
-
-    }else{
-
-      if(progress !==  "0:00:00"){
+    } else {
+      if (progress !== "0:00:00") {
         const updatedHistory = await ListeningHistory.findByIdAndUpdate(
           listeningHistory._id,
           {
@@ -139,9 +133,9 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
           },
           { new: true }
         );
-    
-        console.log("updatedHistory 🔴🔴", updatedHistory)
-    
+
+        console.log("updatedHistory 🔴🔴", updatedHistory);
+
         res.status(httpStatus.OK).json(
           response({
             message: "Listening History Updated",
@@ -151,10 +145,7 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
           })
         );
       }
-
-      
-
-  }
+    }
   } else {
     res.status(httpStatus.OK).json(
       response({
@@ -281,6 +272,56 @@ const updateCharacter = catchAsync(async (req, res) => {
   );
 });
 
+const updateCharacterForPreviewById = catchAsync(async (req, res) => {
+  const character = await Characters.findById(req.params.characterId);
+  if (!character) {
+    // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+
+    return res.status(httpStatus.NOT_FOUND).json(
+      response({
+        message: "Character not found",
+        status: "NOT_FOUND",
+        statusCode: httpStatus.NOT_FOUND,
+        data: null,
+      })
+    );
+  }
+
+  const audioFileIds = await AudioFile.find(
+    {
+      attachedTo: req.params.characterId,
+    },
+    { _id: 1 }
+  );
+
+  // Step 2: Process uploaded audio files
+  const audioFileIDs = [];
+
+  for (const audioFileId of audioFileIds) {
+    audioFileIDs.push(audioFileId._id);
+  }
+
+  const characterData = {
+    audios: audioFileIDs, // Reference the created AudioFile IDs
+    published: true,
+  };
+
+  // const character = await characterService.addNewCharacters(characterData);
+  const updatedCharacter = await Characters.findByIdAndUpdate(
+    req.params.characterId,
+    characterData,
+    { new: true }
+  );
+  res.status(httpStatus.OK).json(
+    response({
+      message: "character Updated",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: updatedCharacter, // character
+    })
+  );
+});
+
 //[🚧][🧑‍💻✅][🧪🆗]
 const getAllCharacters = catchAsync(async (req, res) => {
   const result = await characterService.getAllCharacters();
@@ -382,4 +423,5 @@ module.exports = {
   getAudioById,
   deleteCharacterById,
   updateHistoryOfAAudioFile,
+  updateCharacterForPreviewById,
 };
