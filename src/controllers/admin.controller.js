@@ -4,7 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const response = require("../config/response");
 const { userService } = require("../services");
 
-// cross check korte hobe ..
+
 const deactivateUserById = catchAsync(async (req, res) => {
   const user = await userService.deactivateUserById(req.params.userId);
   if(user.status == 'deactivate'){

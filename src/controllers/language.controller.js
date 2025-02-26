@@ -12,7 +12,6 @@ const { Language } = require("../models");
 //[🚧][🧑‍💻✅][🧪🆗]
 const addNewLanguage = catchAsync(async (req, res) => {
   if (req.file) {
-    // req.body.flagImage = "/uploads/languages/" + req.file.filename;
     req.body.flagImage = await uploadFileToSpace(req.file, "languages");
   }
 
@@ -47,7 +46,6 @@ const deleteLanguage = catchAsync(async (req, res) => {
   if (!language) {
     throw new ApiError(httpStatus.NOT_FOUND, "Language not found");
   }
-
 
   try {
   // Delete image from DigitalOcean Space

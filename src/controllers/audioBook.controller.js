@@ -13,7 +13,7 @@ const {
   deleteFileFromSpace,
 } = require("../middlewares/digitalOcean");
 
-// TODO : Kono audio Book Delete korar time e .. location er count komano lagbe ..
+
 
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const createAudioBook = catchAsync(async (req, res) => {
@@ -241,7 +241,7 @@ const updateAudioBookById = catchAsync(async (req, res) => {
     published: true,
   };
 
-  console.log("req.body from update Audio Book 😥😥😥", req.body);
+ 
   // Step 4: Handle location updates
   if (req.body.locationId) {
     const locationExist = await Location.findById(req.body.locationId);
@@ -352,7 +352,7 @@ const updateAudioBookForPreviewById = catchAsync(async (req, res) => {
 //////////////////////////////////////// Update Audio File By Id
 
 const updateAudioFileByAudioId = catchAsync(async (req, res) => {
-  const { audioFileId } = req.params; // Assuming the audiobook ID is passed as a URL parameter
+  const { audioFileId } = req.params; 
 
   // Step 0: Fetch the existing audiobook
   const audioFile = await AudioFile.findById(audioFileId);
@@ -482,7 +482,7 @@ const editAudioBookPreview = catchAsync(async (req, res) => {
   });
 });
 
-//TODO: AudioBook Delete korle location er count komtese kina check kora lagbe
+
 const deleteAudioBookById = catchAsync(async (req, res) => {
   const { audioBookId } = req.params;
 

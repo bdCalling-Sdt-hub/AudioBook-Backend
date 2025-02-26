@@ -20,8 +20,8 @@ const getAppImages = catchAsync(async (req, res) => {
 
 //[🚧][🧑‍💻✅][🧪🆗✔️]  //
 const uploadBackgroundAndCharacterBtnPhoto = catchAsync(async (req, res) => {
-  const { type } = req.body; // Extract the type from the request body
-  const file = req.file; // Extract the uploaded file
+  const { type } = req.body; 
+  const file = req.file; 
 
   if (!file) {
     throw new Error("No file uploaded");
@@ -32,8 +32,6 @@ const uploadBackgroundAndCharacterBtnPhoto = catchAsync(async (req, res) => {
     );
   }
 
-  // Construct the file path
-  // const filePath = `/uploads/appSettings/${file.filename}`;
 
   // Call the service to handle the upload logic
   const updatedOrCreatedSetting = await appSettingsService.uploadImage(
