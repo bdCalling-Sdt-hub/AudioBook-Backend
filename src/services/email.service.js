@@ -73,7 +73,7 @@ const sendResetPasswordEmail = async (to, otp) => {
 
 const sendInvitationLinkToAdminEmail = async (to, password, message) => {
   console.log("Otp", to, password);
-  const subject = "Verification Code";
+  const subject = "Audio Book Admin Invitation";
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
             <h2 style="color: #4CAF50; text-align: center;">Welcome to Audio Book!</h2>
@@ -91,7 +91,7 @@ const sendInvitationLinkToAdminEmail = async (to, password, message) => {
             <p style="font-size: 16px; color: #333;">${message}</p>
             <p style="font-size: 16px; color: #333;">For your security, we recommend changing your password upon first login.</p>
             <p style="text-align: center; margin-top: 30px;">
-              <a href="https://audiobook.com/login" style="background-color: #4CAF50; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">Login to CoBag</a>
+              <a href="https://audiobook.com/login" style="background-color: #4CAF50; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">Login to AudioBook</a>
             </p>
             <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
             <p style="font-size: 12px; color: #888; text-align: center;">If you did not request this, please contact us immediately at support@audiobook.com.</p>
