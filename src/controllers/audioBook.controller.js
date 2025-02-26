@@ -33,7 +33,7 @@ const createAudioBook = catchAsync(async (req, res) => {
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
   const audioBookId = req.params.audioBookId;
-console.log(req.file)
+  console.log(req.file);
   const audioBook = await AudioBook.findById(audioBookId);
   if (!audioBook) {
     // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
@@ -76,6 +76,9 @@ console.log(req.file)
     })
   );
 });
+// ---------------------------------------  For Update A Audio File By id
+
+///////////////////////////////  Update Audio File By Id
 
 //[🚧][🧑‍💻✅][🧪🆗]
 const getAllAudioBook = catchAsync(async (req, res) => {
@@ -111,19 +114,19 @@ const deleteAudioFile = catchAsync(async (req, res) => {
     );
   }
 
-
   try {
+    // Delete image from DigitalOcean Space
+    await deleteFileFromSpace(audioFile.audioFile);
 
-  // Delete image from DigitalOcean Space
-  await deleteFileFromSpace(audioFile.audioFile);
-
-  await audioFile.deleteOne();
-
-} catch (error) {
-  // Error handling for file deletion or DB deletion failure
-  console.error("Error during file deletion:", error);
-  throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete audio file");
-}
+    await audioFile.deleteOne();
+  } catch (error) {
+    // Error handling for file deletion or DB deletion failure
+    console.error("Error during file deletion:", error);
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to delete audio file"
+    );
+  }
 
   res.status(httpStatus.OK).json(
     response({
@@ -139,7 +142,7 @@ const deleteAudioFile = catchAsync(async (req, res) => {
 const getAAudioBookById = catchAsync(async (req, res) => {
   let audioBook = await AudioBook.findById(req.params.audioBookId).populate({
     path: "audios", // Populate the 'audios' field
-    select: " -createdAt -updatedAt -__v", // -audioFile 
+    select: " -createdAt -updatedAt -__v", // -audioFile
     populate: {
       path: "languageId", // Populate the 'languageId' field within 'audios'
       select: "-createdAt -updatedAt -__v", // Include only specific fields from the Language model
@@ -241,11 +244,9 @@ const updateAudioBookById = catchAsync(async (req, res) => {
     published: true,
   };
 
-  console.log( "req.body from update Audio Book 😥😥😥", req.body);
+  console.log("req.body from update Audio Book 😥😥😥", req.body);
   // Step 4: Handle location updates
   if (req.body.locationId) {
-
-    
     const locationExist = await Location.findById(req.body.locationId);
 
     if (locationExist) {
@@ -294,6 +295,63 @@ const updateAudioBookById = catchAsync(async (req, res) => {
   });
 });
 
+/////////////////////////////////////// Update Only Audios of Audio Book
+
+const updateAudioBookForPreviewById = catchAsync(async (req, res) => {
+  const { audioBookId } = req.params; // Assuming the audiobook ID is passed as a URL parameter
+
+  // Step 0: Fetch the existing audiobook
+  const audioBook = await AudioBook.findById(audioBookId);
+  if (!audioBook) {
+    // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+
+    return res.status(httpStatus.NOT_FOUND).json(
+      response({
+        message: "Audio Book not found",
+        status: "NOT_FOUND",
+        statusCode: httpStatus.NOT_FOUND,
+        data: null,
+      })
+    );
+  }
+
+  // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are
+  // related to this character Id
+
+  const audioFileIds = await AudioFile.find(
+    {
+      attachedTo: req.params.audioBookId,
+    },
+    { _id: 1 }
+  );
+
+  // Step 2: Process uploaded audio files
+  const audioFileIDs = [];
+
+  for (const audioFileId of audioFileIds) {
+    audioFileIDs.push(audioFileId._id);
+  }
+
+  const audioBookData = {
+    audios: audioFileIDs, // Reference the created AudioFile IDs
+    published: true,
+  };
+
+  const updatedAudioBook = await AudioBook.findByIdAndUpdate(
+    audioBookId,
+    audioBookData,
+    { new: true }
+  );
+
+  // Return success response
+  res.status(200).json({
+    message: "AudioBook Updated",
+    status: "OK",
+    statusCode: 200,
+    data: updatedAudioBook,
+  });
+});
+
 //[🚧][🧑‍💻✅][🧪🆗] // 🚧 🧑‍💻✅  🧪🆗
 const showAudioFilesForPreview = catchAsync(async (req, res) => {
   const audioFiles = await AudioBook.findById(req.params.audioBookId)
@@ -302,7 +360,7 @@ const showAudioFilesForPreview = catchAsync(async (req, res) => {
       path: "audios",
       populate: {
         path: "languageId",
-      }
+      },
     })
     .lean(); // Optional: Use .lean() to return plain JavaScript objects instead of Mongoose documents
 
@@ -416,11 +474,13 @@ const deleteAudioBookById = catchAsync(async (req, res) => {
       await deleteFileFromSpace(audioFile.audioFile);
       // Delete the audio file record from the database
       await AudioFile.findByIdAndDelete(audioFile._id);
-
-     } catch (error) {
+    } catch (error) {
       // Error handling for file deletion or DB deletion failure
       console.error("Error during file deletion:", error);
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete audio file");
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Failed to delete audio file"
+      );
     }
   }
 
@@ -460,4 +520,5 @@ module.exports = {
   editAudioBookPreview,
   deleteAudioFile,
   deleteAudioBookById,
+  updateAudioBookForPreviewById,
 };
