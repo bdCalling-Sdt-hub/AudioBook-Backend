@@ -17,7 +17,7 @@ router
   .route("/create")
   .get(auth("commonAdmin"), audioBookController.createAudioBook);
 
-// 🧪
+// 🧪  Create A AudioFile By Id
 router
   .route("/audios/:audioBookId")
   .post(
@@ -43,6 +43,12 @@ router.route("/:audioBookId").put(
   validate(audioBookValidation.updateAudioBook), // TODO : put er jonno new Validation lagbe ..
   audioBookController.updateAudioBookById
 );
+//////////////////////////////////////////////////////////////////
+router.route("/preview/update/:audioBookId").put(
+  auth("commonAdmin"),
+
+  audioBookController.updateAudioBookForPreviewById
+);
 
 router
   .route("/preview/:audioBookId")
@@ -60,11 +66,10 @@ router.route("/preview/:audioBookId").put(
   auth("commonAdmin"),
   audioBookController.editAudioBookPreview
 );
-router
-  .route("/:audioBookId")
-  .get( audioBookController.getAAudioBookById);
 
-  // auth("common"),
+router.route("/:audioBookId").get(audioBookController.getAAudioBookById);
+
+// auth("common"),
 router
   .route("/:audioBookId")
   .delete(auth("commonAdmin"), audioBookController.deleteAudioBookById);
