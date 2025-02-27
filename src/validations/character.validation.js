@@ -7,6 +7,14 @@ const addNewCharacter = {
   }),
 };
 
+const updateCharacter = {
+  body: Joi.object().keys({
+    storyTitle: Joi.string().optional(),
+    coverPhoto: Joi.string().optional(), // Issue : cant apply required to this field
+  }),
+};
+
 module.exports = {
   addNewCharacter,
+  updateCharacter,
 };

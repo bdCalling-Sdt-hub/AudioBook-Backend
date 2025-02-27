@@ -192,12 +192,17 @@ const updateCharacter = catchAsync(async (req, res) => {
   // TODO : already created character chara update kora jabe na ..
   // TODO : validation lagbe must ..
 
-  if (!req.file) {
-    throw new ApiError(httpStatus.NOT_FOUND, "CoverPhoto Not Uploaded");
-  }
+  const prevCharacter = await Characters.findById(req.params.characterId);
+
+  // TODO : 🔴  ei logic likha jabe na ....
+  // if (!req.file) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, "CoverPhoto Not Uploaded");
+  // }
 
   if (req.file) {
     req.body.coverPhoto = await uploadFileToSpace(req.file, "characters");
+  } else {
+    req.body.coverPhoto = prevCharacter.coverPhoto;
   }
 
   // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are
@@ -218,7 +223,9 @@ const updateCharacter = catchAsync(async (req, res) => {
   }
 
   const characterData = {
-    storyTitle: req.body.storyTitle,
+    storyTitle: req.body.storyTitle
+      ? req.body.storyTitle
+      : prevCharacter.storyTitle,
     coverPhoto: req.body.coverPhoto,
     audios: audioFileIDs, // Reference the created AudioFile IDs
     published: true,

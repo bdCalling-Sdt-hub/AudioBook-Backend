@@ -31,7 +31,7 @@ router.route("/:characterId").put(
   [upload.single("coverPhoto")],
 
   auth("commonAdmin"),
-  validate(characterValidation.addNewCharacter),
+  validate(characterValidation.updateCharacter),
   characterController.updateCharacter
 );
 
