@@ -17,7 +17,14 @@ const getAllCharacters = async () => {
 };
 
 const getCharacterById = async (id) => {
-  return Characters.findById(id);
+  return Characters.findById(id).populate({
+    path: "audios",
+    select: "",
+    populate: {
+      path: "languageId",
+      select: "name flagImage",
+    },
+  });;
 };
 
 module.exports = {
