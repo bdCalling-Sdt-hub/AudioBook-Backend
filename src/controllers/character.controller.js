@@ -76,13 +76,11 @@ const getAudioById = catchAsync(async (req, res) => {
         );
       }
     }
-    
   }
 });
 
 // update History for a audio File
 const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
-  
   const userId = req?.user?._id;
   const audioFileId = req.params.audioId;
 
@@ -104,8 +102,6 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
         lastListenedAt: Date.now(),
       });
 
-      
-
       res.status(httpStatus.OK).json(
         response({
           message: "Listening History Created",
@@ -124,8 +120,6 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
           },
           { new: true }
         );
-
-        
 
         res.status(httpStatus.OK).json(
           response({
@@ -148,8 +142,6 @@ const updateHistoryOfAAudioFile = catchAsync(async (req, res) => {
     );
   }
 });
-
-
 
 const createCharacter = catchAsync(async (req, res) => {
   const newCharacter = await Characters.create({ published: false });
@@ -181,7 +173,6 @@ const addAudioWithLanguageIdForACharacter = catchAsync(async (req, res) => {
     );
   }
 
-
   req.body.audioFile = await uploadFileToSpace(req.file, "characters");
 
   const audioFile = AudioFile.create(req.body);
@@ -200,11 +191,13 @@ const addAudioWithLanguageIdForACharacter = catchAsync(async (req, res) => {
 const updateCharacter = catchAsync(async (req, res) => {
   // TODO : already created character chara update kora jabe na ..
   // TODO : validation lagbe must ..
-  if (req.files.coverPhoto) {
-    req.body.coverPhoto = await uploadFileToSpace(
-      req.files.coverPhoto[0],
-      "characters"
-    );
+
+  if (!req.file) {
+    throw new ApiError(httpStatus.NOT_FOUND, "CoverPhoto Not Uploaded");
+  }
+
+  if (req.file) {
+    req.body.coverPhoto = await uploadFileToSpace(req.file, "characters");
   }
 
   // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are
@@ -281,7 +274,6 @@ const updateCharacterForPreviewById = catchAsync(async (req, res) => {
     published: true,
   };
 
-  
   const updatedCharacter = await Characters.findByIdAndUpdate(
     req.params.characterId,
     characterData,
@@ -359,7 +351,6 @@ const deleteCharacterById = catchAsync(async (req, res) => {
 
   const audioFiles = await AudioFile.find({ attachedTo: characterId });
 
- 
   if (audioFiles) {
     for (const audioFile of audioFiles) {
       try {

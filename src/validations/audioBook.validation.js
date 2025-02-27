@@ -6,7 +6,7 @@ const updateAudioBook = {
     storyTitle: Joi.string().optional(),
     coverPhotos: Joi.array().items(Joi.string()).optional(),
     locationId: JoiObjectId().optional().messages({
-      "string.pattern.name": "Language ID must be a valid ObjectId.", // Custom message when the value is not a valid ObjectId
+      "string.pattern.name": "LocationId ID must be a valid ObjectId.", // Custom message when the value is not a valid ObjectId
     }),
   }),
 };

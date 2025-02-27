@@ -25,14 +25,15 @@ router.route("/audios/:characterId").post(
   characterController.addAudioWithLanguageIdForACharacter
 );
 // 🧪🧪
-router
-  .route("/:characterId")
-  .put(
-    upload.fields([{ name: "coverPhoto", maxCount: 1 }]),
-    auth("commonAdmin"),
-    validate(characterValidation.addNewCharacter),
-    characterController.updateCharacter
-  );
+router.route("/:characterId").put(
+  // upload.fields([{ name: "coverPhoto", maxCount: 1 }]),
+
+  [upload.single("coverPhoto")],
+
+  auth("commonAdmin"),
+  validate(characterValidation.addNewCharacter),
+  characterController.updateCharacter
+);
 
 //////////////////////////////////////////////////////////////////
 router
@@ -54,4 +55,3 @@ router
   .delete(auth("commonAdmin"), characterController.deleteCharacterById);
 
 module.exports = router;
-
