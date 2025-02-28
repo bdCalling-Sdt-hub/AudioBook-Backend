@@ -13,8 +13,6 @@ const {
   deleteFileFromSpace,
 } = require("../middlewares/digitalOcean");
 
-
-
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const createAudioBook = catchAsync(async (req, res) => {
   const newCharacter = await AudioBook.create({ published: false });
@@ -137,15 +135,30 @@ const deleteAudioFile = catchAsync(async (req, res) => {
 
 //[🚧][ 🧑‍💻✅][🧪🆗]
 const getAAudioBookById = catchAsync(async (req, res) => {
-  let audioBook = await AudioBook.findById(req.params.audioBookId).populate({
-    path: "audios", // Populate the 'audios' field
-    select: " -createdAt -updatedAt -__v", // -audioFile
-    populate: {
-      path: "languageId", // Populate the 'languageId' field within 'audios'
-      select: "-createdAt -updatedAt -__v", // Include only specific fields from the Language model
-      // name flagImage
-    },
-  });
+  // let audioBook = await AudioBook.findById(req.params.audioBookId).populate({
+  //   path: "audios", // Populate the 'audios' field
+  //   select: " -createdAt -updatedAt -__v", // -audioFile
+  //   populate: {
+  //     path: "languageId", // Populate the 'languageId' field within 'audios'
+  //     select: "-createdAt -updatedAt -__v",
+  //   },
+  // });
+
+  let audioBook = await AudioBook.findById(req.params.audioBookId)
+    .populate({
+      path: "audios locationId", // Populate the 'audios' field
+      select: "-createdAt -updatedAt -__v", // Exclude unwanted fields from audios
+      populate: [
+        {
+          path: "languageId", // Populate 'languageId'
+          select: "-createdAt -updatedAt -__v", // Exclude unwanted fields from Language model
+        },
+      ],
+    })
+    .populate({
+      path: "locationId", // Populate 'locationId'
+      select: "-createdAt -updatedAt -__v", // Exclude unwanted fields from Location model
+    });
 
   if (!audioBook) {
     // throw new ApiError(httpStatus.NOT_FOUND, "audioBook not found");
@@ -241,7 +254,6 @@ const updateAudioBookById = catchAsync(async (req, res) => {
     published: true,
   };
 
- 
   // Step 4: Handle location updates
   if (req.body.locationId) {
     const locationExist = await Location.findById(req.body.locationId);
@@ -352,7 +364,7 @@ const updateAudioBookForPreviewById = catchAsync(async (req, res) => {
 //////////////////////////////////////// Update Audio File By Id
 
 const updateAudioFileByAudioId = catchAsync(async (req, res) => {
-  const { audioFileId } = req.params; 
+  const { audioFileId } = req.params;
 
   // Step 0: Fetch the existing audiobook
   const audioFile = await AudioFile.findById(audioFileId);
@@ -481,7 +493,6 @@ const editAudioBookPreview = catchAsync(async (req, res) => {
     data: updatedAudioBook,
   });
 });
-
 
 const deleteAudioBookById = catchAsync(async (req, res) => {
   const { audioBookId } = req.params;
