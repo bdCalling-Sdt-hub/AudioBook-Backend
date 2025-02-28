@@ -217,7 +217,7 @@ const updateAudioBookById = catchAsync(async (req, res) => {
 
   // ✅ Right Way  // TODO : Right Way te shob gula korte hobe baki shob jaygay ..
 
-  const coverPhotos = [];
+  let coverPhotos = [];
 
   if (req.files && req.files.coverPhotos) {
     coverPhotos.push(
@@ -228,6 +228,8 @@ const updateAudioBookById = catchAsync(async (req, res) => {
         })
       ))
     );
+  }else{
+    coverPhotos = [...audioBook.coverPhotos]
   }
 
   // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are
