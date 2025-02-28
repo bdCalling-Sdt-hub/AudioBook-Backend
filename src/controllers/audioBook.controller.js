@@ -217,7 +217,7 @@ const updateAudioBookById = catchAsync(async (req, res) => {
 
   // ✅ Right Way  // TODO : Right Way te shob gula korte hobe baki shob jaygay ..
 
-  const coverPhotos = [];
+  let coverPhotos = [];
 
   if (req.files && req.files.coverPhotos) {
     coverPhotos.push(
@@ -228,6 +228,8 @@ const updateAudioBookById = catchAsync(async (req, res) => {
         })
       ))
     );
+  } else {
+    coverPhotos = [...audioBook.coverPhotos];
   }
 
   // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are
@@ -248,7 +250,9 @@ const updateAudioBookById = catchAsync(async (req, res) => {
   }
 
   const audioBookData = {
-    storyTitle: req.body.storyTitle,
+    storyTitle: req.body.storyTitle
+      ? req.body.storyTitle
+      : audioBook.storyTitle,
     coverPhotos: coverPhotos,
     audios: audioFileIDs, // Reference the created AudioFile IDs
     published: true,
