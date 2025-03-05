@@ -131,11 +131,16 @@ const activeDeactivateToggleAdminById = async (adminId) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Admin not found");
   }
 
-  if(admin.status === "deactivate") {
-  Object.assign(admin, { status: "active" });
-  }else{
-    Object.assign(admin, { status: "deactivate" });
+  if(admin.role !== 'superAdmin')
+  {
+    if(admin.status === "deactivate") {
+      Object.assign(admin, { status: "active" });
+      }else{
+        Object.assign(admin, { status: "deactivate" });
+      }
   }
+
+  
   await admin.save();
   return admin;
 };
