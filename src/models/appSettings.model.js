@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-// test 
+
 const appSettingsSchema = mongoose.Schema(
   {
     image: {
