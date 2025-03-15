@@ -37,14 +37,14 @@ const deleteLocation = catchAsync(async (req, res) => {
   }
 
   try {
-  await deleteFileFromSpace(location.flagImage);
+ 
   // Delete the location
   await Location.deleteOne({ _id: req.params.locationId });
 
   } catch (error) {
     // Error handling for file deletion or DB deletion failure
     console.error("Error during file deletion:", error);
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete flag image");
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to delete location");
   }
 
   res.status(httpStatus.OK).json(
@@ -58,6 +58,17 @@ const deleteLocation = catchAsync(async (req, res) => {
 });
 
 const createLocation = catchAsync(async (req, res) => {
+  // Test 
+  const { name } = req.body;
+
+  // Check if a location with the same name already exists
+  const existingLocation = await Location.findOne({ name });
+
+  if (existingLocation) {
+    throw new ApiError(httpStatus.CONFLICT, "Location with this name already exists");
+  }
+
+  req.body.count = 0;
   const location = await Location.create(req.body);
   res.status(httpStatus.CREATED).json(
     response({
