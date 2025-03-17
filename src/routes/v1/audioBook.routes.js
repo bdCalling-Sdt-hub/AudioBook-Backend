@@ -10,6 +10,7 @@ const audioBookValidation = require("../../validations/audioBook.validation");
 
 // 🧪
 router.route("/").get(audioBookController.getAllAudioBook);
+router.route("/forAdmin").get(audioBookController.getAllAudioBookForAdmin);
 
 // 🧪
 // create new audioBook after click on add new audioBook button

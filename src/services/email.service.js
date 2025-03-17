@@ -89,7 +89,7 @@ const sendInvitationLinkToAdminEmail = async (to, password, message) => {
               </tr>
             </table>
             <p style="font-size: 16px; color: #333;">${message}</p>
-            <p style="font-size: 16px; color: #333;">For your security, we recommend changing your password upon first login.</p>
+            
             <p style="text-align: center; margin-top: 30px;">
               <a href="https://audiobook.com/login" style="background-color: #4CAF50; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">Login to AudioBook</a>
             </p>
@@ -97,6 +97,8 @@ const sendInvitationLinkToAdminEmail = async (to, password, message) => {
             <p style="font-size: 12px; color: #888; text-align: center;">If you did not request this, please contact us immediately at support@audiobook.com.</p>
           </div>
   `;
+
+  // <!--<p style="font-size: 16px; color: #333;">For your security, we recommend changing your password upon first login.</p> -->
   await sendEmail(to, subject, html);
 };
 

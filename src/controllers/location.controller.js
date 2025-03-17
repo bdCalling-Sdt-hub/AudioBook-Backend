@@ -77,7 +77,7 @@ const createLocation = catchAsync(async (req, res) => {
       statusCode: httpStatus.CREATED,
       data: location,
     })
-  );
+  );  
 });
 
 const updateLocation = catchAsync(async (req, res) => {

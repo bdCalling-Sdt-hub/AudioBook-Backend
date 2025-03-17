@@ -90,6 +90,20 @@ const getAllAudioBook = catchAsync(async (req, res) => {
     })
   );
 });
+const getAllAudioBookForAdmin = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ["storyTitle", "locationId"]);
+  const options = pick(req.query, []);
+  const audioBook = await audioBookService.queryAudioBookForAdmin(filter, options);
+
+  res.status(httpStatus.OK).json(
+    response({
+      message: "All AudioBooks",
+      status: "OK",
+      statusCode: httpStatus.OK,
+      data: audioBook,
+    })
+  );
+});
 
 //Delete AudioFile .. this is also for Character
 const deleteAudioFile = catchAsync(async (req, res) => {
@@ -571,6 +585,7 @@ module.exports = {
   createAudioBook,
   addAudioWithLanguageIdForAudioBook,
   getAllAudioBook,
+  getAllAudioBookForAdmin,
   getAAudioBookById,
   updateAudioBookById,
   showAudioFilesForPreview,
