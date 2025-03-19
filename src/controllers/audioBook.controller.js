@@ -427,7 +427,7 @@ const updateAudioFileByAudioId = catchAsync(async (req, res) => {
 //[🚧][🧑‍💻✅][🧪🆗] // 🚧 🧑‍💻✅  🧪🆗
 const showAudioFilesForPreview = catchAsync(async (req, res) => {
   const audioFiles = await AudioBook.findById(req.params.audioBookId)
-    .select("audios")
+    .select("audios storyTitle")
     .populate({
       path: "audios",
       populate: {
