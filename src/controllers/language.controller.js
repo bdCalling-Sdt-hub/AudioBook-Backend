@@ -46,13 +46,22 @@ const deleteLanguage = catchAsync(async (req, res) => {
   if (!language) {
     throw new ApiError(httpStatus.NOT_FOUND, "Language not found");
   }
-
+  let updatedLanguage;
   try {
   // Delete image from DigitalOcean Space
-  await deleteFileFromSpace(language.flagImage);
+  // await deleteFileFromSpace(language.flagImage);
 
-  await language.deleteOne();
+  // await language.deleteOne();
 
+  language.isDeleted = true;
+  // Delete the location
+  // await Location.deleteOne({ _id: req.params.locationId });
+
+  updatedLanguage = await Language.findByIdAndUpdate(
+    req.params.languageId,
+    language,
+    { new: true }
+  );
 } catch (error) {
   // Error handling for file deletion or DB deletion failure
   console.error("Error during file deletion:", error);
@@ -64,7 +73,7 @@ const deleteLanguage = catchAsync(async (req, res) => {
       message: "Language Deleted",
       status: "OK",
       statusCode: httpStatus.OK,
-      data: language,
+      data: updatedLanguage,
     })
   );
 });

@@ -7,7 +7,7 @@ const { deleteFileFromSpace } = require("../middlewares/digitalOcean");
 
 //[🚧][🧑‍💻][] // 🧑‍💻✅  🧪🆗
 const getAllLocation = catchAsync(async (req, res) => {
-  const result = await Location.find({ count: { $gt: 0 } });
+  const result = await Location.find({ count: { $gt: 0 }, isDeleted: false });
   res.status(httpStatus.OK).json(
     response({
       message: "All location",
@@ -19,7 +19,7 @@ const getAllLocation = catchAsync(async (req, res) => {
 });
 
 const getAllLocationForAdmin = catchAsync(async (req, res) => {
-  const result = await Location.find();
+  const result = await Location.find({isDeleted: false});
   res.status(httpStatus.OK).json(
     response({
       message: "All location",
@@ -31,15 +31,23 @@ const getAllLocationForAdmin = catchAsync(async (req, res) => {
 });
 
 const deleteLocation = catchAsync(async (req, res) => {
-  const location = Location.findById(req.params.locationId);
+  const location = await Location.findById(req.params.locationId);
   if (!location) {
     throw new ApiError(httpStatus.NOT_FOUND, "Location not found");
   }
+  let updatedLocation;
 
   try {
- 
+  location.isDeleted = true;
   // Delete the location
-  await Location.deleteOne({ _id: req.params.locationId });
+  // await Location.deleteOne({ _id: req.params.locationId });
+
+   updatedLocation = await Location.findByIdAndUpdate(
+    req.params.locationId,
+    location,
+    { new: true }
+  );
+
 
   } catch (error) {
     // Error handling for file deletion or DB deletion failure
@@ -52,7 +60,7 @@ const deleteLocation = catchAsync(async (req, res) => {
       message: "Location Deleted",
       status: "OK",
       statusCode: httpStatus.OK,
-      data: null,
+      data: updatedLocation,
     })
   );
 });

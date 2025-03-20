@@ -13,6 +13,48 @@ const getAllCharacters = async () => {
       select: "name flagImage",
     },
   });
+  /*
+  const characters = await Characters.aggregate([
+    // Match only published characters
+    { $match: { published: true } },
+
+    // Populate the `audios` field and filter out audios with null `languageId`
+    {
+      $lookup: {
+        from: "audios", // Replace with the actual collection name for audios
+        localField: "audios",
+        foreignField: "_id",
+        as: "audios",
+        pipeline: [
+          // Lookup to populate `languageId`
+          {
+            $lookup: {
+              from: "languages", // Replace with the actual collection name for languages
+              localField: "languageId",
+              foreignField: "_id",
+              as: "languageId",
+            },
+          },
+          // Unwind the `languageId` array (since $lookup creates an array)
+          { $unwind: "$languageId" },
+          // Filter out audios where `languageId` is null or missing
+          { $match: { "languageId": { $ne: null } } },
+          // Project only the required fields for `audios`
+          {
+            $project: {
+              _id: 1,
+              languageId: { name: 1, flagImage: 1 }, // Include only `name` and `flagImage`
+            },
+          },
+        ],
+      },
+    },
+
+    // Filter out characters whose `audios` array is empty after the above filtering
+    { $match: { audios: { $ne: [] } } },
+  ]);
+  */
+
   return characters;
 };
 

@@ -5,7 +5,7 @@ const addNewLanguage = async (languageBody) => {
 };
 
 const getAllLanguage = async () => {
-  const languages = await Language.find();
+  const languages = await Language.find({isDeleted: false});
   return languages;
 };
 

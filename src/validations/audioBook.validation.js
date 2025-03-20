@@ -5,9 +5,11 @@ const updateAudioBook = {
   body: Joi.object().keys({
     storyTitle: Joi.string().optional(),
     coverPhotos: Joi.array().items(Joi.string()).optional(),
-    locationId: JoiObjectId().optional().messages({
-      "string.pattern.name": "LocationId ID must be a valid ObjectId.", // Custom message when the value is not a valid ObjectId
-    }),
+    // TODO: FIXME: locationId issue kortese .. 
+    locationId: Joi.string(),
+    // locationId: JoiObjectId().optional().messages({
+    //   "string.pattern.name": "LocationId ID must be a valid ObjectId.", // Custom message when the value is not a valid ObjectId
+    // }),
   }),
 };
 
