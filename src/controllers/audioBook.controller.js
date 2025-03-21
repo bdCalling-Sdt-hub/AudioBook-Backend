@@ -558,9 +558,18 @@ const deleteAudioBookById = catchAsync(async (req, res) => {
   // Step 4: Update the location count (if the audiobook is associated with a location)
   if (audioBook.locationId) {
     try {
-      await Location.findByIdAndUpdate(audioBook.locationId, {
-        $inc: { count: -1 }, // Decrement the count by 1
-      });
+      const location = await Location.findById(audioBook.locationId);
+      console.log("🌀🌀🧑‍💻🟢🟢", location)
+
+      if(location.count > 0){
+        await Location.findByIdAndUpdate(audioBook.locationId, {
+          $inc: { count: -1 }, // Decrement the count by 1
+        });
+
+        //Step 5: Delete the audiobook document
+        await AudioBook.findByIdAndDelete(audioBookId);
+      }
+      
     } catch (error) {
       console.error("Failed to update location count:", error.message);
       throw new ApiError(
@@ -570,8 +579,8 @@ const deleteAudioBookById = catchAsync(async (req, res) => {
     }
   }
 
-  // Step 5: Delete the audiobook document
-  await AudioBook.findByIdAndDelete(audioBookId);
+  // // Step 5: Delete the audiobook document
+  // await AudioBook.findByIdAndDelete(audioBookId);
 
   // Return success response
   res.status(httpStatus.OK).json({

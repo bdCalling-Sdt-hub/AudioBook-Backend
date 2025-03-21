@@ -64,7 +64,7 @@ const getCharacterById = async (id) => {
     select: "",
     populate: {
       path: "languageId",
-      select: "name flagImage",
+      select: "name flagImage ",
     },
   });
 };
