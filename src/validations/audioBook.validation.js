@@ -5,8 +5,9 @@ const updateAudioBook = {
   body: Joi.object().keys({
     storyTitle: Joi.string().optional(),
     coverPhotos: Joi.array().items(Joi.string()).optional(),
-    // TODO: FIXME: locationId issue kortese .. 
+    // TODO: FIXME: locationId issue kortese ..
     locationId: Joi.string(),
+    // isPreview: Joi.string(),
     // locationId: JoiObjectId().optional().messages({
     //   "string.pattern.name": "LocationId ID must be a valid ObjectId.", // Custom message when the value is not a valid ObjectId
     // }),
@@ -18,6 +19,7 @@ const addAudioWithLanguageIdForAudioBook = {
     languageId: JoiObjectId().required().messages({
       "string.pattern.name": "Language ID must be a valid ObjectId.",
     }),
+    isPreview: Joi.boolean().optional(),
   }),
 };
 
