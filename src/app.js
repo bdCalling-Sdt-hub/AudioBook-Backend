@@ -81,9 +81,9 @@ cron.schedule("*/1 * * * *", async () => {
   });
 });
 
-cron.schedule("*/2 * * * *", async () => {
+cron.schedule("*/5 * * * *", async () => {
   const characters = await Characters.find({ published: false });
-  console.log("running a task every 2 minutes", characters);
+  console.log("running a task every 5 minutes", characters);
 
   characters.forEach(async (character) => {
     await Characters.findByIdAndDelete(character._id);

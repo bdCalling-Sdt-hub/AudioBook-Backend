@@ -5,6 +5,9 @@ const addNewCharacters = async (characterBody) => {
 };
 
 const getAllCharacters = async () => {
+  const query = {};
+  query.published = true;
+
   const characters = await Characters.find({ published: true }).populate({
     path: "audios",
     select: "",
