@@ -4,12 +4,19 @@ const addNewCharacters = async (characterBody) => {
   return Characters.create(characterBody);
 };
 
-const getAllCharacters = async () => {
+const getAllCharacters = async (req, res) => {
   const query = {};
   query.published = true;
 
+  const isPreviewFilter =
+    req.query.isPreview !== undefined
+      ? { isPreview: req.query.isPreview === "true" }
+      : {};
+
+
   const characters = await Characters.find({ published: true }).populate({
     path: "audios",
+    match: isPreviewFilter,
     select: "",
     populate: {
       path: "languageId",
