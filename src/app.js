@@ -72,7 +72,7 @@ app.get("/test", (req, res) => {
 });
 
 // Schedule to run every hour (for `updateRunningEventStatus`)
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("*/50 * * * *", async () => {
   const audioBooks = await AudioBook.find({ published: false });
   console.log("running a task every 1 minutes", audioBooks);
 
@@ -81,7 +81,7 @@ cron.schedule("*/1 * * * *", async () => {
   });
 });
 
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/50 * * * *", async () => {
   const characters = await Characters.find({ published: false });
   console.log("running a task every 5 minutes", characters);
 
