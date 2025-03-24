@@ -9,6 +9,7 @@ const {
 const sharp = require('sharp');
 const ffmpeg = require('fluent-ffmpeg');
 const axios = require('axios');
+const path = require("path");
 
 // Initialize the S3 client with DigitalOcean Spaces config
 const s3 = new S3Client({
@@ -22,30 +23,30 @@ const s3 = new S3Client({
 
 
 // Compress audio file
-const compressAudio = async (fileBuffer, originalName) => {
-  return new Promise((resolve, reject) => {
-    const tempPath = path.join(__dirname, `${Date.now()}-compressed-${originalName}`);
+// const compressAudio = async (fileBuffer, originalName) => {
+//   return new Promise((resolve, reject) => {
+//     const tempPath = path.join(__dirname, `${Date.now()}-compressed-${originalName}`);
 
-    ffmpeg()
-      .input(fileBuffer)
-      .inputFormat('mp3') // Assuming input is MP3, adjust if necessary
-      .audioCodec('flac') // Lossless compression (use FLAC for no quality loss)
-      .save(tempPath)
-      .on('end', () => {
-        fs.readFile(tempPath, (err, compressedBuffer) => {
-          if (err) {
-            reject('Error reading compressed audio file: ' + err);
-          } else {
-            fs.unlinkSync(tempPath); // Remove temp file
-            resolve(compressedBuffer);
-          }
-        });
-      })
-      .on('error', (err) => {
-        reject('Error compressing audio: ' + err);
-      });
-  });
-};
+//     ffmpeg()
+//       .input(fileBuffer)
+//       .inputFormat('mp3') // Assuming input is MP3, adjust if necessary
+//       .audioCodec('flac') // Lossless compression (use FLAC for no quality loss)
+//       .save(tempPath)
+//       .on('end', () => {
+//         fs.readFile(tempPath, (err, compressedBuffer) => {
+//           if (err) {
+//             reject('Error reading compressed audio file: ' + err);
+//           } else {
+//             fs.unlinkSync(tempPath); // Remove temp file
+//             resolve(compressedBuffer);
+//           }
+//         });
+//       })
+//       .on('error', (err) => {
+//         reject('Error compressing audio: ' + err);
+//       });
+//   });
+// };
 
 // // Compress image file
 // const compressImage = async (imageBuffer) => {
@@ -109,7 +110,8 @@ const uploadFileToSpace = async (file, folder) => {
     compressedFileBuffer = await compressImage(file.buffer, file.mimetype);
   } else if (file.mimetype.startsWith('audio/')) {
     // If it's an audio file, compress it
-    compressedFileBuffer = await compressAudio(file.buffer, file.originalname);
+    // compressedFileBuffer = await compressAudio(file.buffer, file.originalname);
+    compressedFileBuffer = file.buffer;
   } else {
     // If it's neither image nor audio, just use the original file
     compressedFileBuffer = file.buffer;

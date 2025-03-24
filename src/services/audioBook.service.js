@@ -8,19 +8,35 @@ const queryAudioBookForAdmin = async (filter, options) => {
   const query = {};
 
   query.published = true;
+   // Create a copy of filter without isPreview to handle separately
+   const mainFilter = { ...filter };
+   delete mainFilter.isPreview;
 
   // Loop through each filter field and add conditions if they exist
   for (const key of Object.keys(filter)) {
     if (key === "storyTitle" && filter[key] !== "") {
       query[key] = { $regex: filter[key], $options: "i" }; // Case-insensitive regex search for name
-    } else if (filter[key] !== "") {
-      query[key] = filter[key];
+    } else if (key === "isPreview" && mainFilter[key] !== undefined) {
+      console.log("isPreview 🫡🫡🫡", filter[key], filter.isPreview);
+      // Handle isPreview filtering
+      //const isPreviewValue = filter[key]; // Convert string to boolean // === "true"
+      // query.audios = {
+      //   // $ne: [],
+      //   $elemMatch: { isPreview: filter[key] === "true" ? true : false }, //filter[key] // Match audiobooks with at least one audio file matching isPreview
+      // };
+      query[key] = mainFilter[key];
+    } else if (mainFilter[key] !== "") {
+      query[key] = mainFilter[key];
     }
   }
   if (filter?.locationId) {
     query.locationId = filter?.locationId;
   }
 
+  const isPreviewFilter =
+    filter.isPreview !== undefined
+      ? { isPreview: filter.isPreview === "true" }
+      : {};
   // 🟢🟢🟢 ekhane modify kora lagbe ..  Admin er jonno  query.audios = { $ne: [] }; ei line
   // bad diye ekta api banay dite hobe ..  🧪 Done
 
@@ -31,6 +47,7 @@ const queryAudioBookForAdmin = async (filter, options) => {
   options.populate = [
     {
       path: "audios",
+      match: isPreviewFilter,
       select: " -createdAt -updatedAt -__v", //-audioFile
       populate: {
         path: "languageId",

@@ -62,7 +62,7 @@ router
   );
 
 router
-  .route("/preview/:audioBookId")
+  .route("/preview")
   .get(auth("commonAdmin"), audioBookController.showAudioFilesForPreview);
 
 // TODO : Must Fix .. etar controller update korte hobe .. Digital Ocean e upload korar jonno
