@@ -90,6 +90,14 @@ cron.schedule("*/50 * * * *", async () => {
   });
 });
 
+app.use((req, res, next) => {
+  res.setTimeout(600000, () => { // Set to 10 minutes (in milliseconds)
+    console.log('Request timed out');
+    res.status(408).send('Request timed out');
+  });
+  next();
+});
+
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, "This API Not found"));
