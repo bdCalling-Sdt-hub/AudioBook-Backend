@@ -14,6 +14,8 @@ const { authLimiter } = require("./middlewares/rateLimiter");
 const routes = require("./routes/v1");
 const { errorConverter, errorHandler } = require("./middlewares/error");
 const ApiError = require("./utils/ApiError");
+const cron = require("node-cron");
+const { AudioBook, Characters } = require("./models");
 
 const app = express();
 
@@ -67,6 +69,33 @@ app.get("/test", (req, res) => {
     req.headers["x-forwarded-for"] ||
     req.connection.remoteAddress;
   res.send({ message: "This is Love Crew API", userIP });
+});
+
+// Schedule to run every hour (for `updateRunningEventStatus`)
+cron.schedule("*/50 * * * *", async () => {
+  const audioBooks = await AudioBook.find({ published: false });
+  console.log("running a task every 1 minutes", audioBooks);
+
+  audioBooks.forEach(async (audioBook) => {
+    await AudioBook.findByIdAndDelete(audioBook._id);
+  });
+});
+
+cron.schedule("*/50 * * * *", async () => {
+  const characters = await Characters.find({ published: false });
+  console.log("running a task every 5 minutes", characters);
+
+  characters.forEach(async (character) => {
+    await Characters.findByIdAndDelete(character._id);
+  });
+});
+
+app.use((req, res, next) => {
+  res.setTimeout(600000, () => { // Set to 10 minutes (in milliseconds)
+    console.log('Request timed out');
+    res.status(408).send('Request timed out');
+  });
+  next();
 });
 
 // send back a 404 error for any unknown api request

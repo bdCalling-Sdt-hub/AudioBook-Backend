@@ -30,8 +30,9 @@ const createAudioBook = catchAsync(async (req, res) => {
 // FIX : audioBook Id valid kina sheta niye pore chinta kortesi ...
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
+  console.log("req.body addAudioWithlanguageId for Audio BOok  :::: controller: ⚡⚡⚡🔰", req.body)
   const audioBookId = req.params.audioBookId;
-  console.log(req.file);
+  console.log("🫡🫡", req.body);
   const audioBook = await AudioBook.findById(audioBookId);
   if (!audioBook) {
     // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
@@ -63,7 +64,8 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
     req.body.audioFile = await uploadFileToSpace(req.file, "audioBooks");
   }
 
-  const audioFile = AudioFile.create(req.body);
+  const audioFile = await AudioFile.create(req.body);
+  
 
   res.status(httpStatus.CREATED).json(
     response({
@@ -77,7 +79,7 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
 
 //[🚧][🧑‍💻✅][🧪🆗]
 const getAllAudioBook = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["storyTitle", "locationId"]);
+  const filter = pick(req.query, ["storyTitle", "locationId", "isPreview"]);
   const options = pick(req.query, []);
   const audioBook = await audioBookService.queryAudioBooks(filter, options);
 
@@ -91,9 +93,12 @@ const getAllAudioBook = catchAsync(async (req, res) => {
   );
 });
 const getAllAudioBookForAdmin = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["storyTitle", "locationId"]);
+  const filter = pick(req.query, ["storyTitle", "locationId",   "isPreview"]);
   const options = pick(req.query, []);
-  const audioBook = await audioBookService.queryAudioBookForAdmin(filter, options);
+  const audioBook = await audioBookService.queryAudioBookForAdmin(
+    filter,
+    options
+  );
 
   res.status(httpStatus.OK).json(
     response({
@@ -158,9 +163,18 @@ const getAAudioBookById = catchAsync(async (req, res) => {
   //   },
   // });
 
+  const {isPreview} = req.query;
+
+  const isPreviewFilter =
+  isPreview !== undefined
+    ? { isPreview: isPreview === "true" }
+    : {};
+
+
   let audioBook = await AudioBook.findById(req.params.audioBookId)
     .populate({
       path: "audios locationId", // Populate the 'audios' field
+      match: isPreviewFilter,
       select: "-createdAt -updatedAt -__v", // Exclude unwanted fields from audios
       populate: [
         {
@@ -242,8 +256,8 @@ const updateAudioBookById = catchAsync(async (req, res) => {
         })
       ))
     );
-  }else{
-    coverPhotos = [...audioBook.coverPhotos]
+  } else {
+    coverPhotos = [...audioBook.coverPhotos];
   }
 
   // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are
@@ -381,6 +395,7 @@ const updateAudioBookForPreviewById = catchAsync(async (req, res) => {
 
 const updateAudioFileByAudioId = catchAsync(async (req, res) => {
   const { audioFileId } = req.params;
+  
 
   // Step 0: Fetch the existing audiobook
   const audioFile = await AudioFile.findById(audioFileId);
@@ -426,10 +441,18 @@ const updateAudioFileByAudioId = catchAsync(async (req, res) => {
 
 //[🚧][🧑‍💻✅][🧪🆗] // 🚧 🧑‍💻✅  🧪🆗
 const showAudioFilesForPreview = catchAsync(async (req, res) => {
-  const audioFiles = await AudioBook.findById(req.params.audioBookId)
+  const {isPreview, audioBookId} = req.query;
+  
+  const isPreviewFilter =
+  isPreview !== undefined
+    ? { isPreview: isPreview === "true" }
+    : {};
+
+  const audioFiles = await AudioBook.findById(audioBookId)
     .select("audios storyTitle")
     .populate({
       path: "audios",
+      match: isPreviewFilter,
       populate: {
         path: "languageId",
       },
@@ -559,9 +582,9 @@ const deleteAudioBookById = catchAsync(async (req, res) => {
   if (audioBook.locationId) {
     try {
       const location = await Location.findById(audioBook.locationId);
-      console.log("🌀🌀🧑‍💻🟢🟢", location)
+      console.log("🌀🌀🧑‍💻🟢🟢", location);
 
-      if(location.count > 0){
+      if (location.count > 0) {
         await Location.findByIdAndUpdate(audioBook.locationId, {
           $inc: { count: -1 }, // Decrement the count by 1
         });
@@ -569,7 +592,6 @@ const deleteAudioBookById = catchAsync(async (req, res) => {
         //Step 5: Delete the audiobook document
         await AudioBook.findByIdAndDelete(audioBookId);
       }
-      
     } catch (error) {
       console.error("Failed to update location count:", error.message);
       throw new ApiError(

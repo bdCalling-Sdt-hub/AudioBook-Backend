@@ -19,8 +19,20 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
   const socketIo = require("socket.io");
   const socketIO = require("./utils/socketIO");
   const io = socketIo(server, {
+    // cors: {
+    //   origin: "*",
+    // },
     cors: {
-      origin: "*",
+      origin: (origin, callback) => {
+        // Allow all origins (wildcard) and give special permission to your domain
+        if (origin === "https://nimur3000.sobhoy.com" || !origin) {
+          callback(null, true); // Allow request
+        } else {
+          callback(null, true); // Allow all origins, including this one
+        }
+      },
+      methods: ["GET", "POST"],  // Optional: Specify the methods if needed
+      allowedHeaders: ["Content-Type"], // Optional: Define the allowed headers if required
     },
   });
 

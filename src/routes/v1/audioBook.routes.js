@@ -19,16 +19,14 @@ router
   .get(auth("commonAdmin"), audioBookController.createAudioBook);
 
 // 🧪  Create A AudioFile By Id
-router
-  .route("/audios/:audioBookId")
-  .post(
-    [
-      upload.single("audioFile"),
-      validate(audioBookValidation.addAudioWithLanguageIdForAudioBook),
-    ],
-    auth("commonAdmin"),
-    audioBookController.addAudioWithLanguageIdForAudioBook
-  );
+router.route("/audios/:audioBookId").post(
+  [
+    upload.single("audioFile"),
+    // validate(audioBookValidation.addAudioWithLanguageIdForAudioBook),
+  ],
+  auth("commonAdmin"),
+  audioBookController.addAudioWithLanguageIdForAudioBook
+);
 
 router
   .route("/audioFile/:audioFileId")
@@ -64,7 +62,7 @@ router
   );
 
 router
-  .route("/preview/:audioBookId")
+  .route("/preview")
   .get(auth("commonAdmin"), audioBookController.showAudioFilesForPreview);
 
 // TODO : Must Fix .. etar controller update korte hobe .. Digital Ocean e upload korar jonno

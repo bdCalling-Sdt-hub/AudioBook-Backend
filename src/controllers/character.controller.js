@@ -298,7 +298,7 @@ const updateCharacterForPreviewById = catchAsync(async (req, res) => {
 
 //[🚧][🧑‍💻✅][🧪🆗]
 const getAllCharacters = catchAsync(async (req, res) => {
-  const result = await characterService.getAllCharacters();
+  const result = await characterService.getAllCharacters(req, res);
 
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Characters not found");

@@ -15,6 +15,11 @@ const audioFileSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    isPreview: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   {
     timestamps: true,
