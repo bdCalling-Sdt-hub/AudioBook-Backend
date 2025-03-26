@@ -30,7 +30,10 @@ const createAudioBook = catchAsync(async (req, res) => {
 // FIX : audioBook Id valid kina sheta niye pore chinta kortesi ...
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
-  console.log("req.body addAudioWithlanguageId for Audio BOok  :::: controller: ⚡⚡⚡🔰", req.body)
+  console.log(
+    "req.body addAudioWithlanguageId for Audio BOok  :::: controller: ⚡⚡⚡🔰",
+    req.body
+  );
   const audioBookId = req.params.audioBookId;
   console.log("🫡🫡", req.body);
   const audioBook = await AudioBook.findById(audioBookId);
@@ -65,7 +68,6 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
   }
 
   const audioFile = await AudioFile.create(req.body);
-  
 
   res.status(httpStatus.CREATED).json(
     response({
@@ -93,7 +95,7 @@ const getAllAudioBook = catchAsync(async (req, res) => {
   );
 });
 const getAllAudioBookForAdmin = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["storyTitle", "locationId",   "isPreview"]);
+  const filter = pick(req.query, ["storyTitle", "locationId", "isPreview"]);
   const options = pick(req.query, []);
   const audioBook = await audioBookService.queryAudioBookForAdmin(
     filter,
@@ -163,13 +165,10 @@ const getAAudioBookById = catchAsync(async (req, res) => {
   //   },
   // });
 
-  const {isPreview} = req.query;
+  const { isPreview } = req.query;
 
   const isPreviewFilter =
-  isPreview !== undefined
-    ? { isPreview: isPreview === "true" }
-    : {};
-
+    isPreview !== undefined ? { isPreview: isPreview === "true" } : {};
 
   let audioBook = await AudioBook.findById(req.params.audioBookId)
     .populate({
@@ -245,7 +244,7 @@ const updateAudioBookById = catchAsync(async (req, res) => {
 
   // ✅ Right Way  // TODO : Right Way te shob gula korte hobe baki shob jaygay ..
 
-  let coverPhotos = [];
+  let coverPhotos = [...audioBook.coverPhotos];
 
   if (req.files && req.files.coverPhotos) {
     coverPhotos.push(
@@ -256,9 +255,10 @@ const updateAudioBookById = catchAsync(async (req, res) => {
         })
       ))
     );
-  } else {
-    coverPhotos = [...audioBook.coverPhotos];
   }
+  // else {
+  //   coverPhotos = [...audioBook.coverPhotos];
+  // }
 
   // Step 0 : search for audioFiles from audioFile Table and get  audioFileId which are
   // related to this character Id
@@ -395,7 +395,6 @@ const updateAudioBookForPreviewById = catchAsync(async (req, res) => {
 
 const updateAudioFileByAudioId = catchAsync(async (req, res) => {
   const { audioFileId } = req.params;
-  
 
   // Step 0: Fetch the existing audiobook
   const audioFile = await AudioFile.findById(audioFileId);
@@ -441,12 +440,10 @@ const updateAudioFileByAudioId = catchAsync(async (req, res) => {
 
 //[🚧][🧑‍💻✅][🧪🆗] // 🚧 🧑‍💻✅  🧪🆗
 const showAudioFilesForPreview = catchAsync(async (req, res) => {
-  const {isPreview, audioBookId} = req.query;
-  
+  const { isPreview, audioBookId } = req.query;
+
   const isPreviewFilter =
-  isPreview !== undefined
-    ? { isPreview: isPreview === "true" }
-    : {};
+    isPreview !== undefined ? { isPreview: isPreview === "true" } : {};
 
   const audioFiles = await AudioBook.findById(audioBookId)
     .select("audios storyTitle")

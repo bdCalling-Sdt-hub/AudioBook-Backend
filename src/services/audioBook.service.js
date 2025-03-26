@@ -8,9 +8,9 @@ const queryAudioBookForAdmin = async (filter, options) => {
   const query = {};
 
   query.published = true;
-   // Create a copy of filter without isPreview to handle separately
-   const mainFilter = { ...filter };
-   delete mainFilter.isPreview;
+  // Create a copy of filter without isPreview to handle separately
+  const mainFilter = { ...filter };
+  delete mainFilter.isPreview;
 
   // Loop through each filter field and add conditions if they exist
   for (const key of Object.keys(filter)) {
@@ -134,15 +134,31 @@ const updateAudioBook = async (audioBookId, audioBookData) => {
       throw new Error("AudioBook not found");
     }
 
+    let updatedData;
     // Merge the existing data with the new data
-    const updatedData = {
-      ...existingAudioBook.toObject(), // Convert Mongoose document to plain object
-      ...audioBookData, // Override with new data
-    };
+    // const updatedData = {
+    //   ...existingAudioBook.toObject(), // Convert Mongoose document to plain object
+    //   ...audioBookData, // Override with new data
+    // };
 
     // If new cover photos are provided, replace the old ones
-    if (audioBookData.coverPhotos) {
-      updatedData.coverPhotos = audioBookData.coverPhotos;
+    // if (audioBookData.coverPhotos) {
+    //   updatedData.coverPhotos = audioBookData.coverPhotos;
+    // }
+
+    // If new cover photos are provided, append them to the existing ones
+    //if (audioBookData.coverPhotos) {
+
+    console.log("audioBookData.coverPhotos 🧪", audioBookData.coverPhotos);
+    console.log(
+      "existingAudioBook.coverPhotos 🧪",
+      existingAudioBook.coverPhotos
+    );
+    if (existingAudioBook.coverPhotos) {
+      updatedData.coverPhotos = [
+        ...existingAudioBook.coverPhotos,
+        ...audioBookData.coverPhotos,
+      ];
     }
 
     // If new audio files are provided, append them to the existing list
@@ -153,6 +169,7 @@ const updateAudioBook = async (audioBookId, audioBookData) => {
       ];
     }
 
+    console.log("----------- 🧪🧪");
     // Update the audiobook in the database
     const updatedAudioBook = await AudioBook.findByIdAndUpdate(
       audioBookId,
