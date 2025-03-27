@@ -2,11 +2,17 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middlewares/auth");
 const audioBookController = require("../../controllers/audioBook.controller");
-const multer = require("multer");
 const validate = require("../../middlewares/validate");
+const audioBookValidation = require("../../validations/audioBook.validation");
+const fileUpload = require("../../middlewares/fileUpload");
+const httpStatus = require("http-status");
+// const UPLOADS_FOLDER = './public/uploads/audio'
+// const upload = fileUpload(UPLOADS_FOLDER)
+
+const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const audioBookValidation = require("../../validations/audioBook.validation");
+
 
 // 🧪
 router.route("/").get(audioBookController.getAllAudioBook);
@@ -20,11 +26,8 @@ router
 
 // 🧪  Create A AudioFile By Id
 router.route("/audios/:audioBookId").post(
-  [
-    upload.single("audioFile"),
-    // validate(audioBookValidation.addAudioWithLanguageIdForAudioBook),
-  ],
   auth("commonAdmin"),
+  [upload.single("audioFile")],
   audioBookController.addAudioWithLanguageIdForAudioBook
 );
 

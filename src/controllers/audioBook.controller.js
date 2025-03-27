@@ -30,12 +30,12 @@ const createAudioBook = catchAsync(async (req, res) => {
 // FIX : audioBook Id valid kina sheta niye pore chinta kortesi ...
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
-  console.log(
-    "req.body addAudioWithlanguageId for Audio BOok  :::: controller: ⚡⚡⚡🔰",
-    req.body
-  );
+
+  console.log("Consle loge rakib ================= == == = = 🔗🔗🔗 ", req.file)
+
+
   const audioBookId = req.params.audioBookId;
-  console.log("🫡🫡", req.body);
+
   const audioBook = await AudioBook.findById(audioBookId);
   if (!audioBook) {
     // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
@@ -64,6 +64,7 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
   }
 
   if (req.file) {
+    console.log("Audio File🟢🟢",req.file)
     req.body.audioFile = await uploadFileToSpace(req.file, "audioBooks");
   }
 

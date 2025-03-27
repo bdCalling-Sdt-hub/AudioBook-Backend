@@ -31,10 +31,12 @@ app.use(express.static("public"));
 app.use(helmet());
 
 // parse json request body
-app.use(express.json());
+// app.use(express.json());
+app.use(express.json({ limit: '500mb' })); // { limit: "500mb" }
 
-// parse urlencoded request body
-app.use(express.urlencoded({ extended: true }));
+// // parse urlencoded request body
+// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ limit: '500mb', extended: true })); // limit: "500mb",
 
 // sanitize request data
 app.use(xss());
@@ -90,13 +92,13 @@ cron.schedule("*/50 * * * *", async () => {
   });
 });
 
-app.use((req, res, next) => {
-  res.setTimeout(600000, () => { // Set to 10 minutes (in milliseconds)
-    console.log('Request timed out');
-    res.status(408).send('Request timed out');
-  });
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setTimeout(600000, () => { // Set to 10 minutes (in milliseconds)
+//     console.log('Request timed out');
+//     res.status(408).send('Request timed out');
+//   });
+//   next();
+// });
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {

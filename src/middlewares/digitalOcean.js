@@ -5,11 +5,13 @@ const {
   PutObjectCommand,
   S3Client,
 } = require("@aws-sdk/client-s3");
+const { Upload } = require('@aws-sdk/lib-storage');
 const fs = require("fs");
 const sharp = require("sharp");
 const ffmpeg = require("fluent-ffmpeg");
 const axios = require("axios");
 const path = require("path");
+const { PassThrough } = require("stream");
 
 // Initialize the S3 client with DigitalOcean Spaces config
 const s3 = new S3Client({
@@ -22,8 +24,8 @@ const s3 = new S3Client({
   maxAttempts: 3, // Retry upload up to 3 times
   requestHandler: {
     httpOptions: {
-      connectTimeout: 5000, // 5 seconds
-      timeout: 300000, // 5 minutes
+      connectTimeout: 20000, // 5 seconds
+      timeout: 420000, // 7 minute  // 240000, // 4 minutes
     },
   },
 });
@@ -64,11 +66,32 @@ const compressImage = async (imageBuffer, mimeType) => {
   }
 };
 
+
+// Updated compressAudio function using streams
+const compressAudio = async (inputBuffer) => {
+  const passThroughStream = new PassThrough();
+  return new Promise((resolve, reject) => {
+    ffmpeg(inputBuffer)
+      .outputOptions("-b:a", "128k") // Set bitrate to 128 kbps
+      .on("error", (err) => {
+        console.error("FFmpeg error:", err.message);
+        reject(err);
+      })
+      .on("end", () => {
+        console.log("Audio compression completed.");
+        resolve(passThroughStream);
+      })
+      .format("mp3") // Specify the output format
+      .pipe(passThroughStream, { end: true }); // Pipe the output to a PassThrough stream
+  });
+};
+
+
 //> Latest Code  for Large file: Use streaming upload
 
 const uploadFileToSpace = async (file, folder) => {
-  // Threshold for switching upload method (20 MB)
-  const STREAMING_THRESHOLD = 20 * 1024 * 1024;
+  // Threshold for switching upload method (1 MB)
+  const STREAMING_THRESHOLD = 20* 1024 * 1024;
 
   // Generate a unique file name
   const fileName = `${folder}/${Date.now()}-${file.originalname.replace(
@@ -84,13 +107,13 @@ const uploadFileToSpace = async (file, folder) => {
     compressedFileBuffer = await compressImage(file.buffer, file.mimetype);
   } else if (file.mimetype.startsWith("audio/")) {
     // If it's an audio file, compress it
-    // compressedFileBuffer = await compressAudio(file.buffer, file.originalname);
-    compressedFileBuffer = file.buffer;
+     compressedFileBuffer = await compressAudio(file.buffer, file.originalname);
+    //compressedFileBuffer = file.buffer;// await compressAudio(file.buffer); // file.buffer;
   } else {
     // If it's neither image nor audio, just use the original file
-    compressedFileBuffer = file.buffer;
+    compressedFileBuffer =  file.buffer;// await compressAudio(file.buffer); //  file.buffer;
   }
-
+  let upload;
   try {
     const uploadParams = {
       Bucket: process.env.AWS_BUCKET_NAME, // Your Space name
@@ -103,9 +126,10 @@ const uploadFileToSpace = async (file, folder) => {
       // Small file: Use buffer upload
       uploadParams.Body = compressedFileBuffer;
 
-      // Upload the file to DigitalOcean Space
-      const command = new PutObjectCommand(uploadParams);
-      await s3.send(command);
+      // 🟢🟢🟢🟢 Upload the file to DigitalOcean Space
+       const command = new PutObjectCommand(uploadParams);
+       await s3.send(command);
+
     } else {
       // Large file: Use streaming upload
       // Write the compressed file buffer to a temporary file
@@ -117,13 +141,14 @@ const uploadFileToSpace = async (file, folder) => {
       // Stream the file from the temporary path
       uploadParams.Body = fs.createReadStream(tempFilePath);
 
-      // Upload the file to DigitalOcean Space
+      // 🟢🟢🟢🟢Upload the file to DigitalOcean Space
       const command = new PutObjectCommand(uploadParams);
       await s3.send(command);
 
       // Clean up the temporary file
       fs.unlinkSync(tempFilePath);
     }
+
 
     // Generate the CDN URL for the uploaded file
     const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.${process.env.AWS_REGION}.cdn.digitaloceanspaces.com/${fileName}`;
@@ -133,6 +158,7 @@ const uploadFileToSpace = async (file, folder) => {
     throw new Error("Failed to upload file to DigitalOcean Space");
   }
 };
+
 
 //> Bit Modified Code ..............
 /*
