@@ -25,7 +25,7 @@ const s3 = new S3Client({
   requestHandler: {
     httpOptions: {
       connectTimeout: 20000, // 5 seconds
-      timeout: 420000, // 7 minute  // 240000, // 4 minutes
+      timeout: 1200000,     // 15 minutes
     },
   },
 });
@@ -107,8 +107,8 @@ const uploadFileToSpace = async (file, folder) => {
     compressedFileBuffer = await compressImage(file.buffer, file.mimetype);
   } else if (file.mimetype.startsWith("audio/")) {
     // If it's an audio file, compress it
-     compressedFileBuffer = await compressAudio(file.buffer, file.originalname);
-    //compressedFileBuffer = file.buffer;// await compressAudio(file.buffer); // file.buffer;
+    // compressedFileBuffer = await compressAudio(file.buffer, file.originalname);
+    compressedFileBuffer = file.buffer;// await compressAudio(file.buffer); // file.buffer;
   } else {
     // If it's neither image nor audio, just use the original file
     compressedFileBuffer =  file.buffer;// await compressAudio(file.buffer); //  file.buffer;
@@ -122,7 +122,7 @@ const uploadFileToSpace = async (file, folder) => {
       ContentType: file.mimetype,
     };
 
-    if (file.size <= STREAMING_THRESHOLD) {
+    // if (file.size <= STREAMING_THRESHOLD) {
       // Small file: Use buffer upload
       uploadParams.Body = compressedFileBuffer;
 
@@ -130,24 +130,25 @@ const uploadFileToSpace = async (file, folder) => {
        const command = new PutObjectCommand(uploadParams);
        await s3.send(command);
 
-    } else {
-      // Large file: Use streaming upload
-      // Write the compressed file buffer to a temporary file
-      const tempFilePath = `${__dirname}/temp-${Date.now()}-${
-        file.originalname
-      }`;
-      fs.writeFileSync(tempFilePath, compressedFileBuffer);
+    // } 
+    // else {
+    //   // Large file: Use streaming upload
+    //   // Write the compressed file buffer to a temporary file
+    //   const tempFilePath = `${__dirname}/temp-${Date.now()}-${
+    //     file.originalname
+    //   }`;
+    //   fs.writeFileSync(tempFilePath, compressedFileBuffer);
 
-      // Stream the file from the temporary path
-      uploadParams.Body = fs.createReadStream(tempFilePath);
+    //   // Stream the file from the temporary path
+    //   uploadParams.Body = fs.createReadStream(tempFilePath);
 
-      // 🟢🟢🟢🟢Upload the file to DigitalOcean Space
-      const command = new PutObjectCommand(uploadParams);
-      await s3.send(command);
+    //   // 🟢🟢🟢🟢Upload the file to DigitalOcean Space
+    //   const command = new PutObjectCommand(uploadParams);
+    //   await s3.send(command);
 
-      // Clean up the temporary file
-      fs.unlinkSync(tempFilePath);
-    }
+    //   // Clean up the temporary file
+    //   fs.unlinkSync(tempFilePath);
+    // }
 
 
     // Generate the CDN URL for the uploaded file

@@ -6,7 +6,9 @@ const characterValidation = require("../../validations/character.validation");
 const validate = require("../../middlewares/validate");
 const multer = require("multer");
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage,
+    limits: { fileSize: 4000 * 1024 * 1024 }
+});
 
 // TODO: Auth middleware
 router.route("/").get(characterController.getAllCharacters);

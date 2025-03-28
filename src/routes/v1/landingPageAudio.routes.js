@@ -7,7 +7,9 @@ const validate = require("../../middlewares/validate");
 const languagePageAudioValidation = require("../../validations/landingPageAudio.validation");
 const multer = require("multer");
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage,
+    limits: { fileSize: 4000 * 1024 * 1024 }
+});
 
 router.route("/").get(
   // auth("common"),
