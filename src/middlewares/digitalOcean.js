@@ -67,24 +67,6 @@ const compressImage = async (imageBuffer, mimeType) => {
 };
 
 
-// Updated compressAudio function using streams
-const compressAudio = async (inputBuffer) => {
-  const passThroughStream = new PassThrough();
-  return new Promise((resolve, reject) => {
-    ffmpeg(inputBuffer)
-      .outputOptions("-b:a", "128k") // Set bitrate to 128 kbps
-      .on("error", (err) => {
-        console.error("FFmpeg error:", err.message);
-        reject(err);
-      })
-      .on("end", () => {
-        console.log("Audio compression completed.");
-        resolve(passThroughStream);
-      })
-      .format("mp3") // Specify the output format
-      .pipe(passThroughStream, { end: true }); // Pipe the output to a PassThrough stream
-  });
-};
 
 
 //> Latest Code  for Large file: Use streaming upload
@@ -150,7 +132,6 @@ const uploadFileToSpace = async (file, folder) => {
     //   fs.unlinkSync(tempFilePath);
     // }
 
-
     // Generate the CDN URL for the uploaded file
     const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.${process.env.AWS_REGION}.cdn.digitaloceanspaces.com/${fileName}`;
     return fileUrl;
@@ -158,6 +139,26 @@ const uploadFileToSpace = async (file, folder) => {
     console.error("Error uploading to DigitalOcean Space:", error);
     throw new Error("Failed to upload file to DigitalOcean Space");
   }
+};
+
+
+// Updated compressAudio function using streams
+const compressAudio = async (inputBuffer) => {
+  const passThroughStream = new PassThrough();
+  return new Promise((resolve, reject) => {
+    ffmpeg(inputBuffer)
+      .outputOptions("-b:a", "128k") // Set bitrate to 128 kbps
+      .on("error", (err) => {
+        console.error("FFmpeg error:", err.message);
+        reject(err);
+      })
+      .on("end", () => {
+        console.log("Audio compression completed.");
+        resolve(passThroughStream);
+      })
+      .format("mp3") // Specify the output format
+      .pipe(passThroughStream, { end: true }); // Pipe the output to a PassThrough stream
+  });
 };
 
 

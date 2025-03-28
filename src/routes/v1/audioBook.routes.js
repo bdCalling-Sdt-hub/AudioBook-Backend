@@ -12,7 +12,7 @@ const httpStatus = require("http-status");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage,
-    limits: { fileSize: 5600 * 1024 * 1024 } // 3400 
+    limits: { fileSize: 1 * 1024 * 1024 * 1024 } // 3400  // 5600 // 5800
 });
 
 // 🧪

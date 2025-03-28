@@ -25,7 +25,7 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
     cors: {
       origin: (origin, callback) => {
         // Allow all origins (wildcard) and give special permission to your domain
-        if (origin === "https://sheakh3000.sobhoy.com" || !origin) {
+        if (origin === "https://sheakh3000.sobhoy.com" || !origin || "http://localhost:3000" ) {
           callback(null, true); // Allow request
         } else {
           callback(null, true); // Allow all origins, including this one

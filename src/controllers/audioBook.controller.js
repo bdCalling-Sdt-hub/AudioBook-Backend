@@ -65,10 +65,18 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
 
   if (req.file) {
     console.log("Audio File🟢🟢",req.file)
-    req.body.audioFile = await uploadFileToSpace(req.file, "audioBooks");
+    const uploadToSpace = await uploadFileToSpace(req.file, "audioBooks");
+    if(!uploadToSpace){
+      throw new ApiError(httpStatus.NOT_FOUND, "AudioFile is  not Uploaded");
+    }
+     req.body.audioFile = uploadToSpace
   }
 
   const audioFile = await AudioFile.create(req.body);
+
+  if(!audioFile){
+    throw new ApiError(httpStatus.NOT_FOUND, "AudioFile is  not Created");
+  }
 
   res.status(httpStatus.CREATED).json(
     response({

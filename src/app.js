@@ -40,7 +40,7 @@ app.use(express.urlencoded({ limit: '1800mb',parameterLimit: 10000 , extended: t
 
 // sanitize request data
 app.use(xss());
-app.use(mongoSanitize());
+app.use(mongoSanitize()); 
 
 // gzip compression
 app.use(compression());
