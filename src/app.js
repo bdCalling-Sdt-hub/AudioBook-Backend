@@ -46,8 +46,25 @@ app.use(mongoSanitize());
 app.use(compression());
 
 // enable cors
-app.use(cors());
-app.options("*", cors());
+ app.use(cors());
+ app.options("*", cors());
+
+// Define the allowed origins (replace with your domains)
+// const allowedOrigins = ['https://nimur3000.sobhoy.com', 'https://sheakh3000.sobhoy.com'];
+
+// // Use CORS middleware
+// app.use(cors({
+//   origin: function(origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: ['GET', 'POST'],
+//   allowedHeaders: ['Content-Type']
+// }));
+
 
 // jwt authentication
 app.use(passport.initialize());

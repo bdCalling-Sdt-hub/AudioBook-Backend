@@ -8,6 +8,7 @@ const fileUpload = require("../../middlewares/fileUpload");
 const httpStatus = require("http-status");
 // const UPLOADS_FOLDER = './public/uploads/audio'
 // const upload = fileUpload(UPLOADS_FOLDER)
+const ms = require('ms');
 
 const multer = require("multer");
 const storage = multer.memoryStorage();
@@ -25,9 +26,12 @@ router
   .route("/create")
   .get(auth("commonAdmin"), audioBookController.createAudioBook);
 
+  
+
 // 🧪  Create A AudioFile By Id
 router.route("/audios/:audioBookId").post(
   auth("commonAdmin"),
+  setConnectionTimeout('12h'),
   [upload.single("audioFile")],
   audioBookController.addAudioWithLanguageIdForAudioBook
 );
@@ -90,3 +94,15 @@ router
   .delete(auth("commonAdmin"), audioBookController.deleteAudioBookById);
 
 module.exports = router;
+
+function setConnectionTimeout(time) {
+  var delay = typeof time === 'string'
+    ? ms(time)
+    : Number(time || 5000);
+
+  return function (req, res, next) {
+    res.connection.setTimeout(delay);
+    next();
+  }
+}
+
