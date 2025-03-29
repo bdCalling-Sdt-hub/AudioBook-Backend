@@ -33,11 +33,6 @@ const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
 
   console.log("Consle loge rakib ================= == == = = 🔗🔗🔗 ", req.file)
 
-  if(req.file ?? req.file.size > 100 * 1024 * 1024){
-    throw new ApiError(httpStatus[400], "AudioFile can not be Uploaded.. because its bigger than 100Mb");
-  }
-
-
   const audioBookId = req.params.audioBookId;
 
   const audioBook = await AudioBook.findById(audioBookId);
