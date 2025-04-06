@@ -31,9 +31,16 @@ const createAudioBook = catchAsync(async (req, res) => {
 //[🚧][🧑‍💻✅][🧪🆗✔️] //
 const addAudioWithLanguageIdForAudioBook = catchAsync(async (req, res) => {
 
-  console.log("Consle loge rakib ================= == == = = 🔗🔗🔗 ", req.file)
-
   const audioBookId = req.params.audioBookId;
+
+  // if(req.body.languageId){
+  //   const ab = await AudioFile.find({attachedTo : audioBookId, languageId : req.body.languageId})
+  //   if(ab && ab.length !== 0){
+     
+  //     throw new ApiError(httpStatus.BAD_REQUEST, "Language is already Added");
+  //   }
+  // }
+
 
   const audioBook = await AudioBook.findById(audioBookId);
   if (!audioBook) {

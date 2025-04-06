@@ -23,6 +23,7 @@ const getAllCharacters = async (req, res) => {
       select: "name flagImage",
     },
   });
+  
   /*
   const characters = await Characters.aggregate([
     // Match only published characters
