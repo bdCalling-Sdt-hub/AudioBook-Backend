@@ -40,6 +40,9 @@ router
   .route("/audioFile/:audioFileId")
   .delete(auth("commonAdmin"), audioBookController.deleteAudioFile);
 
+router.route("/deleteCoverPhoto")
+.delete(auth("commonAdmin"), audioBookController.deleteAudioBookCoverPhotoByCoverPhotoUrl);
+
 router.route("/:audioBookId").put(
   [
     upload.fields([

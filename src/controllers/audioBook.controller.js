@@ -225,6 +225,44 @@ const getAAudioBookById = catchAsync(async (req, res) => {
   );
 });
 
+const deleteAudioBookCoverPhotoByCoverPhotoUrl = catchAsync(async (req, res) => {
+  const { coverPhotoUrl , audioBookId } = req.query;
+
+  const audioBook = await AudioBook.findById(audioBookId);
+  if (!audioBook) {
+    // throw new ApiError(httpStatus.NOT_FOUND, "AudioBook not found");
+
+    return res.status(httpStatus.NOT_FOUND).json(
+      response({
+        message: "Audio Book not found",
+        status: "NOT_FOUND",
+        statusCode: httpStatus.NOT_FOUND,
+        data: null,
+      })
+    );
+  }
+  if(!coverPhotoUrl){
+    throw new ApiError(httpStatus.NOT_FOUND, "coverPhotoUrl not found");
+  }
+
+   await deleteFileFromSpace(coverPhotoUrl);
+
+  audioBook.coverPhotos = audioBook.coverPhotos.filter(
+    (url) => url !== coverPhotoUrl
+  );
+  
+  await audioBook.save();
+
+  res.status(200).json({
+    message: "AudioBook Updated",
+    status: "OK",
+    statusCode: 200,
+    data: audioBook,
+  });
+});
+
+  
+
 //[🚧][🧑‍💻✅][🧪🆗] //
 
 const updateAudioBookById = catchAsync(async (req, res) => {
@@ -637,4 +675,5 @@ module.exports = {
   deleteAudioBookById,
   updateAudioBookForPreviewById,
   updateAudioFileByAudioId,
+  deleteAudioBookCoverPhotoByCoverPhotoUrl
 };
