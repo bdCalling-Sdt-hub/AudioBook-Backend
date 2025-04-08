@@ -226,7 +226,8 @@ const getAAudioBookById = catchAsync(async (req, res) => {
 });
 
 const deleteAudioBookCoverPhotoByCoverPhotoUrl = catchAsync(async (req, res) => {
-  const { coverPhotoUrl , audioBookId } = req.query;
+  const { audioBookId } = req.query;
+  const {coverPhotoUrl} = req.body;
 
   const audioBook = await AudioBook.findById(audioBookId);
   if (!audioBook) {
@@ -250,11 +251,11 @@ const deleteAudioBookCoverPhotoByCoverPhotoUrl = catchAsync(async (req, res) => 
   audioBook.coverPhotos = audioBook.coverPhotos.filter(
     (url) => url !== coverPhotoUrl
   );
-  
+
   await audioBook.save();
 
   res.status(200).json({
-    message: "AudioBook Updated",
+    message: "Image Deleted Successfully",
     status: "OK",
     statusCode: 200,
     data: audioBook,
